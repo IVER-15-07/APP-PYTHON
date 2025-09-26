@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+
+
+
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre     String
+  email     String   @unique
+  contrasena String
+
+  rol_usuarioId Int
+  rol_ususario Rol_usuario @relation(fields: [rol_usuarioId], references: [id], onDelete: Cascade)
+
+  cursoId   Int
+  curso Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  registro Registro[]
+  calificacion Calificacion[]
+}
+
+model Rol_usuario {
+  id        Int      @id @default(autoincrement())
+  nombre     String   @unique
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+
+  usuario    Usuario[]
+}
+
+
+model Curso {
+  id          Int      @id @default(autoincrement())
+  titulo       String
+  descripcion String
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+  codigo     Int    @unique
+
+
+  usuario Usuario[]
+  registro Registro[]
+
+}
+
+model Registro{
+  id        Int      @id @default(autoincrement())
+  
+  ususario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+  curso Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  cursoId  Int
+
+  inscripcion Inscripcion[]
+}
+
+model Inscripcion{
+  id        Int      @id @default(autoincrement())
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+  registro Registro @relation(fields: [registroId], references: [id], onDelete: Cascade)
+  registroId Int
+
+  opcioninxcripcion OpcionInscripcion @relation(fields: [opcioninscripcionId], references: [id], onDelete: Cascade)
+  opcioninscripcionId Int
+}
+
+model OpcionInscripcion{
+  id       Int      @id @default(autoincrement())
+  nombre     String
+  descripcion String
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+
+  inscripcion Inscripcion[] 
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
+ 
+}
+
+
+model Calificacion{
+  id      Int      @id @default(autoincrement())
+  nota    Int 
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  evaluacionId Int
+}
+
+
+model Topico{
+  id        Int      @id @default(autoincrement())
+  nombre     String
+  descripcion String
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+
+  opcioninscripcion OpcionInscripcion[]
+  recursos Recursos[]
+  evaluacion Evaluacion[]
+  diagnostico Diagnostico[]
+  laboratorio Laboratorio[]
+}
+
+model Recursos{
+  id    Int    @id @default(autoincrement())
+  nombre String
+  url    String
+  descripcion String?
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
+
+  tipotopico Tipotopico @relation(fields: [tipotopicoId], references: [id], onDelete: Cascade)
+  tipotopicoId Int
+}
+
+model Tipotopico{
+  id    Int     @id @default(autoincrement())
+  nombre String @unique
+
+  recursos Recursos[]
+}
+
+
+
+model Evaluacion{
+  id        Int      @id @default(autoincrement())
+  titulo     String
+  descripcion String
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+  puntaje_maximo Int
+
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
+
+  calificacion Calificacion[]
+  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
+}
+
+model CampoPreguntaEvaluacion{
+  id       Int      @id @default(autoincrement())
+
+
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  evaluacionId Int
+
+  respuestaEvaluacion RespuestaEvaluacion @relation(fields: [respuestaEvaluacionId], references: [id], onDelete: Cascade)
+  respuestaEvaluacionId Int
+
+  preguntaEvaluacion PreguntaEvaluacion @relation(fields: [preguntaEvaluacionId], references: [id], onDelete: Cascade)
+  preguntaEvaluacionId Int
+}
+
+model RespuestaEvaluacion{
+  id       Int      @id @default(autoincrement())
+  repuestas String?
+
+  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
+}
+
+model PreguntaEvaluacion{
+  id       Int      @id @default(autoincrement())
+  pregunta String
+  puntaje  Int
+ 
+  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
+}
+
+
+
+model Diagnostico{
+  id       Int      @id @default(autoincrement())
+  titulo  String
+  descripcion String
+  fecha_ini DateTime @default(now())
+  fecha_fin  DateTime @default(now())
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
+
+  campoPreguntaDiagnostico CampoPreguntaDiagnostico[]
+
+}
+
+// tabla relacionadora
+model CampoPreguntaDiagnostico{
+  id       Int      @id @default(autoincrement())
+
+
+  diagnostico Diagnostico @relation(fields: [diagnosticoId], references: [id], onDelete: Cascade)
+  diagnosticoId Int
+
+  preguntaDiagnostico PreguntaDiagnostico @relation(fields: [preguntaDiagnosticoId], references: [id], onDelete: Cascade)
+  preguntaDiagnosticoId Int
+
+}
+
+
+
+model RespuestaDiagnostico{
+  id       Int      @id @default(autoincrement())
+  respuesta String
+
+  seleccionRespuesta SeleccionRespuesta[]
+  
+
+}
+
+model PreguntaDiagnostico{
+  id       Int      @id @default(autoincrement())
+  pregunata String
+
+  campoPreguntaDiagnostico CampoPreguntaDiagnostico[]
+
+  selescionRespuesta SeleccionRespuesta[]
+
+}
+
+// tabla relacionadora 
+model SeleccionRespuesta{
+  id       Int      @id @default(autoincrement())
+
+  respuestaDiagnostico RespuestaDiagnostico @relation(fields: [respuestaDiagnosticoId], references: [id], onDelete: Cascade)
+  respuestaDiagnosticoId Int
+
+  preguntaDiagnostico PreguntaDiagnostico @relation(fields: [preguntaDiagnosticoId], references: [id], onDelete: Cascade)
+  preguntaDiagnosticoId Int
+
+}
+
+
+model Laboratorio{
+  id       Int      @id @default(autoincrement())
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
+}
+

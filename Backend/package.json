@@ -13,9 +13,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.16.2",
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "response-time": "^2.3.4"
+  },
+  "devDependencies": {
+    "prisma": "^6.16.2"
   }
 }

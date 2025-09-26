@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './page/Home'
 import VentanaProfesor from './layout/VentanaProfesor'
 import VentanaEstudiante from './layout/VentanaEstudiante'
+import VentanaPublica from './layout/VentanaPublica'
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
       <Routes>
 
         {/* rurta publica */}
-        <Route path="/" element={<Home />}>
+        <Route path="/" element={<VentanaPublica/>}>
+          <Route index element={<Home />} />
 
 
           {/* rutas estudiantes */}

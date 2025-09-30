@@ -17,7 +17,6 @@
 - Interfaz clara y navegación intuitiva
 - Uso de colores contrastantes y diseño responsivo
 - Subtítulos en videos educativos
-- Cumplimiento de estándares WCAG 2.1
 
 **Importancia**: Permite que el laboratorio llegue a más usuarios y reduce la curva de aprendizaje.
 
@@ -26,7 +25,6 @@
 
 **Implementación**:
 - Autenticación y autorización de usuarios
-- Cifrado de contraseñas (bcrypt/argon2)
 - Validación de datos en backend y frontend
 - Backups automáticos programados
 - Transacciones ACID para operaciones críticas
@@ -73,7 +71,6 @@
 **Implementación**:
 - Arquitectura modular (separación de capas)
 - Base de datos normalizada y bien estructurada
-- Código documentado y siguiendo estándares PEP 8
 - Sistema de gestión de contenidos (CMS) para módulos
 - Versionado de API
 

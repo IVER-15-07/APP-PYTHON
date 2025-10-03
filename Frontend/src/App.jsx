@@ -1,44 +1,43 @@
 
 import { Routes, Route } from 'react-router-dom'
 import Home from './page/Home'
+import Login from './page/Login'
 import VentanaProfesor from './layout/VentanaProfesor'
 import VentanaEstudiante from './layout/VentanaEstudiante'
 import VentanaPublica from './layout/VentanaPublica'
+import ProtectedRoute from './page/ProtectedRoute'
 
 function App() {
   return (
     <>
       <Routes>
+        {/* Ruta de login */}
+        <Route path="/login" element={<Login />} />
 
-        {/* rurta publica */}
-        <Route path="/" element={<VentanaPublica/>}>
+        {/* Rutas públicas */}
+        <Route path="/" element={<VentanaPublica />}>
           <Route index element={<Home />} />
-
-
-          {/* rutas estudiantes */}
-          <Route path="Estudiante" element={<VentanaEstudiante />}>
-
-          </Route>
-
-
-          {/* rutas profesor */}
-          <Route path="Profesor" element={<VentanaProfesor />}>
-
-
-          </Route>
-
         </Route>
 
+        {/* Rutas protegidas - estudiantes */}
+        <Route
+          path="/estudiante/*"
+          element={
+            <ProtectedRoute>
+              <VentanaEstudiante />
+            </ProtectedRoute>
+          }
+        />
 
-
-
-
-
-
-
-
-
-
+        {/* Rutas protegidas - profesor */}
+        <Route
+          path="/profesor/*"
+          element={
+            <ProtectedRoute>
+              <VentanaProfesor />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   )

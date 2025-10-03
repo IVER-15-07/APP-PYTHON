@@ -6,12 +6,14 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  
+  
 }
 
 
@@ -25,8 +27,9 @@ model Usuario {
   id        Int      @id @default(autoincrement())
   nombre     String
   email     String   @unique
-  contrasena String
-
+  contrasena String?
+  firebaseUid    String?  @unique // UID de Firebase
+  profilePicture String?  // URL de la foto de perfil
   rol_usuarioId Int
   rol_ususario Rol_usuario @relation(fields: [rol_usuarioId], references: [id], onDelete: Cascade)
 

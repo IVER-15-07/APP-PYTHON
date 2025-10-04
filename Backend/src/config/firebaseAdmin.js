@@ -1,19 +1,16 @@
 
-import admin from 'firebase-admin';
+import admin from "firebase-admin";
+import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
-// Por ahora usaremos las credenciales del proyecto
-
-const firebaseConfig = {
-  projectId: "login-ac512",
-  // Estas credenciales las obtendremos del service account JSON
-};
-
-// Inicializar Firebase Admin (temporal)
-if (!admin.apps.length) {
+const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+if (!serviceAccountPath || !fs.existsSync(serviceAccountPath)) {
+  console.warn("⚠️ No se encontró service account para Firebase. Firebase login fallará.");
+} else {
   admin.initializeApp({
-    projectId: "login-ac512"
+    credential: admin.credential.cert(JSON.parse(fs.readFileSync(serviceAccountPath, "utf8")))
   });
 }
 
-export const firebaseAdmin = admin;
 export default admin;

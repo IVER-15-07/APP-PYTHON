@@ -1,8 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+//import { PrismaClient } from '../generated/prisma/index.js';
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
-// Singleton - una sola instancia de Prisma
-const prisma = new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'], // Ver consultas en consola
-})
-
-export default prisma
+export default prisma;

@@ -24,28 +24,22 @@ datasource db {
 
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nombre     String
-  email     String   @unique
-  contrasena String?
-  firebaseUid    String?  @unique // UID de Firebase
-  profilePicture String?  // URL de la foto de perfil
+  id            Int          @id @default(autoincrement())
+  nombre        String
+  email         String       @unique
+  contrasena    String?      // null cuando provider != 'local'
+  provider      String       @default("local") // 'local' o 'firebase'
+  profilePicture String?
   rol_usuarioId Int
-  rol_ususario Rol_usuario @relation(fields: [rol_usuarioId], references: [id], onDelete: Cascade)
-
-  cursoId   Int
-  curso Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-
+  rol_usuario   Rol_usuario  @relation(fields: [rol_usuarioId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   registro Registro[]
-  calificacion Calificacion[]
 }
 
 model Rol_usuario {
   id        Int      @id @default(autoincrement())
   nombre     String   @unique
-  fecha_ini DateTime @default(now())
-  fecha_fin  DateTime @default(now())
-
   usuario    Usuario[]
 }
 
@@ -59,7 +53,7 @@ model Curso {
   codigo     Int    @unique
 
 
-  usuario Usuario[]
+
   registro Registro[]
 
 }
@@ -104,9 +98,6 @@ model OpcionInscripcion{
 model Calificacion{
   id      Int      @id @default(autoincrement())
   nota    Int 
-
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId Int
 
   evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
   evaluacionId Int

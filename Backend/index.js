@@ -1,9 +1,9 @@
-import express from 'express'
-//import libroRoutes from "./routes/libro.routes.js"
-import cors from 'cors';
-import route from './src/api/endPoints.js'
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import endPoints from "./src/api/endPoints.js";
+import axios from "axios";
 import responseTime from 'response-time'
-import axios from 'axios'
 
 await axios.get('https://api.ipify.org?format=json')
   .then(response => {
@@ -13,11 +13,15 @@ await axios.get('https://api.ipify.org?format=json')
     console.error('Error al obtener la IP:', error);
   });
 
+
+dotenv.config();
 const PORT = 3000;
 const app = express()
-app.use(responseTime())
+
 app.use(express.json())
-//app.use(libroRoutes);
+app.use(express.urlencoded({ extended: true }));
+app.use(responseTime())
+
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -25,7 +29,7 @@ app.use(cors({
     methods : ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
-app.use('/', route);
 
-app.listen(PORT);
-console.log("Server on port", PORT);
+app.use("/api", endPoints);
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+

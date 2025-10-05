@@ -34,7 +34,6 @@ const Navbar = () => {
         {/* Acción */}
         <div>
           <a
-            href="/login"
             className="text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-xl shadow"
           >
             Acceder

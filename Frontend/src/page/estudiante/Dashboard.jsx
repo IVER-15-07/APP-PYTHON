@@ -1,12 +1,14 @@
-
+// Frontend/src/page/estudiante/Dashboard.jsx
 import { useEffect, useState } from 'react';
-import { firebaseService } from '../../../services/firebase.api.js';
+
+import { authService } from '../../../services/auth.api.js'; // ✅ AFUERA de src/
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const currentUser = firebaseService.getUser();
+    // ✅ USAR authService para obtener usuario del localStorage
+    const currentUser = authService.obtenerUsuarioActual();
     setUser(currentUser);
   }, []);
 
@@ -15,7 +17,7 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-200 mb-2">
-            ¡Bienvenido, {user?.nombre}! 👋
+            ¡Bienvenido, {user?.nombre || 'Estudiante'}! 👋
           </h1>
           <p className="text-slate-400">Panel de control del estudiante</p>
         </div>
@@ -56,7 +58,7 @@ const Dashboard = () => {
                 <p className="text-lg font-medium text-slate-200">{user.nombre}</p>
                 <p className="text-slate-400">{user.email}</p>
                 <p className="text-sm text-emerald-400">
-                  Autenticado con {user.provider} | Rol: {user.rol}
+                  Rol: {user.rol_usuarioId === 1 ? 'Profesor' : 'Estudiante'}
                 </p>
               </div>
             </div>

@@ -1,61 +1,71 @@
-// Frontend/services/firebase.api.js
+
+// Frontend/src/services/firebase.api.js
 import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '../src/config/firebaseConfig.jsx'; // ← Cambiar ruta
-import axiosInstance from '../helpers/axios-config.js';
+import { auth, googleProvider } from '../src/config/firebaseConfig.jsx';
 
-export const firebaseService = {
-  async loginWithGoogle() {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      const firebaseToken = await user.getIdToken();
-      
-      const response = await axiosInstance.post('/auth/firebase-login', {
-        firebaseToken,
-        userData: {
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          uid: user.uid
+export const firebaseAuthService = {
+    
+    // ✅ Login con Google
+    async loginWithGoogle() {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            
+            // Obtener token de Firebase
+            const token = await user.getIdToken();
+            
+            return {
+                success: true,
+                data: {
+                    firebaseToken: token,
+                    userData: {
+                        uid: user.uid,
+                        name: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        emailVerified: user.emailVerified
+                    }
+                }
+            };
+        } catch (error) {
+            console.error('Error en Google Auth:', error);
+            throw new Error(this.getErrorMessage(error.code));
         }
-      });
+    },
 
-      localStorage.setItem('authToken', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.usuario));
+    // ✅ Logout de Firebase
+    async logout() {
+        try {
+            await signOut(auth);
+            return { success: true };
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            throw new Error('Error al cerrar sesión de Firebase');
+        }
+    },
 
-      return {
-        success: true,
-        user: response.data.usuario,
-        token: response.data.token
-      };
-    } catch (error) {
-      console.error('Error en login:', error);
-      throw new Error(error.response?.data?.mensaje || error.message);
+    // ✅ Obtener usuario actual de Firebase
+    getCurrentUser() {
+        return auth.currentUser;
+    },
+
+    // ✅ Verificar si está autenticado en Firebase
+    isAuthenticated() {
+        return !!auth.currentUser;
+    },
+
+    // ✅ Mensajes de error personalizados
+    getErrorMessage(errorCode) {
+        const errorMessages = {
+            'auth/popup-closed-by-user': 'Ventana cerrada por el usuario',
+            'auth/popup-blocked': 'Popup bloqueado por el navegador',
+            'auth/cancelled-popup-request': 'Solicitud de popup cancelada',
+            'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este email',
+            'auth/user-cancelled': 'Usuario canceló la operación',
+            'auth/network-request-failed': 'Error de conexión de red',
+            'auth/too-many-requests': 'Demasiados intentos, intenta más tarde'
+        };
+        
+        return errorMessages[errorCode] || 'Error de autenticación con Google';
     }
-  },
-
-  async logout() {
-    try {
-      await signOut(auth);
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      return { success: true };
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  },
-
-  isAuthenticated() {
-    return !!localStorage.getItem('authToken');
-  },
-
-  getUser() {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  },
-
-  getToken() {
-    return localStorage.getItem('authToken');
-  }
 };

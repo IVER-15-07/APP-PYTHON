@@ -6,6 +6,7 @@ import VentanaProfesor from './layout/VentanaProfesor'
 import VentanaEstudiante from './layout/VentanaEstudiante'
 import VentanaPublica from './layout/VentanaPublica'
 import ProtectedRoute from './page/ProtectedRoute'
+import Register from './page/Register'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         {/* Ruta de login */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Rutas públicas */}
         <Route path="/" element={<VentanaPublica />}>

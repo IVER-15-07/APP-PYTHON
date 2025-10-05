@@ -1,14 +1,17 @@
 // Frontend/src/componentes/ProtectedRoute.jsx
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { firebaseService } from '../../services/firebase.api.js';
+
+import { firebaseAuthService } from '../../services/firebase.api.js';
+
+
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     const checkAuth = () => {
-      const authenticated = firebaseService.isAuthenticated();
+      const authenticated = firebaseAuthService.isAuthenticated();
       setIsAuthenticated(authenticated);
     };
     checkAuth();

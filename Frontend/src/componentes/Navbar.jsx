@@ -1,13 +1,17 @@
 import { useState } from "react"
-import { Navigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { NavLink } from 'react-router-dom'
 
-Navigate
+
 
 const Navbar = () => {
     const [desplegable, setDesplegable] = useState(false)
+    const navigate = useNavigate();
 
-
+    const handleRoleNavigation = (role) => {
+        setDesplegable(false);
+        navigate(`/login?rol=${role.toLowerCase()}`);
+    }
 
     return (
         <header className="bg-slate-900 border-b border-slate-800 text-slate-200">
@@ -53,23 +57,41 @@ const Navbar = () => {
                             Acceder
                         </button>
 
-                        <div
-                            className={`absolute right-0 mt-2 w-44 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-1 ${desplegable ? "block" : "hidden"}`}
-                        >
-                            <NavLink
-                                to="/estudiante"
-                                onClick={() => setDesplegable(false)}
-                                className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
+                        {/* ✅ MENÚ ACTUALIZADO */}
+                        <div className={`absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-1 ${desplegable ? "block" : "hidden"}`}>
+
+                            {/* Estudiante */}
+                            <button
+                                onClick={() => handleRoleNavigation('estudiante')}
+                                className="w-full text-left block px-4 py-3 text-sm text-slate-200 hover:bg-slate-700 border-b border-slate-700"
                             >
-                                Estudiante
-                            </NavLink>
-                            <NavLink
-                                to="/profesor"
-                                onClick={() => setDesplegable(false)}
-                                className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
+                                <div className="flex items-center gap-3">
+                                    <span className="text-lg">🎓</span>
+                                    <div>
+                                        <div className="font-medium">Estudiante</div>
+                                        <div className="text-xs text-slate-400">Quiero aprender</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            {/* Profesor */}
+                            <button
+                                onClick={() => handleRoleNavigation('profesor')}
+                                className="w-full text-left block px-4 py-3 text-sm text-slate-200 hover:bg-slate-700"
                             >
-                                Profesor
-                            </NavLink>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-lg">👨‍🏫</span>
+                                    <div>
+                                        <div className="font-medium">Profesor</div>
+                                        <div className="text-xs text-slate-400">Quiero enseñar</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            {/* Divider */}
+                            <div className="border-t border-slate-700 my-1"></div>
+
+                          
                         </div>
                     </div>
                 </div>

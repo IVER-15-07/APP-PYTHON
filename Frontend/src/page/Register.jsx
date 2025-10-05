@@ -1,19 +1,43 @@
 // Frontend/components/Register.jsx
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState ,useEffect} from 'react';
+import { Link, useNavigate,useSearchParams } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 
 const Register = () => {
+    const [searchParams] = useSearchParams();
+    const rolParam = searchParams.get('rol'); // ✅ LEER ROL DE URL
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
         contrasena: '',
-        confirmarContrasena: ''
+        confirmarContrasena: '',
+        rol_usuarioId: rolParam === 'profesor' ? 1 : 2 // ✅ ASIGNAR ROL POR DEFECTO
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
+
+
+        // ✅ ACTUALIZAR ROL CUANDO CAMBIE LA URL
+    useEffect(() => {
+        if (rolParam) {
+            setFormData(prev => ({
+                ...prev,
+                rol_usuarioId: rolParam === 'profesor' ? 1 : 2
+            }));
+        }
+    }, [rolParam]);
+
+    // ✅ FUNCIÓN PARA MENSAJE DINÁMICO
+    const getRolMessage = () => {
+        if (rolParam === 'profesor') {
+            return 'Crea tu cuenta de Profesor';
+        } else if (rolParam === 'estudiante') {
+            return 'Crea tu cuenta de Estudiante';
+        }
+        return 'Crea tu cuenta para comenzar';
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -61,17 +85,25 @@ const Register = () => {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
+       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
             <div className="bg-slate-800/90 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md shadow-2xl border border-slate-700/50">
 
-                {/* Header */}
+                {/* Header dinámico */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-emerald-400 mb-2 drop-shadow-lg">
                         PyLearn
                     </h1>
                     <p className="text-slate-400 text-sm">
-                        Crea tu cuenta para comenzar
+                        {getRolMessage()} {/* ✅ MENSAJE DINÁMICO */}
                     </p>
+                    
+                    {/* ✅ MOSTRAR ROL SELECCIONADO */}
+                    {rolParam && (
+                        <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
+                            <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
+                            <span>Registrándote como {rolParam}</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Error Message */}
@@ -149,72 +181,58 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* tipo de  roles  */}
-                    <div className="space-y-3">
-                        <label className="text-slate-300 text-sm font-medium block">
-                            Tipo de cuenta
-                        </label>
-
+                    {/* ✅ SOLO MOSTRAR SELECTOR SI NO HAY ROL EN URL */}
+                    {!rolParam && (
                         <div className="space-y-3">
-                            {/* Estudiante */}
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <div className="relative">
+                            <label className="text-slate-300 text-sm font-medium block">
+                                Tipo de cuenta
+                            </label>
+                            
+                            <div className="space-y-3">
+                                {/* Estudiante */}
+                                <label className="flex items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">
                                     <input
                                         type="radio"
                                         name="rol_usuarioId"
-                                        value={2}
+                                        value="2"
                                         checked={formData.rol_usuarioId == 2}
                                         onChange={handleChange}
-                                        className="sr-only"
+                                        className="mr-3 text-emerald-500"
                                         disabled={loading}
                                     />
-                                    <div className={`w-5 h-5 rounded-full border-2 transition-all duration-300 ${formData.rol_usuarioId == 2
-                                            ? 'border-emerald-400 bg-emerald-400'
-                                            : 'border-slate-400'
-                                        }`}>
-                                        {formData.rol_usuarioId == 2 && (
-                                            <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                        )}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">🎓</span>
+                                        <div>
+                                            <div className="text-slate-200 font-medium">Estudiante</div>
+                                            <div className="text-slate-400 text-sm">Quiero aprender programación</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <span className="text-2xl">🎓</span>
-                                <div>
-                                    <span className="text-white font-medium">Estudiante</span>
-                                    <span className="text-slate-400 text-sm ml-2">- Quiero aprender Python</span>
-                                </div>
-                            </label>
+                                </label>
 
-                            {/* Profesor */}
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <div className="relative">
+                                {/* Profesor */}
+                                <label className="flex items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">
                                     <input
                                         type="radio"
                                         name="rol_usuarioId"
-                                        value={1}
+                                        value="1"
                                         checked={formData.rol_usuarioId == 1}
                                         onChange={handleChange}
-                                        className="sr-only"
+                                        className="mr-3 text-emerald-500"
                                         disabled={loading}
                                     />
-                                    <div className={`w-5 h-5 rounded-full border-2 transition-all duration-300 ${formData.rol_usuarioId == 1
-                                            ? 'border-emerald-400 bg-emerald-400'
-                                            : 'border-slate-400'
-                                        }`}>
-                                        {formData.rol_usuarioId == 1 && (
-                                            <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                        )}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">👨‍🏫</span>
+                                        <div>
+                                            <div className="text-slate-200 font-medium">Profesor</div>
+                                            <div className="text-slate-400 text-sm">Quiero enseñar programación</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <span className="text-2xl">👨‍🏫</span>
-                                <div>
-                                    <span className="text-white font-medium">Profesor</span>
-                                    <span className="text-slate-400 text-sm ml-2">- Quiero enseñar Python</span>
-                                </div>
-                            </label>
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Submit Button */}
+                    {/* Submit Button dinámico */}
                     <button
                         type="submit"
                         className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
@@ -226,7 +244,7 @@ const Register = () => {
                                 Creando cuenta...
                             </div>
                         ) : (
-                            'Crear Cuenta'
+                            `Crear Cuenta${rolParam ? ` de ${rolParam.charAt(0).toUpperCase() + rolParam.slice(1)}` : ''}`
                         )}
                     </button>
                 </form>
@@ -236,10 +254,10 @@ const Register = () => {
                     <p className="text-slate-400 text-sm">
                         ¿Ya tienes cuenta?{' '}
                         <Link
-                            to="/login"
+                            to={rolParam ? `/login?rol=${rolParam}` : '/login'}
                             className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-300 hover:underline"
                         >
-                            Inicia Sesión
+                            Inicia Sesión{rolParam ? ` como ${rolParam}` : ''}
                         </Link>
                     </p>
                 </div>
@@ -247,5 +265,6 @@ const Register = () => {
         </div>
     );
 };
+
 
 export default Register;

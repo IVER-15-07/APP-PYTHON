@@ -161,38 +161,6 @@ jobs:
           echo "✅ Prisma Client generated"
           echo "✅ Ready for deployment"
 
-  # Job 7: Deploy (solo en main)
-  deploy:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: build-check
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Display deployment info
-        run: |
-          echo "🚀 Ready to deploy to production"
-          echo "📦 Branch: ${{ github.ref }}"
-          echo "📝 Commit: ${{ github.sha }}"
-          echo "👤 Author: ${{ github.actor }}"
-          echo "⏰ Time: $(date)"
-
-      # Aquí agregarías tu deployment real:
-      # Para Railway:
-      # - name: Deploy to Railway
-      #   run: |
-      #     npm install -g @railway/cli
-      #     railway up
-      #   env:
-      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      
-      # Para Render:
-      # - name: Trigger Render Deploy
-      #   run: |
-      #     curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   # Job 8: Notificación final
   success:

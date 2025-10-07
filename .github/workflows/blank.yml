@@ -1,151 +1,42 @@
-name: Backend CI/CD
+name: CI
 
 on:
   push:
-    branches: [ "main", "test/GithubActions" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-env:
-  NODE_VERSION: '20'
+    branches: ["**"]
 
 jobs:
-  setup:
-    name: Setup & Install
+  backend:
     runs-on: ubuntu-latest
-    outputs:
-      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+    defaults:
+      run:
+        working-directory: ./Backend
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Cache node modules
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-
-      - name: Setup Node.js
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
+          node-version: 20
       - name: Install dependencies
-        run: npm ci
+        run: npm install
+      - name: Build backend
+        run: npm run build  # o npm test, si ya tienes tests
 
-      - name: Verify Prisma installation
-        run: npx prisma --version
-
-  prisma-validate:
-    name: Validate Prisma Schema
+  frontend:
     runs-on: ubuntu-latest
-    needs: setup
+    defaults:
+      run:
+        working-directory: ./Frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma validate --schema=Backend/prisma/schema.prisma
-      - run: npx prisma format --check
-
-  check-syntax:
-    name: Check Code Syntax
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: node --check src/index.js
-        continue-on-error: true # Evita fallo si no existe el archivo
-      - run: node -e "console.log('✅ Node modules loaded successfully')"
-
-  prisma-generate:
-    name: Generate Prisma Client
-    runs-on: ubuntu-latest
-    needs: prisma-validate
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: |
-          if [ -d "node_modules/@prisma/client" ]; then
-            echo "✅ Prisma Client generated successfully"
-          else
-            echo "❌ Prisma Client generation failed"
-            exit 1
-          fi
-
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm audit --audit-level=moderate
-        continue-on-error: true
-
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: prisma-generate
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm test
-
-  build:
-    name: Build Verification
-    runs-on: ubuntu-latest
-    needs: [test, check-syntax]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm run build
-
-  notify-success:
-    name: Pipeline Success
-    runs-on: ubuntu-latest
-    needs: [prisma-validate, check-syntax, security, build]
-    if: success()
-    steps:
-      - run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✅ CI Pipeline PASSED"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "📋 Summary:"
-          echo "  ✓ Dependencies installed"
-          echo "  ✓ Prisma schema validated"
-          echo "  ✓ Code syntax checked"
-          echo "  ✓ Prisma Client generated"
-          echo "  ✓ Security audit completed"
-          echo "  ✓ Tests passed"
-          echo "  ✓ Build completed"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build

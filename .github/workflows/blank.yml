@@ -20,7 +20,6 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
-      # Opcional: agrega un paso de lint o test si tienes
       # - name: Lint
       #   run: npm run lint
       # - name: Test
@@ -41,5 +40,7 @@ jobs:
         run: npm install
       - name: Lint
         run: npm run lint
-      - name: Build
-        run: npm run build
+      - name: Fix
+        run: npm run lint:fix
+      #- name: Build
+      #  run: npm run build

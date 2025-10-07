@@ -20,8 +20,11 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
-      - name: Run backend (dev)
-        run: npm run dev
+      # Opcional: agrega un paso de lint o test si tienes
+      # - name: Lint
+      #   run: npm run lint
+      # - name: Test
+      #   run: npm test
 
   frontend:
     runs-on: ubuntu-latest

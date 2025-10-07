@@ -1,17 +1,14 @@
-// Frontend/src/componentes/ProtectedRoute.jsx
+
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api.js';
-
-
-
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     const checkAuth = () => {
-      const user  = authService.isAuthenticated();
+      const user = authService.isAuthenticated();
       setIsAuthenticated(!!user);
     };
     checkAuth();

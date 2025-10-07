@@ -2,8 +2,6 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { NavLink } from 'react-router-dom'
 
-
-
 const Navbar = () => {
     const [desplegable, setDesplegable] = useState(false)
     const navigate = useNavigate();
@@ -16,13 +14,12 @@ const Navbar = () => {
     return (
         <header className="bg-slate-900 border-b border-slate-800 text-slate-200">
             <div className="mx-auto max-w-7xl h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-                {/* Marca */}
+
                 <div className="flex items-center gap-2">
                     <span className="text-white font-extrabold tracking-wide">PyLearn</span>
                     <span className="text-xs text-slate-400 hidden sm:inline">Aprende Python</span>
                 </div>
 
-                {/* Menú */}
                 <nav>
                     <ul className="flex items-center gap-6">
                         <NavLink
@@ -45,7 +42,6 @@ const Navbar = () => {
                     </ul>
                 </nav>
 
-                {/* Acción */}
                 <div className="flex items-center gap-2">
                     <div className="relative" >
                         <button
@@ -57,10 +53,8 @@ const Navbar = () => {
                             Acceder
                         </button>
 
-                        {/* ✅ MENÚ ACTUALIZADO */}
                         <div className={`absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-1 ${desplegable ? "block" : "hidden"}`}>
 
-                            {/* Estudiante */}
                             <button
                                 onClick={() => handleRoleNavigation('estudiante')}
                                 className="w-full text-left block px-4 py-3 text-sm text-slate-200 hover:bg-slate-700 border-b border-slate-700"
@@ -74,7 +68,6 @@ const Navbar = () => {
                                 </div>
                             </button>
 
-                            {/* Profesor */}
                             <button
                                 onClick={() => handleRoleNavigation('profesor')}
                                 className="w-full text-left block px-4 py-3 text-sm text-slate-200 hover:bg-slate-700"
@@ -88,10 +81,8 @@ const Navbar = () => {
                                 </div>
                             </button>
 
-                            {/* Divider */}
                             <div className="border-t border-slate-700 my-1"></div>
 
-                          
                         </div>
                     </div>
                 </div>

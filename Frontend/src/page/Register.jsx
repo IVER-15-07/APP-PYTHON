@@ -1,25 +1,23 @@
-// Frontend/components/Register.jsx
-import { useState ,useEffect} from 'react';
-import { Link, useNavigate,useSearchParams } from 'react-router-dom';
+
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 
 const Register = () => {
     const [searchParams] = useSearchParams();
-    const rolParam = searchParams.get('rol'); // ✅ LEER ROL DE URL
+    const rolParam = searchParams.get('rol'); //  LEER ROL DE URL
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
         contrasena: '',
         confirmarContrasena: '',
-        rol_usuarioId: rolParam === 'profesor' ? 1 : 2 // ✅ ASIGNAR ROL POR DEFECTO
+        rol_usuarioId: rolParam === 'profesor' ? 1 : 2
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
-
-        // ✅ ACTUALIZAR ROL CUANDO CAMBIE LA URL
     useEffect(() => {
         if (rolParam) {
             setFormData(prev => ({
@@ -29,7 +27,6 @@ const Register = () => {
         }
     }, [rolParam]);
 
-    // ✅ FUNCIÓN PARA MENSAJE DINÁMICO
     const getRolMessage = () => {
         if (rolParam === 'profesor') {
             return 'Crea tu cuenta de Profesor';
@@ -53,7 +50,6 @@ const Register = () => {
         setError('');
         setSuccess('');
 
-        // Validaciones frontend
         if (formData.contrasena !== formData.confirmarContrasena) {
             setError('Las contraseñas no coinciden');
             setLoading(false);
@@ -85,19 +81,17 @@ const Register = () => {
 
 
     return (
-       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
             <div className="bg-slate-800/90 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md shadow-2xl border border-slate-700/50">
 
-                {/* Header dinámico */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-emerald-400 mb-2 drop-shadow-lg">
                         PyLearn
                     </h1>
                     <p className="text-slate-400 text-sm">
-                        {getRolMessage()} {/* ✅ MENSAJE DINÁMICO */}
+                        {getRolMessage()}
                     </p>
-                    
-                    {/* ✅ MOSTRAR ROL SELECCIONADO */}
+
                     {rolParam && (
                         <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
                             <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
@@ -106,7 +100,6 @@ const Register = () => {
                     )}
                 </div>
 
-                {/* Error Message */}
                 {error && (
                     <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6 text-red-400 text-sm text-center">
                         {error}
@@ -180,7 +173,7 @@ const Register = () => {
                             <label className="text-slate-300 text-sm font-medium block">
                                 Tipo de cuenta
                             </label>
-                            
+
                             <div className="space-y-3">
                                 {/* Estudiante */}
                                 <label className="flex items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">

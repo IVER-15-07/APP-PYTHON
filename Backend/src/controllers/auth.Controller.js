@@ -14,8 +14,21 @@ export async function register(req, res) {
 
 export async function login(req, res) {
   try {
-    const result = await authService.login(req.body);
-    res.json({ success: true, data: result });
+    const { user, token } = await authService.login(req.body);
+    return res.json({
+      success: true,
+      message: "Login exitoso",
+      data: {
+        token,
+        usuario: {
+          id: user.id,
+          nombre: user.nombre,
+          email: user.email,
+          rol_usuarioId: user.rol_usuarioId,
+          profilePicture: user.profilePicture || null,
+        },
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });

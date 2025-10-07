@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build backend
-        run: npm run build  # o npm test, si ya tienes tests
+        run: npm run test  # o npm test, si ya tienes tests
 
   frontend:
     runs-on: ubuntu-latest

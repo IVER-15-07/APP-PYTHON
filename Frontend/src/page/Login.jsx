@@ -4,6 +4,7 @@ import { Link,  useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import { firebaseAuthService } from '../../services/firebase.api';
 
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const rolParam = searchParams.get('rol'); // ✅ Leer rol de la URL

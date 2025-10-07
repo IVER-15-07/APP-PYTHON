@@ -113,17 +113,14 @@ const Register = () => {
                     </div>
                 )}
 
-                {/* Success Message */}
                 {success && (
                     <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-6 text-green-400 text-sm text-center">
                         {success}
                     </div>
                 )}
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-5">
 
-                    {/* Nombre */}
                     <div>
                         <input
                             type="text"
@@ -137,7 +134,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Email */}
                     <div>
                         <input
                             type="email"
@@ -151,7 +147,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Contraseña */}
                     <div>
                         <input
                             type="password"
@@ -166,7 +161,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Confirmar Contraseña */}
                     <div>
                         <input
                             type="password"
@@ -181,7 +175,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* ✅ SOLO MOSTRAR SELECTOR SI NO HAY ROL EN URL */}
                     {!rolParam && (
                         <div className="space-y-3">
                             <label className="text-slate-300 text-sm font-medium block">
@@ -232,7 +225,6 @@ const Register = () => {
                         </div>
                     )}
 
-                    {/* Submit Button dinámico */}
                     <button
                         type="submit"
                         className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
@@ -249,7 +241,6 @@ const Register = () => {
                     </button>
                 </form>
 
-                {/* Footer */}
                 <div className="text-center mt-6">
                     <p className="text-slate-400 text-sm">
                         ¿Ya tienes cuenta?{' '}

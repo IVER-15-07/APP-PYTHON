@@ -168,55 +168,7 @@ const Register = () => {
                         />
                     </div>
 
-                    {!rolParam && (
-                        <div className="space-y-3">
-                            <label className="text-slate-300 text-sm font-medium block">
-                                Tipo de cuenta
-                            </label>
-
-                            <div className="space-y-3">
-                                {/* Estudiante */}
-                                <label className="flex items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">
-                                    <input
-                                        type="radio"
-                                        name="rol_usuarioId"
-                                        value="2"
-                                        checked={formData.rol_usuarioId == 2}
-                                        onChange={handleChange}
-                                        className="mr-3 text-emerald-500"
-                                        disabled={loading}
-                                    />
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl">🎓</span>
-                                        <div>
-                                            <div className="text-slate-200 font-medium">Estudiante</div>
-                                            <div className="text-slate-400 text-sm">Quiero aprender programación</div>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                {/* Profesor */}
-                                <label className="flex items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">
-                                    <input
-                                        type="radio"
-                                        name="rol_usuarioId"
-                                        value="1"
-                                        checked={formData.rol_usuarioId == 1}
-                                        onChange={handleChange}
-                                        className="mr-3 text-emerald-500"
-                                        disabled={loading}
-                                    />
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl">👨‍🏫</span>
-                                        <div>
-                                            <div className="text-slate-200 font-medium">Profesor</div>
-                                            <div className="text-slate-400 text-sm">Quiero enseñar programación</div>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    )}
+            
 
                     <button
                         type="submit"

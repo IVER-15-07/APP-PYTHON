@@ -89,29 +89,26 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
-      
+
       <div className="bg-slate-800/90 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md shadow-2xl border border-slate-700/50">
 
-  <button
-    onClick={() => navigate('/')}
-    aria-label="Cerrar"
-    title="Cerrar"
-    className="absolute top-3 right-3 text-slate-400 hover:text-white bg-transparent p-1 rounded-md"
-  >
-    ✕
-  </button>
+        <button
+          onClick={() => navigate('/')}
+          aria-label="Cerrar"
+          title="Cerrar"
+          className="absolute top-3 right-3 text-slate-400 hover:text-white bg-transparent p-1 rounded-md"
+        >
+          ✕
+        </button>
 
-  {/* ...existing code... */}
-  {error && (
-    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6 text-red-400 text-sm text-center">
-      {error}
-    </div>
-  )}
+        {/* ...existing code... */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6 text-red-400 text-sm text-center">
+            {error}
+          </div>
+        )}
 
         <div className="text-center mb-8">
-
-          
-
 
           <h1 className="text-4xl font-bold text-emerald-400 mb-2 drop-shadow-lg">
             PyLearn

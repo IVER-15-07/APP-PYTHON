@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
+import Course from '../page/profesor/course';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -26,7 +27,7 @@ const VentanaProfesor = () => {
     return (
         <div className="min-h-screen bg-slate-950 flex">
 
-            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'}`}>
+            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} h-screen sticky top-0 flex-shrink-0 overflow-hidden`}>
 
                 <div className="p-4 border-b border-slate-800">
                     <div className="flex items-center justify-between">
@@ -92,10 +93,10 @@ const VentanaProfesor = () => {
                 </div>
             </aside>
 
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 h-screenoverflow-auto">
                 <Routes>
                     <Route index element={<Dashboard />} />
-                    {/* <Route path="cursos" element={<GestionCursos />} /> */}
+                    <Route path="cursos" element={<Course />} />
                     {/* <Route path="estudiantes" element={<GestionEstudiantes />} /> */}
                     {/* <Route path="ejercicios" element={<CrearEjercicios />} /> */}
                     {/* <Route path="estadisticas" element={<Estadisticas />} /> */}

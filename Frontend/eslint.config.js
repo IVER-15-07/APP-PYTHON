@@ -35,4 +35,4 @@ export default [
       "react/jsx-uses-react": "off",
     },
   },
-];
+]; 

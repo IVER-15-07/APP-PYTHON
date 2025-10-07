@@ -1,8 +1,9 @@
-// Frontend/src/layout/VentanaProfesor.jsx
+
 import { useState } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
+import Course from '../page/profesor/course';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -25,11 +26,9 @@ const VentanaProfesor = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 flex">
-            
-            {/* ✅ SIDEBAR PROFESOR */}
-            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'}`}>
-                
-                {/* Header del Sidebar */}
+
+            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} h-screen sticky top-0 flex-shrink-0 overflow-hidden`}>
+
                 <div className="p-4 border-b border-slate-800">
                     <div className="flex items-center justify-between">
                         <div className={`flex items-center gap-3 ${!sidebarOpen && 'justify-center'}`}>
@@ -50,7 +49,6 @@ const VentanaProfesor = () => {
                     </div>
                 </div>
 
-                {/* Info del Usuario */}
                 {sidebarOpen && user && (
                     <div className="p-4 border-b border-slate-800">
                         <div className="flex items-center gap-3">
@@ -65,7 +63,6 @@ const VentanaProfesor = () => {
                     </div>
                 )}
 
-                {/* Menú de Navegación */}
                 <nav className="p-4 space-y-2">
                     {menuItems.map((item) => (
                         <NavLink
@@ -73,10 +70,9 @@ const VentanaProfesor = () => {
                             to={item.path}
                             end={item.exact}
                             className={({ isActive }) =>
-                                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                                    isActive
-                                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
+                                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
                                 } ${!sidebarOpen && 'justify-center'}`
                             }
                         >
@@ -86,7 +82,6 @@ const VentanaProfesor = () => {
                     ))}
                 </nav>
 
-                {/* Logout */}
                 <div className="absolute bottom-4 left-4 right-4">
                     <button
                         onClick={handleLogout}
@@ -98,11 +93,10 @@ const VentanaProfesor = () => {
                 </div>
             </aside>
 
-            {/* ✅ CONTENIDO PRINCIPAL */}
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 h-screenoverflow-auto">
                 <Routes>
                     <Route index element={<Dashboard />} />
-                    {/* <Route path="cursos" element={<GestionCursos />} /> */}
+                    <Route path="cursos" element={<Course />} />
                     {/* <Route path="estudiantes" element={<GestionEstudiantes />} /> */}
                     {/* <Route path="ejercicios" element={<CrearEjercicios />} /> */}
                     {/* <Route path="estadisticas" element={<Estadisticas />} /> */}

@@ -102,7 +102,7 @@ const Login = () => {
           {rolParam && (
             <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
               <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
-              <span>Logueándote como {rolParam}</span> {/* ✅ TÉRMINO CORRECTO */}
+              <span>Inicia como {rolParam}</span> {/* ✅ TÉRMINO CORRECTO */}
             </div>
           )}
         </div>
@@ -181,7 +181,7 @@ const Login = () => {
                 Logueándote...
               </div>
             ) : (
-              `Loguearme${rolParam ? ` como ${rolParam.charAt(0).toUpperCase() + rolParam.slice(1)}` : ''}` // ✅ TÉRMINO CORRECTO
+              `Iniciar Sesión${rolParam ? ` como ${rolParam.charAt(0).toUpperCase() + rolParam.slice(1)}` : ''}` // ✅ TÉRMINO CORRECTO
             )}
           </button>
         </form>

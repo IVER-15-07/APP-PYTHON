@@ -1,4 +1,4 @@
-// Frontend/src/layout/VentanaEstudiante.jsx
+
 import { useState } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
@@ -24,10 +24,10 @@ const VentanaEstudiante = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 flex">
-            
+
             {/* ✅ SIDEBAR ESTUDIANTE */}
-            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'}`}>
-                
+            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} h-screen sticky top-0 flex-shrink-0 overflow-hidden`}>
+
                 {/* Header del Sidebar */}
                 <div className="p-4 border-b border-slate-800">
                     <div className="flex items-center justify-between">
@@ -72,10 +72,9 @@ const VentanaEstudiante = () => {
                             to={item.path}
                             end={item.exact}
                             className={({ isActive }) =>
-                                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                                    isActive
-                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
                                 } ${!sidebarOpen && 'justify-center'}`
                             }
                         >
@@ -98,7 +97,7 @@ const VentanaEstudiante = () => {
             </aside>
 
             {/* ✅ CONTENIDO PRINCIPAL */}
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 h-screen overflow-auto">
                 <Routes>
                     <Route index element={<Dashboard />} />
                     {/* <Route path="cursos" element={<Cursos />} /> */}

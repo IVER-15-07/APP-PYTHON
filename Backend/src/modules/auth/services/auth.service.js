@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import admin from "../config/firebaseAdmin.js";
-import { usuarioRepository } from "../repositories/usuario.repositorio.js";
+import admin from "../../../config/firebaseAdmin.js";
+import { usuarioRepository } from "../repositories/auth.repository.js";
 
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";

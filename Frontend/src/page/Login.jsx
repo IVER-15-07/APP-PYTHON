@@ -5,6 +5,7 @@ import { authService } from '../../services/auth.api';
 import { firebaseAuthService } from '../../services/firebase.api';
 
 
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const rolParam = searchParams.get('rol'); //  Leer rol de la URL
@@ -63,22 +64,19 @@ const Login = () => {
     setError('');
     try {
       const firebaseResult = await firebaseAuthService.loginWithGoogle();
+
+      console.log("firebaseResult:", firebaseResult);
       if (firebaseResult.success) {
         const roleId = rolParam === 'profesor' ? 1 : 2;
-        const response = await authService.firebaseLogin(
-          firebaseResult.data,
-          roleId
-        );
+        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;
-          if (user.rol_usuarioId === 1) {
-            navigate('/profesor');
-          } else if (user.rol_usuarioId === 2) {
-            navigate('/estudiante');
-          } else {
-            navigate('/login');
-          }
+          if (user.rol_usuarioId === 1) navigate('/profesor');
+          else if (user.rol_usuarioId === 2) navigate('/estudiante');
+          else navigate('/login');
         }
+      } else {
+        setError(firebaseResult.message);
       }
     } catch (error) {
       setError(error.message);

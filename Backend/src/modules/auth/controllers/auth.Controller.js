@@ -37,8 +37,8 @@ export async function login(req, res) {
 
 export async function firebaseLogin(req, res) {
   try {
-    const { firebaseToken, userData } = req.body;
-    const result = await authService.firebaseLogin({ firebaseToken, userData });
+    const { idToken, userData } = req.body;
+    const result = await authService.firebaseLogin({ idToken, userData });
     res.json({ success: true, data: result });
   } catch (err) {
     console.error(err);

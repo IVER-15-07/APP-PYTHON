@@ -17,12 +17,12 @@ export const authService = {
     async login(credenciales) {
         try {
             const response = await axiosInstance.post('/api/login', credenciales);
-            
+
             if (response.data.success) {
                 localStorage.setItem('userToken', response.data.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.data.usuario));
             }
-            
+
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
@@ -30,24 +30,34 @@ export const authService = {
     },
 
     // Login Firebase
+
     async firebaseLogin(firebaseData, predefinedRole = null) {
         try {
-            // Enviar datos de Firebase + rol predefinido al backend
-            const dataToSend = {
-                ...firebaseData,
-                predefinedRole: predefinedRole // Agregar rol predefinido
+            // firebaseData debe incluir idToken
+            const payload = {
+                idToken: firebaseData?.idToken,
+                uid: firebaseData?.uid,
+                email: firebaseData?.email,
+                displayName: firebaseData?.displayName,
+                photoURL: firebaseData?.photoURL,
+                predefinedRole: predefinedRole ?? null
             };
 
-            const response = await axiosInstance.post('/api/firebase-login', dataToSend);
-            
-            if (response.data.success) {
-                localStorage.setItem('userToken', response.data.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.data.usuario));
+            if (!payload.idToken) throw new Error("No hay idToken de Firebase");
+
+            const response = await axiosInstance.post("/api/firebase-login", payload);
+
+            if (response.data?.success) {
+                const token = response.data.data.token;
+                const usuario = response.data.data.usuario;
+                localStorage.setItem("userToken", token);
+                localStorage.setItem("user", JSON.stringify(usuario));
+                axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             }
-            
+
             return response.data;
         } catch (error) {
-            throw new Error(error.response?.data?.message || 'Error en login con Firebase');
+            throw new Error(error.response?.data?.message || error.message || "Error en login con Firebase");
         }
     },
 

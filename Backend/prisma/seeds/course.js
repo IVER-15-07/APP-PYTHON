@@ -1,5 +1,4 @@
-export default async function seedCursos(prisma) {
-
+export default async function seedGrupoTopico(prisma) {
   const grupos = [
     { nombreNivel: "Primeros Pasos" },
     { nombreNivel: "Operadores" },
@@ -7,15 +6,13 @@ export default async function seedCursos(prisma) {
     { nombreNivel: "Funciones y Excepciones" },
     { nombreNivel: "Estructuras de Datos" },
     { nombreNivel: "Clases y Objetos" },
-    
   ];
 
-  // Insertar/actualizar de forma programática
   for (const g of grupos) {
-    await prisma.grupo_Topico.upsert({
-      where: { nombreNivel: g.nombreNivel },
-      update: {},
-      create: g,
+    await prisma.grupo_Topico.create({
+      data: g, // Prisma asignará id automáticamente
     });
   }
+
+  console.log("Seed de Grupo_Topico completado ✅");
 }

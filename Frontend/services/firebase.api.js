@@ -1,14 +1,25 @@
 
 // Frontend/src/services/firebase.api.js
 import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '../src/config/firebaseConfig';
+import { auth, googleProvider, microsoftProvider } from '../src/config/firebaseConfig';
+
+
+const TIMEOUT_MS = 15000;
+
+function withTimeout(promise, ms = TIMEOUT_MS) {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("tiempo agotado")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
 
 export const firebaseAuthService = {
 
     // ✅ Login con Google
     async loginWithGoogle() {
         try {
-            const result = await signInWithPopup(auth, googleProvider);
+            const result = await withTimeout(signInWithPopup(auth, googleProvider));
             const user = result.user;
             const idToken = await user.getIdToken(); // <- obligatorio
             return {
@@ -19,7 +30,24 @@ export const firebaseAuthService = {
             return { success: false, message: err.message };
         }
     },
-    // ✅ Logout de Firebase
+    
+
+    async loginWithMicrosoft() {
+
+        try {
+            const result = await withTimeout(signInWithPopup(auth, microsoftProvider));
+            const user = result.user;
+            const idToken = await user.getIdToken(); // <- obligatorio
+            return {
+                success: true,
+                data: { idToken, uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL }
+            };
+        } catch (err) {
+            return { success: false, message: err.message };
+        }
+    },
+
+
     async logout() {
         try {
             await signOut(auth);

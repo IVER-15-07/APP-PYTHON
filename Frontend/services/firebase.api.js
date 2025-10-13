@@ -1,39 +1,53 @@
 
 // Frontend/src/services/firebase.api.js
 import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '../src/config/firebaseConfig.jsx';
+import { auth, googleProvider, microsoftProvider } from '../src/config/firebaseConfig';
+
+
+const TIMEOUT_MS = 15000;
+
+function withTimeout(promise, ms = TIMEOUT_MS) {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("tiempo agotado")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
 
 export const firebaseAuthService = {
-    
+
     // ✅ Login con Google
     async loginWithGoogle() {
         try {
-            const result = await signInWithPopup(auth, googleProvider);
+            const result = await withTimeout(signInWithPopup(auth, googleProvider));
             const user = result.user;
-            
-            // Obtener token de Firebase
-            const token = await user.getIdToken();
-            
+            const idToken = await user.getIdToken(); // <- obligatorio
             return {
                 success: true,
-                data: {
-                    firebaseToken: token,
-                    userData: {
-                        uid: user.uid,
-                        name: user.displayName,
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        emailVerified: user.emailVerified
-                    }
-                }
+                data: { idToken, uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL }
             };
-        } catch (error) {
-            console.error('Error en Google Auth:', error);
-            throw new Error(this.getErrorMessage(error.code));
+        } catch (err) {
+            return { success: false, message: err.message };
+        }
+    },
+    
+
+    async loginWithMicrosoft() {
+
+        try {
+            const result = await withTimeout(signInWithPopup(auth, microsoftProvider));
+            const user = result.user;
+            const idToken = await user.getIdToken(); // <- obligatorio
+            return {
+                success: true,
+                data: { idToken, uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL }
+            };
+        } catch (err) {
+            return { success: false, message: err.message };
         }
     },
 
-    // ✅ Logout de Firebase
+
     async logout() {
         try {
             await signOut(auth);
@@ -65,7 +79,7 @@ export const firebaseAuthService = {
             'auth/network-request-failed': 'Error de conexión de red',
             'auth/too-many-requests': 'Demasiados intentos, intenta más tarde'
         };
-        
+
         return errorMessages[errorCode] || 'Error de autenticación con Google';
     }
 };

@@ -4,6 +4,7 @@ import admin from "../../../config/firebaseAdmin.js";
 import { usuarioRepository } from "../repositories/auth.repository.js";
 
 
+
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 
@@ -20,7 +21,7 @@ function generateToken(user) {
 }
 
 export const authService = {
-    async register(data) {
+  async register(data) {
     const { nombre, email, contrasena, rol_usuarioId, profilePicture } = data;
     if (!nombre || !email || !contrasena || !rol_usuarioId) {
       throw { status: 400, message: "Nombre, email, contrasena y rol_usuarioId son requeridos" };
@@ -59,40 +60,54 @@ export const authService = {
 
 
 
+  // ...existing code...
+  async firebaseLogin({ idToken, roleId = null }) {
+    if (!idToken) throw { status: 400, message: "firebaseToken requerido" };
 
-  // firebaseToken: token que viene del cliente (client-side Firebase)
-  async firebaseLogin({ firebaseToken, userData }) {
-    if (!firebaseToken) throw { status: 400, message: "firebaseToken requerido" };
-    // verifica token
-    const decoded = await admin.auth().verifyIdToken(firebaseToken).catch(err => {
-      throw { status: 401, message: "Firebase token inválido" };
-    });
+    // Logs de depuración
+    console.log(">>> firebaseLogin - received idToken (start):", typeof idToken === "string" ? idToken.slice(0, 60) + "..." : idToken);
+    console.log(">>> firebase admin apps length:", admin?.apps?.length ?? "no admin");
 
-    const email = decoded.email || userData?.email;
-    if (!email) throw { status: 400, message: "Email no disponible en token" };
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      console.log(">>> Firebase token decoded:", decoded);
 
-    // buscar usuario por email
-    let user = await usuarioRepository.findByEmail(email);
+      // Buscar/crear usuario en BD
+      const email = decoded.email;
+      if (!email) throw { status: 400, message: "Email no disponible en token de Firebase" };
 
-    if (!user) {
-      // crear usuario (provider = 'firebase')
-      user = await usuarioRepository.create({
-        nombre: userData?.name || decoded.name || "Usuario Firebase",
-        email,
-        contrasena: null,
-        provider: "firebase",
-        profilePicture: userData?.photoURL || decoded.picture || null,
-        rol_usuarioId: Number(userData?.rol_usuarioId || 1) // por defecto rol 1 (ajusta)
-      });
-    } else {
-      // si existe y provider distinto, podrías actualizar profilePicture si quieres
+      let user = await usuarioRepository.findByEmail(email);
+
+      if (!user) {
+        const rol = Number(roleId ?? 2);
+        user = await usuarioRepository.create({
+          nombre: decoded.name ?? email,
+          email,
+          contrasena: null,
+          rol_usuarioId: rol,
+          profilePicture: decoded.picture ?? null,
+          provider: "firebase",
+          //uid: decoded.uid ?? null
+        });
+      }
+
+      const token = generateToken(user);
+      const usuario = {
+        id: user.id,
+        nombre: user.nombre,
+        email: user.email,
+        rol_usuarioId: user.rol_usuarioId,
+        profilePicture: user.profilePicture || null
+      };
+
+      return { token, usuario };
+    } catch (err) {
+      console.error(">>> verifyIdToken error:", err?.code ?? "", err?.message ?? err);
+      // devolver el mensaje real para depuración (no en producción)
+      throw { status: 400, message: err?.message || "Token Firebase inválido" };
     }
-
-    const token = generateToken(user);
-    return { user, token };
-  }
-
-
+  },
+// ...existing code...
 
 
 };

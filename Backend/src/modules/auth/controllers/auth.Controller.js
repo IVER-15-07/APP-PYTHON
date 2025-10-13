@@ -37,8 +37,9 @@ export async function login(req, res) {
 
 export async function firebaseLogin(req, res) {
   try {
-    const { idToken, userData } = req.body;
-    const result = await authService.firebaseLogin({ idToken, userData });
+    console.log("POST /api/firebase-login body:", req.body); // <<-- debug
+    const { idToken, roleId } = req.body;
+    const result = await authService.firebaseLogin({ idToken, roleId });
     res.json({ success: true, data: result });
   } catch (err) {
     console.error(err);

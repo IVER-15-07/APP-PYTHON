@@ -6,6 +6,7 @@ CREATE TABLE "Usuario" (
     "contrasena" TEXT,
     "provider" TEXT NOT NULL DEFAULT 'local',
     "profilePicture" TEXT,
+    "firebaseUid" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "rol_usuarioId" INTEGER NOT NULL,
@@ -161,6 +162,9 @@ CREATE TABLE "Parametro" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Usuario_firebaseUid_key" ON "Usuario"("firebaseUid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Rol_usuario_nombre_key" ON "Rol_usuario"("nombre");

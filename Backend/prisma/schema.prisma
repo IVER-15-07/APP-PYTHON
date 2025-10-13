@@ -25,6 +25,7 @@ model Usuario {
   contrasena    String?      // null cuando provider != 'local'
   provider      String       @default("local") // 'local' o 'firebase'
   profilePicture String?
+   firebaseUid    String?  @unique
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 

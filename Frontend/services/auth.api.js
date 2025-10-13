@@ -33,17 +33,32 @@ export const authService = {
 
     async firebaseLogin(firebaseData, predefinedRole = null) {
         try {
-            // firebaseData debe incluir idToken
-            const payload = {
-                idToken: firebaseData?.idToken,
-                uid: firebaseData?.uid,
-                email: firebaseData?.email,
-                displayName: firebaseData?.displayName,
-                photoURL: firebaseData?.photoURL,
-                predefinedRole: predefinedRole ?? null
-            };
+            // Intentar obtener el Firebase ID token de varias fuentes:
+            let idToken =
+                firebaseData?.idToken ??
+                firebaseData?.tokenId ??
+                null;
 
-            if (!payload.idToken) throw new Error("No hay idToken de Firebase");
+            // Si nos pasaron un user de Firebase (result.user), obtener ID token con getIdToken()
+            if (!idToken && firebaseData?.user?.getIdToken) {
+                idToken = await firebaseData.user.getIdToken();
+            }
+
+            // Si nos pasaron result (de signInWithPopup) con credential
+            if (!idToken && firebaseData?.credential?.idToken) {
+                idToken = firebaseData.credential.idToken;
+            }
+
+            if (!idToken) throw new Error("No hay idToken de Firebase");
+
+            const payload = {
+                idToken,
+                roleId: predefinedRole ?? firebaseData?.roleId ?? null,
+                uid: firebaseData?.uid ?? firebaseData?.user?.uid ?? null,
+                email: firebaseData?.email ?? firebaseData?.user?.email ?? null,
+                displayName: firebaseData?.displayName ?? firebaseData?.user?.displayName ?? null,
+                photoURL: firebaseData?.photoURL ?? firebaseData?.user?.photoURL ?? null
+            };
 
             const response = await axiosInstance.post("/api/firebase-login", payload);
 
@@ -57,7 +72,9 @@ export const authService = {
 
             return response.data;
         } catch (error) {
-            throw new Error(error.response?.data?.message || error.message || "Error en login con Firebase");
+            console.error("firebaseLogin (client) error:", error?.response ?? error);
+            const serverMsg = error?.response?.data?.message ?? error.message ?? "Error en login con Firebase";
+            throw new Error(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));
         }
     },
 

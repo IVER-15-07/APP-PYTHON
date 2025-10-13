@@ -4,16 +4,28 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Insertando datos semilla...");
-  await prisma.rol_usuario.upsert({
-    where: { nombre: "Estudiante" },
+await prisma.rol_usuario.upsert({
+    where: { nombre: "Administrador" },
     update: {},
-    create: { nombre: "Estudiante" }
+    create: { nombre: "Administrador" },
   });
 
   await prisma.rol_usuario.upsert({
-    where: { nombre: "Profesor" },
+    where: { nombre: "Profesor ejecutor" },
     update: {},
-    create: { nombre: "Profesor" }
+    create: { nombre: "Profesor ejecutor" },
+  });
+
+  await prisma.rol_usuario.upsert({
+    where: { nombre: "Profesor editor" },
+    update: {},
+    create: { nombre: "Profesor editor" },
+  });
+
+  await prisma.rol_usuario.upsert({
+    where: { nombre: "Estudiante" },
+    update: {},
+    create: { nombre: "Estudiante" },
   });
 
   console.log("✅ Datos semilla insertados correctamente.");

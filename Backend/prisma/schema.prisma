@@ -18,11 +18,6 @@ datasource db {
 
 
 
-
-
-
-
-
 model Usuario {
   id            Int          @id @default(autoincrement())
   nombre        String
@@ -30,11 +25,14 @@ model Usuario {
   contrasena    String?      // null cuando provider != 'local'
   provider      String       @default("local") // 'local' o 'firebase'
   profilePicture String?
-  rol_usuarioId Int
-  rol_usuario   Rol_usuario  @relation(fields: [rol_usuarioId], references: [id])
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+
+  rol_usuarioId Int
+  rol_usuario   Rol_usuario  @relation(fields: [rol_usuarioId], references: [id])
+
   registro Registro[]
+  calificacion Calificacion[]
 }
 
 model Rol_usuario {
@@ -44,7 +42,7 @@ model Rol_usuario {
 }
 
 
-model Curso {
+model Grupo {
   id          Int      @id @default(autoincrement())
   titulo       String
   descripcion String
@@ -52,42 +50,30 @@ model Curso {
   fecha_fin  DateTime @default(now())
   codigo     Int    @unique
 
-
-
+  grupo_topico Grupo_Topico[]
   registro Registro[]
-
 }
 
 model Registro{
   id        Int      @id @default(autoincrement())
-  
-  ususario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  fecha_registro DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
-  curso Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  cursoId  Int
-
-  inscripcion Inscripcion[]
+  grupo Grupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  grupoId Int
+ 
 }
 
-model Inscripcion{
-  id        Int      @id @default(autoincrement())
-  fecha_ini DateTime @default(now())
-  fecha_fin  DateTime @default(now())
-  registro Registro @relation(fields: [registroId], references: [id], onDelete: Cascade)
-  registroId Int
 
-  opcioninxcripcion OpcionInscripcion @relation(fields: [opcioninscripcionId], references: [id], onDelete: Cascade)
-  opcioninscripcionId Int
-}
 
-model OpcionInscripcion{
+model Grupo_Topico{
   id       Int      @id @default(autoincrement())
-  nombre     String
-  descripcion String
-  fecha_ini DateTime @default(now())
-  fecha_fin  DateTime @default(now())
+  nombreNivel    String
+ 
 
-  inscripcion Inscripcion[] 
+  grupo Grupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  grupoId Int
 
   topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
@@ -99,23 +85,33 @@ model Calificacion{
   id      Int      @id @default(autoincrement())
   nota    Int 
 
-  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
-  evaluacionId Int
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+
+  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int
 }
 
 
 model Topico{
   id        Int      @id @default(autoincrement())
   nombre     String
-  descripcion String
-  fecha_ini DateTime @default(now())
-  fecha_fin  DateTime @default(now())
+  aprobado   Boolean @default(false)
 
-  opcioninscripcion OpcionInscripcion[]
+  tipo_topico Tipo_topico @relation(fields: [tipo_topicoId], references: [id], onDelete: Cascade)
+  tipo_topicoId Int
+
+  calificacion Calificacion[]
   recursos Recursos[]
   evaluacion Evaluacion[]
-  diagnostico Diagnostico[]
-  laboratorio Laboratorio[]
+  grupo_topico Grupo_Topico[]
+
+}
+model Tipo_topico{
+  id    Int     @id @default(autoincrement())
+  nombre String @unique
+
+  topico Topico[]
 }
 
 model Recursos{
@@ -127,11 +123,12 @@ model Recursos{
   topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
-  tipotopico Tipotopico @relation(fields: [tipotopicoId], references: [id], onDelete: Cascade)
-  tipotopicoId Int
+  tipo_recurso Tipo_recurso @relation(fields: [tipo_recursoId], references: [id], onDelete: Cascade)
+  tipo_recursoId Int
+
 }
 
-model Tipotopico{
+model Tipo_recurso{
   id    Int     @id @default(autoincrement())
   nombre String @unique
 
@@ -142,116 +139,67 @@ model Tipotopico{
 
 model Evaluacion{
   id        Int      @id @default(autoincrement())
-  titulo     String
-  descripcion String
+  evaluacion String
+  descripcion String?
+  puntaje_evaluacion Int
+
   fecha_ini DateTime @default(now())
   fecha_fin  DateTime @default(now())
-  puntaje_maximo Int
-
 
   topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
-  calificacion Calificacion[]
-  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
+  tipo_evaluacion Tipo_evaluacion[]
+  evaluacion_pregunta Evaluacion_pregunta[]
+
+ 
 }
 
-model CampoPreguntaEvaluacion{
-  id       Int      @id @default(autoincrement())
+model Tipo_evaluacion{
+  id    Int     @id @default(autoincrement())
+  nombre String @unique
 
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  evaluacionId Int
+}
+
+model Evaluacion_pregunta{
+  id    Int     @id @default(autoincrement())
 
   evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
   evaluacionId Int
 
-  respuestaEvaluacion RespuestaEvaluacion @relation(fields: [respuestaEvaluacionId], references: [id], onDelete: Cascade)
-  respuestaEvaluacionId Int
+  pregunta Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
+  preguntaId Int
 
-  preguntaEvaluacion PreguntaEvaluacion @relation(fields: [preguntaEvaluacionId], references: [id], onDelete: Cascade)
-  preguntaEvaluacionId Int
+  parametro Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
+  parametroId Int
 }
 
-model RespuestaEvaluacion{
-  id       Int      @id @default(autoincrement())
-  repuestas String?
-
-  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
-}
-
-model PreguntaEvaluacion{
-  id       Int      @id @default(autoincrement())
+model Pregunta{
+  id    Int     @id @default(autoincrement())
   pregunta String
-  puntaje  Int
- 
-  campoPreguntaEvaluacion CampoPreguntaEvaluacion[]
-}
 
-
-
-model Diagnostico{
-  id       Int      @id @default(autoincrement())
-  titulo  String
-  descripcion String
-  fecha_ini DateTime @default(now())
-  fecha_fin  DateTime @default(now())
-
-  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
-  topicoId Int
-
-  campoPreguntaDiagnostico CampoPreguntaDiagnostico[]
+  evaluacion_pregunta Evaluacion_pregunta[]
+  respuesta Respuesta[]
 
 }
 
-// tabla relacionadora
-model CampoPreguntaDiagnostico{
-  id       Int      @id @default(autoincrement())
+model Respuesta{
+  id    Int     @id @default(autoincrement())
+  puntaje Int
+  respuesta String  
 
-
-  diagnostico Diagnostico @relation(fields: [diagnosticoId], references: [id], onDelete: Cascade)
-  diagnosticoId Int
-
-  preguntaDiagnostico PreguntaDiagnostico @relation(fields: [preguntaDiagnosticoId], references: [id], onDelete: Cascade)
-  preguntaDiagnosticoId Int
-
+  pregunta Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
+  preguntaId Int
 }
 
-
-
-model RespuestaDiagnostico{
-  id       Int      @id @default(autoincrement())
-  respuesta String
-
-  seleccionRespuesta SeleccionRespuesta[]
+model Parametro{
+  id    Int     @id @default(autoincrement())
+  Parametro String @unique
   
-
-}
-
-model PreguntaDiagnostico{
-  id       Int      @id @default(autoincrement())
-  pregunata String
-
-  campoPreguntaDiagnostico CampoPreguntaDiagnostico[]
-
-  selescionRespuesta SeleccionRespuesta[]
-
-}
-
-// tabla relacionadora 
-model SeleccionRespuesta{
-  id       Int      @id @default(autoincrement())
-
-  respuestaDiagnostico RespuestaDiagnostico @relation(fields: [respuestaDiagnosticoId], references: [id], onDelete: Cascade)
-  respuestaDiagnosticoId Int
-
-  preguntaDiagnostico PreguntaDiagnostico @relation(fields: [preguntaDiagnosticoId], references: [id], onDelete: Cascade)
-  preguntaDiagnosticoId Int
-
+  evaluacion_pregunta Evaluacion_pregunta[]
 }
 
 
-model Laboratorio{
-  id       Int      @id @default(autoincrement())
-
-  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
-  topicoId Int
-}
 

@@ -14,8 +14,21 @@ export async function register(req, res) {
 
 export async function login(req, res) {
   try {
-    const result = await authService.login(req.body);
-    res.json({ success: true, data: result });
+    const { user, token } = await authService.login(req.body);
+    return res.json({
+      success: true,
+      message: "Login exitoso",
+      data: {
+        token,
+        usuario: {
+          id: user.id,
+          nombre: user.nombre,
+          email: user.email,
+          rol_usuarioId: user.rol_usuarioId,
+          profilePicture: user.profilePicture || null,
+        },
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
@@ -24,8 +37,9 @@ export async function login(req, res) {
 
 export async function firebaseLogin(req, res) {
   try {
-    const { firebaseToken, userData } = req.body;
-    const result = await authService.firebaseLogin({ firebaseToken, userData });
+    console.log("POST /api/firebase-login body:", req.body); // <<-- debug
+    const { idToken, roleId } = req.body;
+    const result = await authService.firebaseLogin({ idToken, roleId });
     res.json({ success: true, data: result });
   } catch (err) {
     console.error(err);

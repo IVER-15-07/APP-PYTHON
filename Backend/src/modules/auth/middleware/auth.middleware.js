@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { usuarioRepository } from "../repositories/usuario.repositorio.js";
+import { usuarioRepository } from "../repositories/auth.repository.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

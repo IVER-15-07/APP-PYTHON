@@ -70,14 +70,14 @@ model Registro{
 
 model Grupo_Topico{
   id       Int      @id @default(autoincrement())
-  nombreNivel    String
+  nombreNivel    String 
  
 
-  grupo Grupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
-  grupoId Int
+  grupo Grupo? @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  grupoId Int?
 
-  topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
-  topicoId Int
+  topico Topico? @relation(fields: [topicoId], references: [id], onDelete: Cascade)
+  topicoId Int?
  
 }
 

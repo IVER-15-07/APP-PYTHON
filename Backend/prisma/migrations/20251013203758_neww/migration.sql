@@ -48,8 +48,8 @@ CREATE TABLE "Registro" (
 CREATE TABLE "Grupo_Topico" (
     "id" SERIAL NOT NULL,
     "nombreNivel" TEXT NOT NULL,
-    "grupoId" INTEGER NOT NULL,
-    "topicoId" INTEGER NOT NULL,
+    "grupoId" INTEGER,
+    "topicoId" INTEGER,
 
     CONSTRAINT "Grupo_Topico_pkey" PRIMARY KEY ("id")
 );

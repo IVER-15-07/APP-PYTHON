@@ -1,6 +1,5 @@
-
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5fBD0dQu4MFBFX00A9bzAbLcqjDqjoEQ",
@@ -12,13 +11,18 @@ const firebaseConfig = {
   measurementId: "G-Q2PXR6WFKC"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+// inicializar solo si no hay apps (evita errores con HMR)
+if (!getApps().length) {
+  initializeApp(firebaseConfig);
+  console.log("Firebase cliente inicializado");
+} else {
+  console.log("Firebase cliente ya inicializado");
+}
 
-
+export const auth = getAuth();
 export const googleProvider = new GoogleAuthProvider();
+export const microsoftProvider = new OAuthProvider("microsoft.com");
+googleProvider.setCustomParameters({ prompt: "select_account" });
+microsoftProvider.setCustomParameters({ prompt: "select_account" });
 
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
-export default app;
+export default firebaseConfig;

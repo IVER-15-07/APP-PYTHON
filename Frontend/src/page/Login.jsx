@@ -5,6 +5,8 @@ import { authService } from '../../services/auth.api';
 import { firebaseAuthService } from '../../services/firebase.api';
 
 
+
+
 const Login = () => {
   const [searchParams] = useSearchParams();
   const rolParam = searchParams.get('rol'); //  Leer rol de la URL
@@ -63,22 +65,19 @@ const Login = () => {
     setError('');
     try {
       const firebaseResult = await firebaseAuthService.loginWithGoogle();
+
+      console.log("firebaseResult:", firebaseResult);
       if (firebaseResult.success) {
         const roleId = rolParam === 'profesor' ? 1 : 2;
-        const response = await authService.firebaseLogin(
-          firebaseResult.data,
-          roleId
-        );
+        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;
-          if (user.rol_usuarioId === 1) {
-            navigate('/profesor');
-          } else if (user.rol_usuarioId === 2) {
-            navigate('/estudiante');
-          } else {
-            navigate('/login');
-          }
+          if (user.rol_usuarioId === 1) navigate('/profesor');
+          else if (user.rol_usuarioId === 2) navigate('/estudiante');
+          else navigate('/login');
         }
+      } else {
+        setError(firebaseResult.message);
       }
     } catch (error) {
       setError(error.message);
@@ -86,6 +85,33 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  
+   const handleMicrosoftLogin = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const firebaseResult = await firebaseAuthService.loginWithMicrosoft();
+  
+        console.log("firebaseResult:", firebaseResult);
+        if (firebaseResult.success) {
+          const roleId = rolParam === 'profesor' ? 1 : 2;
+          const response = await authService.firebaseLogin(firebaseResult.data, roleId);
+          if (response.success) {
+            const user = response.data.usuario;
+            if (user.rol_usuarioId === 1) navigate('/profesor');
+            else if (user.rol_usuarioId === 2) navigate('/estudiante');
+            else navigate('/login');
+          }
+        } else {
+          setError(firebaseResult.message);
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }; 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
@@ -120,7 +146,7 @@ const Login = () => {
           {rolParam && (
             <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
               <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
-              <span>Inicia como {rolParam}</span> {/* ✅ TÉRMINO CORRECTO */}
+              <span>Inicia como {rolParam}</span> 
             </div>
           )}
         </div>
@@ -147,7 +173,29 @@ const Login = () => {
             </svg>
           )}
           {loading ? 'Logueándote...' :
-            (rolParam ? `Continuar con Google como ${rolParam}` : 'Continuar con Google')
+            (rolParam ? `Continuar con Google` : 'Continuar con Google')
+          }
+        </button>
+
+        <button
+          onClick={handleMicrosoftLogin}
+          className="w-full py-4 bg-white text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300/50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 mb-6"
+          disabled={loading}
+          aria-label="Continuar con Microsoft"
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-gray-400/30 border-t-gray-600 rounded-full animate-spin"></div>
+          ) : (
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="9" height="9" fill="#f35325" />
+              <rect x="13" y="2" width="9" height="9" fill="#81bc06" />
+              <rect x="2" y="13" width="9" height="9" fill="#05a6f0" />
+              <rect x="13" y="13" width="9" height="9" fill="#ffba08" />
+            </svg>
+
+          )}
+          {loading ? 'Logueándote...' :
+            (rolParam ? `Continuar con Microsoft` : 'Continuar con Microsoft')
           }
         </button>
 
@@ -219,4 +267,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;

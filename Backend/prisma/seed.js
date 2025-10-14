@@ -2,33 +2,19 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+import seedRoles from "./seeds/role.js";
+import seedCursos from "./seeds/course.js";
+
+
+
 async function main() {
-  console.log("🌱 Insertando datos semilla...");
-await prisma.rol_usuario.upsert({
-    where: { nombre: "Administrador" },
-    update: {},
-    create: { nombre: "Administrador" },
-  });
+  console.log(" 🌱 Iniciando seed...");
 
-  await prisma.rol_usuario.upsert({
-    where: { nombre: "Profesor ejecutor" },
-    update: {},
-    create: { nombre: "Profesor ejecutor" },
-  });
+  await seedRoles(prisma);
+  await seedCursos(prisma);
 
-  await prisma.rol_usuario.upsert({
-    where: { nombre: "Profesor editor" },
-    update: {},
-    create: { nombre: "Profesor editor" },
-  });
 
-  await prisma.rol_usuario.upsert({
-    where: { nombre: "Estudiante" },
-    update: {},
-    create: { nombre: "Estudiante" },
-  });
-
-  console.log("✅ Datos semilla insertados correctamente.");
+  console.log("🌟 Seed completado");
 }
 main()
   .catch(e => { console.error(e); process.exit(1); })

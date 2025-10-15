@@ -30,6 +30,7 @@ CREATE TABLE "Grupo" (
     "fecha_ini" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "fecha_fin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "codigo" INTEGER NOT NULL,
+    "cursoId" INTEGER NOT NULL,
 
     CONSTRAINT "Grupo_pkey" PRIMARY KEY ("id")
 );
@@ -47,11 +48,36 @@ CREATE TABLE "Registro" (
 -- CreateTable
 CREATE TABLE "Grupo_Topico" (
     "id" SERIAL NOT NULL,
-    "nombreNivel" TEXT NOT NULL,
     "grupoId" INTEGER,
     "topicoId" INTEGER,
+    "estadoId" INTEGER,
 
     CONSTRAINT "Grupo_Topico_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Curso" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT NOT NULL,
+
+    CONSTRAINT "Curso_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Nivel" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT NOT NULL,
+    "cursoId" INTEGER NOT NULL,
+
+    CONSTRAINT "Nivel_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Estado" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT NOT NULL,
+
+    CONSTRAINT "Estado_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -60,6 +86,7 @@ CREATE TABLE "Calificacion" (
     "nota" INTEGER NOT NULL,
     "usuarioId" INTEGER NOT NULL,
     "topicoId" INTEGER NOT NULL,
+    "estadoId" INTEGER NOT NULL,
 
     CONSTRAINT "Calificacion_pkey" PRIMARY KEY ("id")
 );
@@ -70,6 +97,7 @@ CREATE TABLE "Topico" (
     "nombre" TEXT NOT NULL,
     "aprobado" BOOLEAN NOT NULL DEFAULT false,
     "tipo_topicoId" INTEGER NOT NULL,
+    "nivelId" INTEGER NOT NULL,
 
     CONSTRAINT "Topico_pkey" PRIMARY KEY ("id")
 );
@@ -173,6 +201,15 @@ CREATE UNIQUE INDEX "Rol_usuario_nombre_key" ON "Rol_usuario"("nombre");
 CREATE UNIQUE INDEX "Grupo_codigo_key" ON "Grupo"("codigo");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Registro_usuarioId_grupoId_key" ON "Registro"("usuarioId", "grupoId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Curso_nombre_key" ON "Curso"("nombre");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Estado_nombre_key" ON "Estado"("nombre");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Tipo_topico_nombre_key" ON "Tipo_topico"("nombre");
 
 -- CreateIndex
@@ -188,6 +225,9 @@ CREATE UNIQUE INDEX "Parametro_Parametro_key" ON "Parametro"("Parametro");
 ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_rol_usuarioId_fkey" FOREIGN KEY ("rol_usuarioId") REFERENCES "Rol_usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Grupo" ADD CONSTRAINT "Grupo_cursoId_fkey" FOREIGN KEY ("cursoId") REFERENCES "Curso"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Registro" ADD CONSTRAINT "Registro_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -200,13 +240,25 @@ ALTER TABLE "Grupo_Topico" ADD CONSTRAINT "Grupo_Topico_grupoId_fkey" FOREIGN KE
 ALTER TABLE "Grupo_Topico" ADD CONSTRAINT "Grupo_Topico_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Grupo_Topico" ADD CONSTRAINT "Grupo_Topico_estadoId_fkey" FOREIGN KEY ("estadoId") REFERENCES "Estado"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Nivel" ADD CONSTRAINT "Nivel_cursoId_fkey" FOREIGN KEY ("cursoId") REFERENCES "Curso"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Calificacion" ADD CONSTRAINT "Calificacion_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Calificacion" ADD CONSTRAINT "Calificacion_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Calificacion" ADD CONSTRAINT "Calificacion_estadoId_fkey" FOREIGN KEY ("estadoId") REFERENCES "Estado"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Topico" ADD CONSTRAINT "Topico_tipo_topicoId_fkey" FOREIGN KEY ("tipo_topicoId") REFERENCES "Tipo_topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId") REFERENCES "Nivel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;

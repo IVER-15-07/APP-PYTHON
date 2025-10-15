@@ -45,9 +45,9 @@ const Login = () => {
       if (response.success) {
         const user = response.data.usuario;
         console.log('Usuario logueado:', user);
-        if (user.rol_usuarioId === 1) {
+        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2  || user.rol_usuarioId === 3) {
           navigate('/profesor');
-        } else if (user.rol_usuarioId === 2) {
+        } else if (user.rol_usuarioId === 4) {
           navigate('/estudiante');
         } else {
           navigate('/login');
@@ -68,7 +68,7 @@ const Login = () => {
 
       console.log("firebaseResult:", firebaseResult);
       if (firebaseResult.success) {
-        const roleId = rolParam === 'profesor' ? 1 : 2;
+        const roleId = rolParam === 'profesor' ? 2 : 4;
         const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;
@@ -95,7 +95,7 @@ const Login = () => {
   
         console.log("firebaseResult:", firebaseResult);
         if (firebaseResult.success) {
-          const roleId = rolParam === 'profesor' ? 1 : 2;
+          const roleId = rolParam === 'profesor' ? 2 : 4;
           const response = await authService.firebaseLogin(firebaseResult.data, roleId);
           if (response.success) {
             const user = response.data.usuario;

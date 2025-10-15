@@ -11,7 +11,7 @@ const Register = () => {
         email: '',
         contrasena: '',
         confirmarContrasena: '',
-        rol_usuarioId: rolParam === 'profesor' ? 1 : 2
+        rol_usuarioId: rolParam === 'profesor' ? 2 : 4
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -22,7 +22,7 @@ const Register = () => {
         if (rolParam) {
             setFormData(prev => ({
                 ...prev,
-                rol_usuarioId: rolParam === 'profesor' ? 1 : 2
+                rol_usuarioId: rolParam === 'profesor' ? 2 : 4
             }));
         }
     }, [rolParam]);

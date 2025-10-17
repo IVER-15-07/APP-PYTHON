@@ -1,5 +1,5 @@
-import { solicitudRepository } from "../repositories/role.repository.js";
-import { roleRepository } from "../repositories/request.repository.js";
+import { solicitudRepository } from "../repositories/request.repository.js";
+import { roleRepository } from "../repositories/role.repository.js";
 
 
 export const solicitudService = {

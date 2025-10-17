@@ -5,6 +5,7 @@ import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
 import Course from '../page/profesor/course';
 import Modal from '../componentes/Modal';
+import { teacherService } from '../../services/teacher.api';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -12,10 +13,15 @@ const VentanaProfesor = () => {
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
 
+    // estados del modal para enviar solicitud
+    const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
+    const [requestLoading, setRequestLoading] = useState(false);
+    const [requestError, setRequestError] = useState(null);
+    const [requestSuccess, setRequestSuccess] = useState(null);
 
     useEffect(() => {
         const roleId = user?.rol_usuarioId ?? user?.rol?.id ?? user?.rol_usuario?.id;
-        if (roleId === 5 ) {
+        if (roleId === 5) {
             setModalOpen(true);
         } else {
             setModalOpen(false);
@@ -26,6 +32,26 @@ const VentanaProfesor = () => {
     const handleLogout = () => {
         authService.logout();
         navigate('/login');
+    };
+
+    const handleSendRequest = async () => {
+        setRequestError(null);
+        setRequestSuccess(null);
+        setRequestLoading(true);
+        try {
+            // ids según tu Prisma: 2 = Profesor ejecutor, 3 = Profesor editor
+            const desiredRolId = professorVariant === 'ejecutor' ? 2 : 3;
+            const token = authService.obtenerToken?.(); // asegúrate que retorna token
+            await teacherService.requestRoleChange({ rolId: desiredRolId }, token);
+            setRequestSuccess('Solicitud enviada correctamente. El administrador la revisará.');
+            // opcional: cerrar modal tras éxito
+            setTimeout(() => setModalOpen(false), 1400);
+        } catch (err) {
+            console.error('Enviar solicitud error:', err);
+            setRequestError(err.message || 'Error al enviar la solicitud');
+        } finally {
+            setRequestLoading(false);
+        }
     };
 
     const menuItems = [
@@ -118,18 +144,62 @@ const VentanaProfesor = () => {
             </main>
 
 
-            <Modal
+             <Modal
                 open={modalOpen}
-                //onClose={() => setModalOpen(false)}
-                title="Información"
+                onClose={() => setModalOpen(false)}
+                title="Solicitar rol de Profesor"
                 size="md"
                 footer={
                     <div className="flex justify-end gap-2">
-                        <button onClick={() => handleLogout()} className="px-3 py-2 rounded bg-slate-700 text-slate-200">Cerrar</button>
+                        <button onClick={() => setModalOpen(false)} className="px-3 py-2 rounded bg-slate-700 text-slate-200">Cerrar</button>
+                        <button
+                            onClick={handleSendRequest}
+                            disabled={requestLoading}
+                            className="px-3 py-2 rounded bg-emerald-500 text-white disabled:opacity-60"
+                        >
+                            {requestLoading ? 'Enviando...' : 'Enviar solicitud'}
+                        </button>
                     </div>
                 }
             >
-                <p className="text-slate-300">Tienes el rol "usuario". Si deseas solicitar el rol de profesor, ve a Registro y envía la solicitud.</p>
+                <div className="space-y-4">
+                    <p className="text-slate-300">Tienes el rol "usuario". Selecciona el tipo de profesor que deseas solicitar:</p>
+
+                    <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 text-slate-200">
+                            <input
+                                type="radio"
+                                name="variant_modal"
+                                value="ejecutor"
+                                checked={professorVariant === 'ejecutor'}
+                                onChange={() => setProfessorVariant('ejecutor')}
+                                disabled={requestLoading}
+                            />
+                            Profesor ejecutor
+                        </label>
+
+                        <label className="flex items-center gap-2 text-slate-200">
+                            <input
+                                type="radio"
+                                name="variant_modal"
+                                value="editor"
+                                checked={professorVariant === 'editor'}
+                                onChange={() => setProfessorVariant('editor')}
+                                disabled={requestLoading}
+                            />
+                            Profesor editor
+                        </label>
+                    </div>
+
+                    <p className="text-xs text-slate-400">
+                        {professorVariant === 'editor'
+                            ? 'Como editor podrás crear y editar cursos.'
+                            : 'Como ejecutor podrás crear grupos y gestionar evaluaciones.'}
+                    </p>
+
+                    {requestError && <div className="text-sm text-red-400">{requestError}</div>}
+                    {requestSuccess && <div className="text-sm text-emerald-400">{requestSuccess}</div>}
+                </div>
             </Modal>
 
         </div>

@@ -8,6 +8,8 @@ import { firebaseAuthService } from '../../services/firebase.api';
 
 
 const Login = () => {
+
+
   const [searchParams] = useSearchParams();
   const rolParam = searchParams.get('rol'); //  Leer rol de la URL
 
@@ -19,9 +21,11 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+
+
   const getRolMessage = () => {
-    if (rolParam === 'profesor') {
-      return 'Inicia sesión como Profesor';
+    if (rolParam === 'usuario') {
+      return 'Inicia sesión como usuario';
     } else if (rolParam === 'estudiante') {
       return 'Inicia sesión como Estudiante';
     }
@@ -45,7 +49,7 @@ const Login = () => {
       if (response.success) {
         const user = response.data.usuario;
         console.log('Usuario logueado:', user);
-        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2  || user.rol_usuarioId === 3) {
+        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2  || user.rol_usuarioId === 3 || user.rol_usuarioId === 5) {
           navigate('/profesor');
         } else if (user.rol_usuarioId === 4) {
           navigate('/estudiante');
@@ -68,7 +72,7 @@ const Login = () => {
 
       console.log("firebaseResult:", firebaseResult);
       if (firebaseResult.success) {
-        const roleId = rolParam === 'profesor' ? 2 : 4;
+        const roleId = rolParam === 'usuario' ? 5 : 4;
         const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;

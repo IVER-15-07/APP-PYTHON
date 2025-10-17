@@ -1,14 +1,27 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
 import Course from '../page/profesor/course';
+import Modal from '../componentes/Modal';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [user, setUser] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
+    const [modalOpen, setModalOpen] = useState(false);
+
+
+    useEffect(() => {
+        const roleId = user?.rol_usuarioId ?? user?.rol?.id ?? user?.rol_usuario?.id;
+        if (roleId === 5 ) {
+            setModalOpen(true);
+        } else {
+            setModalOpen(false);
+        }
+    }, [user]);
+
 
     const handleLogout = () => {
         authService.logout();
@@ -103,6 +116,22 @@ const VentanaProfesor = () => {
                     {/* <Route path="perfil" element={<Perfil />} /> */}
                 </Routes>
             </main>
+
+
+            <Modal
+                open={modalOpen}
+                //onClose={() => setModalOpen(false)}
+                title="Información"
+                size="md"
+                footer={
+                    <div className="flex justify-end gap-2">
+                        <button onClick={() => handleLogout()} className="px-3 py-2 rounded bg-slate-700 text-slate-200">Cerrar</button>
+                    </div>
+                }
+            >
+                <p className="text-slate-300">Tienes el rol "usuario". Si deseas solicitar el rol de profesor, ve a Registro y envía la solicitud.</p>
+            </Modal>
+
         </div>
     );
 };

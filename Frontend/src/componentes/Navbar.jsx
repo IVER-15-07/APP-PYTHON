@@ -69,7 +69,7 @@ const Navbar = () => {
                             </button>
 
                             <button
-                                onClick={() => handleRoleNavigation('profesor')}
+                                onClick={() => handleRoleNavigation('usuario')}
                                 className="w-full text-left block px-4 py-3 text-sm text-slate-200 hover:bg-slate-700"
                             >
                                 <div className="flex items-center gap-3">

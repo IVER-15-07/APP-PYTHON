@@ -29,17 +29,34 @@ model Usuario {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  rol_usuarioId Int
-  rol_usuario   Rol_usuario  @relation(fields: [rol_usuarioId], references: [id])
+  rol_usuarioId Int?
+  rol_usuario   Rol_usuario?  @relation(fields: [rol_usuarioId], references: [id])
 
   registro Registro[]
   calificacion Calificacion[]
+  solicitudRol solicitudRol[]
+
+}
+
+model solicitudRol{
+  id       Int      @id @default(autoincrement())
+  estado   String   @default("pendiente") // pendiente, aprobado, rechazado
+  fecha_solicitud DateTime @default(now())
+
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int @unique
+  rol_usuario Rol_usuario @relation(fields: [rol_usuarioId], references: [id], onDelete: Cascade)
+  rol_usuarioId Int
+
+
 }
 
 model Rol_usuario {
   id        Int      @id @default(autoincrement())
   nombre     String   @unique
   usuario    Usuario[]
+  solicitudRol solicitudRol[]
 }
 
 

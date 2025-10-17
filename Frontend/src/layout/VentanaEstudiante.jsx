@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/estudiante/Dashboard';
+import Course from '../page/estudiante/course';
 
 const VentanaEstudiante = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -100,7 +101,7 @@ const VentanaEstudiante = () => {
             <main className="flex-1 h-screen overflow-auto">
                 <Routes>
                     <Route index element={<Dashboard />} />
-                    {/* <Route path="cursos" element={<Cursos />} /> */}
+                    <Route path="cursos" element={<Course />} /> 
                     {/* <Route path="progreso" element={<Progreso />} /> */}
                     {/* <Route path="ejercicios" element={<Ejercicios />} /> */}
                     {/* <Route path="perfil" element={<Perfil />} /> */}

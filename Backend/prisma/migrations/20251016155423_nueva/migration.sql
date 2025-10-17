@@ -9,9 +9,20 @@ CREATE TABLE "Usuario" (
     "firebaseUid" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "rol_usuarioId" INTEGER NOT NULL,
+    "rol_usuarioId" INTEGER,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "solicitudRol" (
+    "id" SERIAL NOT NULL,
+    "estado" TEXT NOT NULL DEFAULT 'pendiente',
+    "fecha_solicitud" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "usuarioId" INTEGER NOT NULL,
+    "rol_usuarioId" INTEGER NOT NULL,
+
+    CONSTRAINT "solicitudRol_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -195,6 +206,9 @@ CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
 CREATE UNIQUE INDEX "Usuario_firebaseUid_key" ON "Usuario"("firebaseUid");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "solicitudRol_usuarioId_key" ON "solicitudRol"("usuarioId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Rol_usuario_nombre_key" ON "Rol_usuario"("nombre");
 
 -- CreateIndex
@@ -222,7 +236,13 @@ CREATE UNIQUE INDEX "Tipo_evaluacion_nombre_key" ON "Tipo_evaluacion"("nombre");
 CREATE UNIQUE INDEX "Parametro_Parametro_key" ON "Parametro"("Parametro");
 
 -- AddForeignKey
-ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_rol_usuarioId_fkey" FOREIGN KEY ("rol_usuarioId") REFERENCES "Rol_usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_rol_usuarioId_fkey" FOREIGN KEY ("rol_usuarioId") REFERENCES "Rol_usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "solicitudRol" ADD CONSTRAINT "solicitudRol_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "solicitudRol" ADD CONSTRAINT "solicitudRol_rol_usuarioId_fkey" FOREIGN KEY ("rol_usuarioId") REFERENCES "Rol_usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Grupo" ADD CONSTRAINT "Grupo_cursoId_fkey" FOREIGN KEY ("cursoId") REFERENCES "Curso"("id") ON DELETE CASCADE ON UPDATE CASCADE;

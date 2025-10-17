@@ -17,3 +17,31 @@ export const changeUserRole = async (req, res) => {
     res.status(status).json({ success: false, message: err.message || "Error interno" });
   }
 };
+
+export const approveRoleRequest = async (req, res) => {
+  try {
+    const requesterId = req.user?.id;
+    if (!requesterId) return res.status(401).json({ success: false, message: "No autenticado" });
+
+    const requestId = parseInt(req.params.id, 10);
+    const result = await roleRequestService.approveRequest(requesterId, requestId);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
+  }
+};
+
+export const rejectRoleRequest = async (req, res) => {
+  try {
+    const requesterId = req.user?.id;
+    if (!requesterId) return res.status(401).json({ success: false, message: "No autenticado" });
+
+    const requestId = parseInt(req.params.id, 10);
+    const result = await roleRequestService.rejectRequest(requesterId, requestId);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
+  }
+};

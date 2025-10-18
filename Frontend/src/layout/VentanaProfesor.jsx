@@ -7,6 +7,7 @@ import Course from '../page/profesor/course';
 import Modal from '../componentes/Modal';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../page/admin/DashboardAdmin';
+import Sidebar from '../componentes/Sidebar';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -93,80 +94,24 @@ const VentanaProfesor = () => {
     return (
         <div className="min-h-screen bg-slate-950 flex">
 
-            <aside className={`bg-slate-900 border-r border-slate-800 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} h-screen sticky top-0 flex-shrink-0 overflow-hidden`}>
-
-                <div className="p-4 border-b border-slate-800">
-                    <div className="flex items-center justify-between">
-                        <div className={`flex items-center gap-3 ${!sidebarOpen && 'justify-center'}`}>
-                            <span className="text-2xl">👨‍🏫</span>
-                            {sidebarOpen && (
-                                <div>
-                                    <h2 className="text-blue-400 font-bold text-lg">PyLearn</h2>
-                                    <p className="text-slate-400 text-xs">Profesor</p>
-                                </div>
-                            )}
-                        </div>
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="text-slate-400 hover:text-white p-1 rounded"
-                        >
-                            {sidebarOpen ? '◀' : '▶'}
-                        </button>
-                    </div>
-                </div>
-
-                {sidebarOpen && user && (
-                    <div className="p-4 border-b border-slate-800">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                                {user.nombre?.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-slate-200 font-medium truncate">{user.nombre}</p>
-                                <p className="text-slate-400 text-sm truncate">{user.email}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <nav className="p-4 space-y-2">
-                    {menuItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            end={item.exact}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
-                                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                                } ${!sidebarOpen && 'justify-center'}`
-                            }
-                        >
-                            <span className="text-xl">{item.icon}</span>
-                            {sidebarOpen && <span className="font-medium">{item.label}</span>}
-                        </NavLink>
-                    ))}
-                </nav>
-
-                <div className="absolute bottom-4 left-4 right-4">
-                    <button
-                        onClick={handleLogout}
-                        className={`w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors ${!sidebarOpen && 'justify-center'}`}
-                    >
-                        <span className="text-xl">🚪</span>
-                        {sidebarOpen && <span className="font-medium">Cerrar Sesión</span>}
-                    </button>
-                </div>
-            </aside>
+            <Sidebar
+                user={user}
+                items={menuItems}
+                roleLabel="Profesor"
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                onLogout={handleLogout}
+                brand={{ icon: "🎓", name: "PyLearn" }}
+            />
 
             <main className="flex-1 h-screenoverflow-auto">
                 <Routes>
                     <Route index element={
-                            user? ((user.rol_usuarioId ?? user.rol?.id ?? user.rol_usuario?.id) === 1
-                                    ? <DashboardAdmin />
-                                    : <Dashboard />)
-                                : <div style={{ padding: 20 }}>Cargando...</div>
-                        }
+                        user ? ((user.rol_usuarioId ?? user.rol?.id ?? user.rol_usuario?.id) === 1
+                            ? <DashboardAdmin />
+                            : <Dashboard />)
+                            : <div style={{ padding: 20 }}>Cargando...</div>
+                    }
                     />
                     <Route path="cursos" element={<Course />} />
                     {/* <Route path="estudiantes" element={<GestionEstudiantes />} /> */}
@@ -176,8 +121,6 @@ const VentanaProfesor = () => {
                 </Routes>
             </main>
 
-
-            // ...existing code...
             <Modal
                 open={modalOpen}
                 onClose={() => navigate('/login')}
@@ -196,7 +139,6 @@ const VentanaProfesor = () => {
                     </div>
                 }
             >
-
                 {pendingRequest ? (
                     <div className="space-y-4">
                         <div className="text-sm text-yellow-400 space-y-1">
@@ -275,8 +217,6 @@ const VentanaProfesor = () => {
                     </div>
                 )}
             </Modal>
-
-
         </div>
     );
 };

@@ -4,6 +4,23 @@ import pluginReact from "eslint-plugin-react";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs,jsx}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
+  { 
+    files: ["**/*.{js,mjs,cjs,jsx}"], 
+    plugins: { js }, 
+    extends: ["js/recommended"], 
+    languageOptions: { 
+      globals: globals.node
+    } 
+  },
+  // Configuración específica para archivos de test
+  {
+    files: ["**/*.test.{js,jsx}", "**/*.spec.{js,jsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest
+      }
+    }
+  },
   pluginReact.configs.flat.recommended,
 ]);

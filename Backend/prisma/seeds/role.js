@@ -23,4 +23,10 @@
     update: {},
     create: { nombre: "Estudiante" },
   });
+
+  await prisma.rol_usuario.upsert({
+    where: { nombre: "usuario" },
+    update: {},
+    create: { nombre: "usuario" },
+  });
 }

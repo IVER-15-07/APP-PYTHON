@@ -29,17 +29,34 @@ model Usuario {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  rol_usuarioId Int
-  rol_usuario   Rol_usuario  @relation(fields: [rol_usuarioId], references: [id])
+  rol_usuarioId Int?
+  rol_usuario   Rol_usuario?  @relation(fields: [rol_usuarioId], references: [id])
 
   registro Registro[]
   calificacion Calificacion[]
+  solicitudRol solicitudRol[]
+
+}
+
+model solicitudRol{
+  id       Int      @id @default(autoincrement())
+  estado   String   @default("pendiente") // pendiente, aprobado, rechazado
+  fecha_solicitud DateTime @default(now())
+
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int @unique
+  rol_usuario Rol_usuario @relation(fields: [rol_usuarioId], references: [id], onDelete: Cascade)
+  rol_usuarioId Int
+
+
 }
 
 model Rol_usuario {
   id        Int      @id @default(autoincrement())
   nombre     String   @unique
   usuario    Usuario[]
+  solicitudRol solicitudRol[]
 }
 
 
@@ -51,8 +68,12 @@ model Grupo {
   fecha_fin  DateTime @default(now())
   codigo     Int    @unique
 
+  curso Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  cursoId Int
+
   grupo_topico Grupo_Topico[]
   registro Registro[]
+
 }
 
 model Registro{
@@ -63,6 +84,8 @@ model Registro{
   usuarioId Int
   grupo Grupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
   grupoId Int
+
+  @@unique([usuarioId, grupoId])
  
 }
 
@@ -70,15 +93,47 @@ model Registro{
 
 model Grupo_Topico{
   id       Int      @id @default(autoincrement())
-  nombreNivel    String 
  
-
   grupo Grupo? @relation(fields: [grupoId], references: [id], onDelete: Cascade)
   grupoId Int?
 
   topico Topico? @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int?
- 
+
+  estado Estado? @relation(fields: [estadoId], references: [id], onDelete: Cascade)
+  estadoId Int?
+}
+
+
+model Curso{
+  id     Int      @id @default(autoincrement())
+  nombre String @unique
+
+  nivel Nivel[]
+  grupo Grupo[]
+
+}
+
+model Nivel{
+  id      Int      @id @default(autoincrement())
+  nombre String 
+
+  curso Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  cursoId Int
+
+  topico Topico[]
+
+}
+
+
+model Estado{
+  id      Int      @id @default(autoincrement())
+  nombre String @unique
+
+  calificacion Calificacion[]
+  grupo_topico Grupo_Topico[]
+
+
 }
 
 
@@ -86,11 +141,15 @@ model Calificacion{
   id      Int      @id @default(autoincrement())
   nota    Int 
 
+
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
 
   topico Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
+
+  estado Estado @relation(fields: [estadoId], references: [id], onDelete: Cascade)
+  estadoId Int
 }
 
 
@@ -101,6 +160,8 @@ model Topico{
 
   tipo_topico Tipo_topico @relation(fields: [tipo_topicoId], references: [id], onDelete: Cascade)
   tipo_topicoId Int
+  nivel Nivel @relation(fields: [nivelId], references: [id], onDelete: Cascade)
+  nivelId Int
 
   calificacion Calificacion[]
   recursos Recursos[]

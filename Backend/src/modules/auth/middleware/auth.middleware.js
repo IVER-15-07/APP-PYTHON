@@ -14,7 +14,7 @@ export async function verifyToken(req, res, next) {
     if (!user) return res.status(401).json({ message: "Usuario no encontrado" });
 
     // adjunta usuario (puedes filtrar campos)
-    req.user = { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol_usuario.nombre };
+    req.user = { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol_usuario.nombre,  rol_usuarioId: user.rol_usuarioId ?? user.rol_usuario?.id ?? null};
     next();
   } catch (err) {
     console.error(err);

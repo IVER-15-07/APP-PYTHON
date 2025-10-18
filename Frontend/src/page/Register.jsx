@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
+import { teacherService } from '../../services/teacher.api';
 
 const Register = () => {
     const [searchParams] = useSearchParams();
@@ -11,18 +12,22 @@ const Register = () => {
         email: '',
         contrasena: '',
         confirmarContrasena: '',
-        rol_usuarioId: rolParam === 'profesor' ? 1 : 2
+        rol_usuarioId: rolParam === 'usuario' ? 5 : 4
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
+    const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
+
+
+
     useEffect(() => {
         if (rolParam) {
             setFormData(prev => ({
                 ...prev,
-                rol_usuarioId: rolParam === 'profesor' ? 1 : 2
+                rol_usuarioId: rolParam === 'usuario' ? 5 : 4
             }));
         }
     }, [rolParam]);
@@ -44,40 +49,69 @@ const Register = () => {
         if (error) setError('');
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-        setSuccess('');
+    // ...existing code...
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
 
-        if (formData.contrasena !== formData.confirmarContrasena) {
-            setError('Las contraseñas no coinciden');
-            setLoading(false);
-            return;
-        }
+    if (formData.contrasena !== formData.confirmarContrasena) {
+        setError('Las contraseñas no coinciden');
+        setLoading(false);
+        return;
+    }
 
-        if (formData.contrasena.length < 6) {
-            setError('La contraseña debe tener al menos 6 caracteres');
-            setLoading(false);
-            return;
-        }
+    if (formData.contrasena.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres');
+        setLoading(false);
+        return;
+    }
 
-        try {
-            const { confirmarContrasena, ...datosRegistro } = formData;
-            const response = await authService.register(datosRegistro);
+    try {
+        const { confirmarContrasena, ...datosRegistro } = formData;
+        const response = await authService.register(datosRegistro);
 
-            if (response.success) {
+        if (response.success) {
+            // decidir rol solicitado solo si el formulario muestra la opción
+            if (rolParam === 'usuario') {
+                const desiredRolId = professorVariant === 'ejecutor' ? 2 : 3; // ajusta ids según tu DB
+
+                // intentar extraer token del response (si el backend lo devuelve)
+                const token = response.data?.token || response.token || authService.obtenerToken?.();
+
+                if (token) {
+                    try {
+                        await teacherService.requestRoleChange({ rolId: desiredRolId }, token);
+                        setSuccess('Registro exitoso. Solicitud de rol enviada al administrador.');
+                    } catch (errReq) {
+                        console.error('Error enviando solicitud:', errReq);
+                        // si falla el envío aun con token, guardar para reintentar
+                        localStorage.setItem('pendingRoleRequest', JSON.stringify({ rolId: desiredRolId }));
+                        setSuccess('Registro exitoso. Hubo un problema enviando la solicitud; se intentará enviar al iniciar sesión.');
+                    }
+                    setTimeout(() => navigate('/login'), 1500);
+                } else {
+                    // no hay token: guardar petición para enviarla después al hacer login
+                    localStorage.setItem('pendingRoleRequest', JSON.stringify({ rolId: desiredRolId }));
+                    setSuccess('Registro exitoso. Inicia sesión para enviar la solicitud de rol al administrador.');
+                    setTimeout(() => navigate('/login'), 1500);
+                }
+            } else {
                 setSuccess('¡Registro exitoso! Redirigiendo al login...');
-                setTimeout(() => {
-                    navigate('/login');
-                }, 2000);
+                setTimeout(() => navigate('/login'), 1500);
             }
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setLoading(false);
+        } else {
+            setError(response.message || 'Error en el registro');
         }
-    };
+    } catch (error) {
+        console.error(error);
+        setError(error.message || 'Error en el registro');
+    } finally {
+        setLoading(false);
+    }
+};
+// ...existing code...
 
 
     return (
@@ -168,7 +202,47 @@ const Register = () => {
                         />
                     </div>
 
-            
+                    {/* Opciones para profesor: variante + solicitar rol */}
+                    {rolParam === 'usuario' && (
+                        <div className="bg-slate-900 p-3 rounded border border-slate-700">
+                            <label className="block text-sm text-slate-300 mb-2">Solicitar este rol al administrador</label>
+
+                            <div className="flex items-center gap-3 mb-3">
+                                <label className="text-sm text-slate-200">
+                                    <input
+                                        type="radio"
+                                        name="variant"
+                                        value="ejecutor"
+                                        checked={professorVariant === 'ejecutor'}
+                                        onChange={() => setProfessorVariant('ejecutor')}
+                                        disabled={loading}
+                                    />{' '}
+                                    Profesor ejecutor
+                                </label>
+                                <label className="text-sm text-slate-200">
+                                    <input
+                                        type="radio"
+                                        name="variant"
+                                        value="editor"
+                                        checked={professorVariant === 'editor'}
+                                        onChange={() => setProfessorVariant('editor')}
+                                        disabled={loading}
+                                    />{' '}
+                                    Profesor editor
+                                </label>
+                            </div>
+
+                            <p className="text-xs text-slate-400 mt-2">
+                                📩 Estás solicitando ser <strong>{professorVariant === 'editor' ? 'Profesor editor' : 'Profesor ejecutor'}</strong>.{' '}
+                                {professorVariant === 'editor'
+                                    ? 'Como editor podrás crear y editar cursos.'
+                                    : 'Como ejecutor podrás crear grupos y gestionar evaluaciones.'}
+                                {' '}Tu solicitud será revisada por el administrador y serás notificado cuando se procese.
+                            </p>
+                        </div>
+                    )}
+
+
 
                     <button
                         type="submit"

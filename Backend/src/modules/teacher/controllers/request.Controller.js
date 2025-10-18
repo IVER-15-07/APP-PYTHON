@@ -18,3 +18,19 @@ export const createRoleRequest = async (req, res) => {
   }
 
 }
+
+export const getMyRequest = async (req, res) => {
+    try {
+        const usuarioId = req.user?.id;
+        if (!usuarioId) return res.status(401).json({ success: false, message: "No autenticado" });
+
+        const solicitud = await solicitudService.getMyRequest(usuarioId);
+        return res.json({ success: true, data: solicitud });
+    } catch (error) {
+        console.error("error en solicitudController:", error);
+        const status = error.status || 500;
+        res.status(status).json({ success: false,
+        message: error.message || "Error interno" });
+    }
+
+}

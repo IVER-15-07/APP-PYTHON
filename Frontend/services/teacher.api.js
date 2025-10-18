@@ -9,4 +9,13 @@ export const teacherService = {
             throw new Error(error.response?.data?.message || 'Error al enviar la solicitud');
         }   
     },
+
+    async getMyRoleRequest() {
+        try {
+            const response = await axiosInstance.get('/api/role-requests'); 
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener la solicitud');
+        }
+    }
 };

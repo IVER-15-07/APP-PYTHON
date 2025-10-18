@@ -31,4 +31,9 @@ export const solicitudService = {
         });
 
     },
+
+    async getMyRequest(usuarioId) {
+        const pendiente = await solicitudRepository.myrequest(usuarioId);
+        return pendiente || null;
+    },
 };

@@ -1,5 +1,5 @@
 
-import Navbar from '../componentes/Navbar'
+import { Navbar } from "../componentes/ui";
 import { Outlet } from "react-router-dom"
 const VentanaPublica = () => {
     return (

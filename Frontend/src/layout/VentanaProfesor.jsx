@@ -4,10 +4,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
 import Course from '../page/profesor/course';
-import Modal from '../componentes/Modal';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../page/admin/DashboardAdmin';
-import Sidebar from '../componentes/Sidebar';
+import { Sidebar, Modal} from "../componentes/ui";
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);

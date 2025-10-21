@@ -1,9 +1,7 @@
 // ...existing code...
 import { useEffect, useState } from "react";
 import { adminService } from "../../../services/admin.api";
-import Cards from "../../componentes/ui/Cards";
-
-import UiButton from "../../componentes/ui/UiButton";
+import { Card, Button } from "../../componentes/ui";
 
 
 
@@ -72,9 +70,9 @@ const DashboardAdmin = () => {
             </header>
 
             <section style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                <Cards title="Usuarios totales" value="—" />
-                <Cards title="Solicitudes pendientes" value={pendingCount} />
-                <Cards title="Cursos" value="—" />
+                <Card title="Usuarios totales" value="—" />
+                <Card title="Solicitudes pendientes" value={pendingCount} />
+                <Card title="Cursos" value="—" />
             </section>
 
             {message && <div style={{ marginBottom: 12, color: "#a3e635" }}>{message}</div>}
@@ -112,8 +110,8 @@ const DashboardAdmin = () => {
                                         <td style={{ ...tdStyle, textTransform: "capitalize" }}>{r.estado}</td>
                                         <td style={tdStyle}>
                                             <div style={{ display: "flex", gap: 8 }}>
-                                                <UiButton variant="approve" onClick={() => handleApproveRemote(r.id)}>Aprobar</UiButton>
-                                                <UiButton variant="reject" onClick={() => handleRejectRemote(r.id)}>Rechazar</UiButton>
+                                                <Button variant="approve" onClick={() => handleApproveRemote(r.id)}>Aprobar</Button>
+                                                <Button variant="reject" onClick={() => handleRejectRemote(r.id)}>Rechazar</Button>
                                             </div>
                                         </td>
                                     </tr>

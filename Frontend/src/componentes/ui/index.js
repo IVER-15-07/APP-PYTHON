@@ -1,0 +1,12 @@
+// components/ui/index.js
+// Layout
+export { default as Navbar } from './layout/Navbar/Navbar';
+export { default as Sidebar } from './layout/Sidebar/Sidebar';
+
+// Data Display
+export { default as Card } from './data-display/Card/Card';
+// Inputs
+export { default as Button } from './inputs/Button/Button';
+
+// Feedback
+export { default as Modal } from './feedback/Modal/Modal';

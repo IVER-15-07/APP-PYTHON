@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/estudiante/Dashboard';
 import Course from '../page/estudiante/course';
-import Sidebar from '../componentes/Sidebar';
+import { Sidebar } from "../componentes/ui";
 
 const VentanaEstudiante = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);

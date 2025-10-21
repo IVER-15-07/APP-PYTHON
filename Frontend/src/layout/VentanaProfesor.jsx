@@ -6,7 +6,7 @@ import Dashboard from '../page/profesor/Dashboard';
 import Course from '../page/profesor/course';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../page/admin/DashboardAdmin';
-import { Sidebar, Modal} from "../componentes/ui";
+import { Sidebar, Modal} from "../components/ui";
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);

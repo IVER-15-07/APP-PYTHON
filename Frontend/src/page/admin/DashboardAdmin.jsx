@@ -1,7 +1,7 @@
 // ...existing code...
 import { useEffect, useState } from "react";
 import { adminService } from "../../../services/admin.api";
-import { Card, Button } from "../../componentes/ui";
+import { Card, Button } from "../../components/ui";
 
 
 

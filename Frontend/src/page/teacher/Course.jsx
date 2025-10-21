@@ -31,6 +31,7 @@ const Course = () => {
       const data = res?.data ?? res ?? [];
       setCourses(Array.isArray(data) ? data : []);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -46,6 +47,7 @@ const Course = () => {
       await navigator.clipboard.writeText(text);
       // opcional: mostrar notificación
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('No se pudo copiar', err);
     }
   };

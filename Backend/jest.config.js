@@ -7,4 +7,7 @@ export default {
   transform: {
     '^.+\\.js$': 'babel-jest',
   },
+  silent: false,
+  verbose: true,
+  setupFilesAfterEnv: ['<rootDir>/tests/setup/silencioConsole.js'],
 };

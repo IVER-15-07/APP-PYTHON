@@ -202,45 +202,7 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    {/* Opciones para profesor: variante + solicitar rol */}
-                    {rolParam === 'usuario' && (
-                        <div className="bg-slate-900 p-3 rounded border border-slate-700">
-                            <label className="block text-sm text-slate-300 mb-2">Solicitar este rol al administrador</label>
-
-                            <div className="flex items-center gap-3 mb-3">
-                                <label className="text-sm text-slate-200">
-                                    <input
-                                        type="radio"
-                                        name="variant"
-                                        value="ejecutor"
-                                        checked={professorVariant === 'ejecutor'}
-                                        onChange={() => setProfessorVariant('ejecutor')}
-                                        disabled={loading}
-                                    />{' '}
-                                    Profesor ejecutor
-                                </label>
-                                <label className="text-sm text-slate-200">
-                                    <input
-                                        type="radio"
-                                        name="variant"
-                                        value="editor"
-                                        checked={professorVariant === 'editor'}
-                                        onChange={() => setProfessorVariant('editor')}
-                                        disabled={loading}
-                                    />{' '}
-                                    Profesor editor
-                                </label>
-                            </div>
-
-                            <p className="text-xs text-slate-400 mt-2">
-                                📩 Estás solicitando ser <strong>{professorVariant === 'editor' ? 'Profesor editor' : 'Profesor ejecutor'}</strong>.{' '}
-                                {professorVariant === 'editor'
-                                    ? 'Como editor podrás crear y editar cursos.'
-                                    : 'Como ejecutor podrás crear grupos y gestionar evaluaciones.'}
-                                {' '}Tu solicitud será revisada por el administrador y serás notificado cuando se procese.
-                            </p>
-                        </div>
-                    )}
+                  
 
 
 

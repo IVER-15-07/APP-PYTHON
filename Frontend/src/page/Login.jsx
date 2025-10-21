@@ -49,7 +49,7 @@ const Login = () => {
       if (response.success) {
         const user = response.data.usuario;
         console.log('Usuario logueado:', user);
-        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2  || user.rol_usuarioId === 3 || user.rol_usuarioId === 5) {
+        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2 || user.rol_usuarioId === 3 || user.rol_usuarioId === 5) {
           navigate('/profesor');
         } else if (user.rol_usuarioId === 4) {
           navigate('/estudiante');
@@ -90,32 +90,31 @@ const Login = () => {
     }
   };
 
-  
-   const handleMicrosoftLogin = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const firebaseResult = await firebaseAuthService.loginWithMicrosoft();
-  
-        console.log("firebaseResult:", firebaseResult);
-        if (firebaseResult.success) {
-          const roleId = rolParam === 'profesor' ? 2 : 4;
-          const response = await authService.firebaseLogin(firebaseResult.data, roleId);
-          if (response.success) {
-            const user = response.data.usuario;
-            if (user.rol_usuarioId === 1) navigate('/profesor');
-            else if (user.rol_usuarioId === 2) navigate('/estudiante');
-            else navigate('/login');
-          }
-        } else {
-          setError(firebaseResult.message);
+
+  const handleMicrosoftLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const firebaseResult = await firebaseAuthService.loginWithMicrosoft();
+      console.log("firebaseResult:", firebaseResult);
+      if (firebaseResult.success) {
+        const roleId = rolParam === 'usuario' ? 5 : 4; // igual que Google
+        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
+        if (response.success) {
+          const user = response.data.usuario;
+          if (user.rol_usuarioId === 5) navigate('/profesor');
+          else if (user.rol_usuarioId === 4) navigate('/estudiante');
+          else navigate('/login');
         }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      } else {
+        setError(firebaseResult.message);
       }
-    }; 
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
@@ -150,7 +149,7 @@ const Login = () => {
           {rolParam && (
             <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
               <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
-              <span>Inicia como {rolParam}</span> 
+              <span>Inicia como {rolParam}</span>
             </div>
           )}
         </div>

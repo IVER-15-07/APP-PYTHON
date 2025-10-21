@@ -22,7 +22,11 @@ if (!getApps().length) {
 export const auth = getAuth();
 export const googleProvider = new GoogleAuthProvider();
 export const microsoftProvider = new OAuthProvider("microsoft.com");
+microsoftProvider.addScope('openid');
+microsoftProvider.addScope('email');
+microsoftProvider.addScope('profile');
+
 googleProvider.setCustomParameters({ prompt: "select_account" });
-microsoftProvider.setCustomParameters({ prompt: "select_account" });
+microsoftProvider.setCustomParameters({ prompt: "select_account", tenant: "common" });
 
 export default firebaseConfig;

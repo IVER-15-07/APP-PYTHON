@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const course = () => {
+const Course = () => {
 // curso fijo (card principal)
   const [curso] = useState({
     id: 1,
@@ -145,4 +145,4 @@ const course = () => {
 
 
 
-export default course
+export default Course

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
 import Course from '../page/profesor/course';
@@ -11,7 +11,7 @@ import Sidebar from '../componentes/Sidebar';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [user, setUser] = useState(authService.obtenerUsuarioActual());
+    const [user] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -72,6 +72,7 @@ const VentanaProfesor = () => {
             // actualizar pending
             setPendingRequest({ rol_usuarioId: desiredRolId, estado: 'pendiente' });
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.error('Enviar solicitud error:', err);
             setRequestError(err.message || 'Error al enviar la solicitud');
         } finally {
@@ -178,7 +179,7 @@ const VentanaProfesor = () => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <p className="text-slate-300">Tienes el rol "usuario". Selecciona el tipo de profesor que deseas solicitar:</p>
+                        <p className="text-slate-300">Tienes el rol usuario. Selecciona el tipo de profesor que deseas solicitar:</p>
 
                         <div className="flex items-center gap-4">
                             <label className="flex items-center gap-2 text-slate-200">

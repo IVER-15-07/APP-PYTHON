@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 const Sidebar = ({
   user,
@@ -87,4 +88,30 @@ const Sidebar = ({
   );
 };
 
+// Validación de PropTypes
+Sidebar.propTypes = {
+  user: PropTypes.shape({
+    nombre: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+    avatar: PropTypes.string,
+    role: PropTypes.string,
+  }).isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      href: PropTypes.string,
+      icon: PropTypes.node,
+      onClick: PropTypes.func,
+    })
+  ),
+  roleLabel: PropTypes.string,
+  sidebarOpen: PropTypes.bool,
+  setSidebarOpen: PropTypes.func,
+  onLogout: PropTypes.func.isRequired,
+  brand: PropTypes.shape({
+    icon: PropTypes.node,
+    name: PropTypes.string,
+  }),
+};
 export default Sidebar;

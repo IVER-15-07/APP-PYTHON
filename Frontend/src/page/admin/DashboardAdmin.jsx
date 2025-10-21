@@ -10,7 +10,7 @@ import UiButton from "../../componentes/ui/UiButton";
 const DashboardAdmin = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [actionLoading, setActionLoading] = useState(null);
+    const [setActionLoading] = useState(null);
     const [message, setMessage] = useState(null);
 
     const fetchRequests = async () => {

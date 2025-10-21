@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api.js';
+import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -28,4 +29,8 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
+// Validación de PropTypes
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 export default ProtectedRoute;

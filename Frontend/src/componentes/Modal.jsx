@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
+import PropTypes from 'prop-types';
 
 const Modal = ({
   open = false,
-  onClose = () => {},
+  onClose = () => { },
   title = "",
   children,
   footer = null,
@@ -76,6 +77,17 @@ const Modal = ({
     </div>,
     document.body
   );
+};
+// Validación de PropTypes
+Modal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  title: PropTypes.string,
+  children: PropTypes.node,
+  footer: PropTypes.node,
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  closeOnBackdrop: PropTypes.bool,
+  ariaLabel: PropTypes.string,
 };
 
 export default Modal;

@@ -14,8 +14,10 @@ const firebaseConfig = {
 // inicializar solo si no hay apps (evita errores con HMR)
 if (!getApps().length) {
   initializeApp(firebaseConfig);
+  // eslint-disable-next-line no-console
   console.log("Firebase cliente inicializado");
 } else {
+  // eslint-disable-next-line no-console
   console.log("Firebase cliente ya inicializado");
 }
 

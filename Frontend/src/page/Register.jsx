@@ -19,7 +19,7 @@ const Register = () => {
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
-    const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
+    const [professorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
 
 
 
@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
     }
 
     try {
-        const { confirmarContrasena, ...datosRegistro } = formData;
+        const { ...datosRegistro } = formData;
         const response = await authService.register(datosRegistro);
 
         if (response.success) {
@@ -85,6 +85,7 @@ const handleSubmit = async (e) => {
                         await teacherService.requestRoleChange({ rolId: desiredRolId }, token);
                         setSuccess('Registro exitoso. Solicitud de rol enviada al administrador.');
                     } catch (errReq) {
+                        // eslint-disable-next-line no-console
                         console.error('Error enviando solicitud:', errReq);
                         // si falla el envío aun con token, guardar para reintentar
                         localStorage.setItem('pendingRoleRequest', JSON.stringify({ rolId: desiredRolId }));
@@ -105,6 +106,7 @@ const handleSubmit = async (e) => {
             setError(response.message || 'Error en el registro');
         }
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
         setError(error.message || 'Error en el registro');
     } finally {

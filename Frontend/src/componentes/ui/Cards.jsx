@@ -1,4 +1,4 @@
-
+import PropTypes from 'prop-types';
 
 /**
  * Props:
@@ -62,4 +62,19 @@ const Card = ({
   );
 };
 
+// Validación de PropTypes
+Card.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.node,
+  ]).isRequired,
+  subtitle: PropTypes.string,
+  icon: PropTypes.node,
+  variant: PropTypes.oneOf(['default', 'success', 'warning', 'info']),
+  footer: PropTypes.node,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+};
 export default Card;

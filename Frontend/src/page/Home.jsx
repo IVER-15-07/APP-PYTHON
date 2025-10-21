@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 
 const Home = () => {
-    const [copiado, setCopiado] = useState(false)
+  const [copiado, setCopiado] = useState(false)
 
   const ejemplo = `# Tu primer programa en Python
 nombre = input("¿Cómo te llamas? ")
@@ -18,11 +18,12 @@ for i in range(3):
       setCopiado(true)
       setTimeout(() => setCopiado(false), 1500)
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("No se pudo copiar:", e)
     }
   }
   return (
-        <main className="bg-slate-950 text-slate-200 min-h-[calc(100vh-56px)]">
+    <main className="bg-slate-950 text-slate-200 min-h-[calc(100vh-56px)]">
       {/* Héroe */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid lg:grid-cols-2 items-center gap-10">

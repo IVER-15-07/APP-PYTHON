@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/estudiante/Dashboard';
 import Course from '../page/estudiante/course';
@@ -8,7 +8,7 @@ import Sidebar from '../componentes/Sidebar';
 
 const VentanaEstudiante = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [user, setUser] = useState(authService.obtenerUsuarioActual());
+    const [user] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
 
     const handleLogout = () => {

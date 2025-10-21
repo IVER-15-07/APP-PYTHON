@@ -1,4 +1,4 @@
-
+import PropTypes from 'prop-types';
 /**
  * Props:
  * - variant: 'default' | 'approve' | 'reject' | 'secondary'
@@ -76,5 +76,24 @@ const UiButton = ({
     </button>
   );
 };
-
+// Validación de PropTypes
+UiButton.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+  onClick: PropTypes.func,
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
+  variant: PropTypes.oneOf([
+    'default',
+    'primary',
+    'secondary',
+    'success',
+    'warning',
+    'danger',
+    'info',
+    'outline'
+  ]),
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
+  disabled: PropTypes.bool,
+  style: PropTypes.object,
+};
 export default UiButton;

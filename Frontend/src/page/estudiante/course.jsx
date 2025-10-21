@@ -1,97 +1,85 @@
-import { useState, useEffect } from "react";
 
-const course = () => {
-// curso fijo (card principal)
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const Course = () => {
   const [curso] = useState({
     id: 1,
     nombre: "Introducción a Python",
     descripcion: "Curso introductorio de Python: variables, control y funciones.",
   });
 
-  // datos simulados de grupos (no se muestran en la UI, solo para validar código)
-  const [grupos] = useState([
-    { id: 1, nombre: "Grupo A", codigo: "ABC123", miembrosCount: 4 },
-    { id: 2, nombre: "Grupo B", codigo: "DEF456", miembrosCount: 2 },
-    { id: 3, nombre: "Grupo C", codigo: "GHI789", miembrosCount: 0 },
-  ]);
-
-  // estado del usuario en este curso
-  const [currentGroup, setCurrentGroup] = useState(null); // { id, nombre, codigo, miembrosCount }
-  const [showForm, setShowForm] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [grupo, setGrupo] = useState(null);
+  const [niveles, setNiveles] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
+  // 🔹 Recuperar del localStorage al cargar el componente
   useEffect(() => {
-    // si quieres cargar el grupo real desde el backend, hazlo aquí
+    const savedGrupo = localStorage.getItem("grupo");
+    const savedNiveles = localStorage.getItem("niveles");
+
+    if (savedGrupo) setGrupo(JSON.parse(savedGrupo));
+    if (savedNiveles) setNiveles(JSON.parse(savedNiveles));
   }, []);
 
-  const joinByCode = () => {
+  const joinByCode = async () => {
     setMsg("");
     if (!codigo.trim()) {
       setMsg("Ingresa un código válido.");
       return;
     }
+
     setLoading(true);
-    setTimeout(() => {
-      const found = grupos.find(g => g.codigo.toLowerCase() === codigo.trim().toLowerCase());
-      if (!found) {
-        setMsg("Código inválido.");
-        setLoading(false);
-        return;
-      }
-      // simular unión: establecer currentGroup
-      setCurrentGroup(found);
-      setCodigo("");
+    try {
+      const res = await axios.post("http://localhost:3000/api/grupo/join-by-code", {
+        codigo,
+      });
+
+      setGrupo(res.data.grupo);
+      setNiveles(res.data.niveles);
+      setMsg(res.data.message);
       setShowForm(false);
-      setMsg("Te has unido correctamente.");
+
+      // Guardar en localStorage
+      localStorage.setItem("grupo", JSON.stringify(res.data.grupo));
+      localStorage.setItem("niveles", JSON.stringify(res.data.niveles));
+    } catch (error) {
+      setMsg("Código inválido o error del servidor.");
+      setGrupo(null);
+      setNiveles([]);
+      localStorage.removeItem("grupo");
+      localStorage.removeItem("niveles");
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
-  const leaveGroup = () => {
-    // si integras backend, llamar endpoint para abandonar grupo
-    setCurrentGroup(null);
-    setMsg("Has salido del grupo.");
-  };
-
-
-    return (
-       <div className="p-6">
-      <div className="max-w-2xl mx-auto">
+  return (
+    <div className="p-6 flex justify-center">
+      {/* 🔹 Contenedor que ocupa el 90% del ancho */}
+      <div className="w-[90%]">
         <div className="bg-slate-800 p-6 rounded-lg shadow-md">
+          {/* Cabecera del curso */}
           <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h1 className="text-2xl font-bold text-slate-100 truncate">{curso.nombre}</h1>
               <p className="text-slate-400 mt-2">{curso.descripcion}</p>
 
               <div className="mt-4">
-                {currentGroup ? (
+                {grupo ? (
                   <div className="bg-emerald-700/10 border border-emerald-700/20 text-emerald-200 px-4 py-3 rounded">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm text-emerald-100">Estás en</div>
-                        <div className="font-semibold text-emerald-200 text-lg">{currentGroup.nombre}</div>
+                        <div className="text-sm text-emerald-100">Te uniste al grupo</div>
+                        <div className="font-semibold text-emerald-200 text-lg">{grupo.titulo}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-slate-300">Miembros</div>
-                        <div className="font-medium text-slate-100">{currentGroup.miembrosCount}</div>
+                        <div className="text-sm text-slate-300">Código</div>
+                        <div className="font-medium text-slate-100">{grupo.codigo}</div>
                       </div>
-                    </div>
-
-                    <div className="flex gap-2 mt-3">
-                      <button
-                        onClick={() => navigator.clipboard?.writeText(currentGroup.nombre) && alert("Nombre copiado")}
-                        className="px-3 py-1 rounded bg-slate-700 text-slate-200 text-sm"
-                      >
-                        Copiar nombre
-                      </button>
-                      <button
-                        onClick={leaveGroup}
-                        className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm"
-                      >
-                        Salir del grupo
-                      </button>
                     </div>
                   </div>
                 ) : (
@@ -100,41 +88,68 @@ const course = () => {
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-2">
-              <button
-                onClick={() => { setShowForm(s => !s); setMsg(""); }}
-                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded"
-              >
-                {currentGroup ? "Cambiar de grupo" : "Unirse por código"}
-              </button>
-              {/* opción de crear/solicitar grupo eliminada según petición */}
-            </div>
+            {/* Botón visible solo si NO está unido */}
+            {!grupo && (
+              <div className="flex flex-col items-end gap-2">
+                <button
+                  onClick={() => {
+                    setShowForm((s) => !s);
+                    setMsg("");
+                  }}
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded"
+                >
+                  Unirse por código
+                </button>
+              </div>
+            )}
           </div>
 
-          {showForm && !currentGroup && (
+          {/* Formulario para ingresar el código */}
+          {showForm && !grupo && (
             <div className="mt-4 bg-slate-900 p-4 rounded border border-slate-700">
               <label className="text-sm text-slate-300 block mb-2">Unirse por código</label>
               <div className="flex gap-2">
                 <input
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                  placeholder="Introduce el código"
-                  className="flex-1 px-3 py-2 rounded bg-slate-800 text-slate-200"
+                    value={codigo}
+                    onChange={(e) => {
+                      // Solo permitir números y máximo 5 caracteres
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                      setCodigo(val);
+                    }}
+                    placeholder="Introduce el código"
+                    className="flex-1 px-3 py-2 rounded bg-slate-800 text-slate-200"
+                    maxLength={5}
                 />
                 <button
                   onClick={joinByCode}
                   disabled={loading}
                   className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded"
                 >
-                  {loading ? "Procesando..." : "Unirse"}
+                  {loading ? "Verificando..." : "Unirse"}
                 </button>
               </div>
               {msg && <p className="text-xs text-red-400 mt-2">{msg}</p>}
             </div>
           )}
 
-          {/* estado / mensaje */}
-          {!showForm && !currentGroup && msg && (
+          {/* Lista de niveles si el código es válido */}
+          {grupo && niveles.length > 0 && (
+            <div className="mt-6 bg-slate-900 p-4 rounded border border-slate-700">
+              <h2 className="text-lg font-semibold text-emerald-400 mb-3">Niveles disponibles</h2>
+              <ul className="space-y-2">
+                {niveles.map((nivel) => (
+                  <li
+                    key={nivel.id}
+                    className="bg-slate-800 px-3 py-2 rounded text-slate-200 border border-slate-700"
+                  >
+                    {nivel.nombre}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!showForm && !grupo && msg && (
             <div className="mt-4 text-sm text-red-400">{msg}</div>
           )}
         </div>
@@ -143,6 +158,4 @@ const course = () => {
   );
 };
 
-
-
-export default course
+export default Course;

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/profesor/Dashboard';
-import Course from '../page/profesor/course';
+//import Course from '../page/profesor/course';
 import Modal from '../componentes/Modal';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../page/admin/DashboardAdmin';

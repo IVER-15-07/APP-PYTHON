@@ -76,8 +76,8 @@ const Login = () => {
         const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;
-          if (user.rol_usuarioId === 1) navigate('/profesor');
-          else if (user.rol_usuarioId === 2) navigate('/estudiante');
+          if (user.rol_usuarioId === 5) navigate('/profesor');
+          else if (user.rol_usuarioId === 4) navigate('/estudiante');
           else navigate('/login');
         }
       } else {

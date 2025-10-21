@@ -1,9 +1,12 @@
-import express from "express";
-import { joinGroupByCode } from "../controllers/grupo.controller.js";
+import { Router } from "express";
+import { joinGroupByCode, getUserGroup } from "../controllers/grupo.controller.js";
 
-const router = express.Router();
+const router = Router();
 
-// Ruta para unirse a un grupo
+// Ruta para unirse a un grupo por código
 router.post("/join-by-code", joinGroupByCode);
+
+// Ruta para obtener el grupo actual del usuario
+router.get("/user/:usuarioId", getUserGroup);
 
 export default router;

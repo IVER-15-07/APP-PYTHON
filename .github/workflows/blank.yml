@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["test/GithubActions"]
+    branches: ["fix/test"]
   pull_request:
-    branches: ["test/GithubActions"]
+    branches: ["fix/test"]
 
 jobs:
   backend:

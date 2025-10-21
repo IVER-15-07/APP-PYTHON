@@ -32,10 +32,19 @@ const Course = () => {
       return;
     }
 
+    const usuario = JSON.parse(localStorage.getItem("user"));
+    const id_usuario = usuario?.id;
+
+    if (!id_usuario) {
+      setMsg("Error: no se encontró el usuario en sesión.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await axios.post("http://localhost:3000/api/grupo/join-by-code", {
         codigo,
+        id_usuario, // 👈 Enviamos el id del usuario autenticado
       });
 
       setGrupo(res.data.grupo);
@@ -43,11 +52,11 @@ const Course = () => {
       setMsg(res.data.message);
       setShowForm(false);
 
-      // Guardar en localStorage
+      // Guardamos los datos en localStorage
       localStorage.setItem("grupo", JSON.stringify(res.data.grupo));
       localStorage.setItem("niveles", JSON.stringify(res.data.niveles));
     } catch (error) {
-      setMsg("Código inválido o error del servidor.");
+      setMsg(error.response?.data?.message || "Código inválido o error del servidor.");
       setGrupo(null);
       setNiveles([]);
       localStorage.removeItem("grupo");
@@ -56,6 +65,9 @@ const Course = () => {
       setLoading(false);
     }
   };
+
+
+
 
   return (
     <div className="p-6 flex justify-center">
@@ -74,11 +86,11 @@ const Course = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-sm text-emerald-100">Te uniste al grupo</div>
-                        <div className="font-semibold text-emerald-200 text-lg">{grupo.titulo}</div>
+                        <div className="font-semibold text-emerald-200 text-lg">{/*grupo.titulo*/}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-slate-300">Código</div>
-                        <div className="font-medium text-slate-100">{grupo.codigo}</div>
+                        <div className="text-sm text-slate-300">-</div>
+                        <div className="font-medium text-slate-100">{/*grupo.codigo*/}</div>
                       </div>
                     </div>
                   </div>

@@ -1,10 +1,10 @@
 
-// Frontend/src/services/firebase.api.js
+
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider, microsoftProvider } from '../src/config/firebaseConfig';
 
 
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 20000;
 
 function withTimeout(promise, ms = TIMEOUT_MS) {
   const timeout = new Promise((_, reject) =>

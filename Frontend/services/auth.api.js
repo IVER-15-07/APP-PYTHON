@@ -3,7 +3,24 @@ import axiosInstance from "../helpers/axios-config";
 
 export const authService = {
 
-    // Registro
+    async registerSendCode(datospending) {
+        try {
+            const response = await axiosInstance.post('/api/register/send-code', datospending);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al enviar código de verificación');
+        }
+    },
+
+    async registerVerifyCode(verifydata) {
+        try {
+            const response = await axiosInstance.post('/api/register/verify-code', verifydata);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al verificar código de verificación');
+        }
+    },
+
     async register(datosUsuario) {
         try {
             const response = await axiosInstance.post('/api/register', datosUsuario);
@@ -13,7 +30,7 @@ export const authService = {
         }
     },
 
-    // Login local
+
     async login(credenciales) {
         try {
             const response = await axiosInstance.post('/api/login', credenciales);

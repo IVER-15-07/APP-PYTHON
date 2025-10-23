@@ -1,4 +1,19 @@
 -- CreateTable
+CREATE TABLE "RegistroPendiente" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "nombre" TEXT NOT NULL,
+    "contrasenaHash" TEXT NOT NULL,
+    "rol_usuarioId" INTEGER NOT NULL,
+    "code" TEXT NOT NULL,
+    "expira" TIMESTAMP(3) NOT NULL,
+    "usado" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "RegistroPendiente_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Usuario" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
@@ -7,6 +22,9 @@ CREATE TABLE "Usuario" (
     "provider" TEXT NOT NULL DEFAULT 'local',
     "profilePicture" TEXT,
     "firebaseUid" TEXT,
+    "verificado" BOOLEAN NOT NULL DEFAULT false,
+    "emailToken" TEXT,
+    "emailTokenExpira" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "rol_usuarioId" INTEGER,
@@ -200,10 +218,16 @@ CREATE TABLE "Parametro" (
 );
 
 -- CreateIndex
+CREATE INDEX "RegistroPendiente_email_idx" ON "RegistroPendiente"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_firebaseUid_key" ON "Usuario"("firebaseUid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Usuario_emailToken_key" ON "Usuario"("emailToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "solicitudRol_usuarioId_key" ON "solicitudRol"("usuarioId");

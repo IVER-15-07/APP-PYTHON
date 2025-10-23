@@ -2,8 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import admin from "../../../config/firebaseAdmin.js";
 import { usuarioRepository } from "../repositories/auth.repository.js";
-
-
+import { userRepository } from "../repositories/user.repository.js";
+import { pendingRepository } from "../repositories/pending.repository.js";
+import { sendVerificationCode } from "../utils/mailer.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
@@ -59,8 +60,6 @@ export const authService = {
   },
 
 
-
-  // ...existing code...
   async firebaseLogin({ idToken, roleId = null }) {
     if (!idToken) throw { status: 400, message: "firebaseToken requerido" };
 
@@ -107,7 +106,60 @@ export const authService = {
       throw { status: 400, message: err?.message || "Token Firebase inválido" };
     }
   },
-// ...existing code...
+
+
+  async registerSendCode(data) {
+    const { nombre, email, contrasena, rol_usuarioId } = data;
+
+    if (!nombre || !email || !contrasena)
+      throw { status: 400, message: "Faltan campos" };
+
+    const exists = await userRepository.findByEmail(email);
+    if (exists) throw { status: 400, message: "Email ya registrado" };
+
+    // invalida códigos previos no usados
+    await pendingRepository.invalidateAllByEmail(email);
+
+    const contrasenaHash = await bcrypt.hash(contrasena, 10);
+    const code = String(100000 + Math.floor(Math.random() * 900000)); // 6 dígitos
+    const expira = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+
+    await pendingRepository.create({
+      email,
+      nombre,
+      contrasenaHash,
+      rol_usuarioId: Number(rol_usuarioId) || 5,
+      code,
+      expira,
+    });
+
+    await sendVerificationCode(email, code);
+    return { success: true, message: "Código enviado al correo" };
+  },
+
+  async registerVerifyCode(data) {
+    const { email, code } = data;
+
+    if (!email || !code)
+      throw { status: 400, message: "Email y código requeridos" };
+
+    const pending = await pendingRepository.findValidByEmailAndCode(email, String(code));
+    if (!pending)
+      throw { status: 400, message: "Código inválido o expirado" };
+
+    const user = await userRepository.create({
+      nombre: pending.nombre,
+      email: pending.email,
+      contrasena: pending.contrasenaHash,
+      rol_usuarioId: pending.rol_usuarioId,
+      verificado: true,
+      provider: "local",
+    });
+
+    await pendingRepository.marcaUsada(pending.id);
+    return { success: true, user };
+  },
+
 
 
 };

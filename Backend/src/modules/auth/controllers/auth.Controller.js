@@ -55,3 +55,22 @@ export async function me(req, res) {
     res.status(500).json({ success: false });
   }
 }
+
+export async function registerSendCode(req, res) {
+  try {
+    const result = await authService.registerSendCode(req.body);
+    res.status(201).json({ success: true, data: result });
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
+  } 
+}
+export async function registerVerifyCode(req, res) {
+  try {
+    const result = await authService.registerVerifyCode(req.body);
+    res.status(201).json({ success: true, data: result });
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
+  }
+}

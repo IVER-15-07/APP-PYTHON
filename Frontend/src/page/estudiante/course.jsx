@@ -15,7 +15,7 @@ const Course = () => {
   const [niveles, setNiveles] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  // 🔹 Al cargar, verificar en el backend si el usuario pertenece a un grupo
+  // Al cargar, verificar en el backend si el usuario pertenece a un grupo
   useEffect(() => {
     const usuario = JSON.parse(localStorage.getItem("user"));
     if (!usuario?.id) return;
@@ -38,7 +38,7 @@ const Course = () => {
     fetchUserGroup();
   }, []);
 
-  // 🔹 Unirse por código
+  // Unirse por código
   const joinByCode = async () => {
     setMsg("");
     if (!codigo.trim()) {

@@ -1,9 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-/**
- * Unirse a un grupo mediante código
- */
+/* Unirse a un grupo mediante código */
 export const joinGroupByCode = async (req, res) => {
   const { codigo, usuarioId } = req.body;
 
@@ -48,9 +46,7 @@ export const joinGroupByCode = async (req, res) => {
   }
 };
 
-/**
- * Verificar si un usuario ya pertenece a un grupo
- */
+/* Verificar si un usuario ya pertenece a un grupo*/
 export const getUserGroup = async (req, res) => {
   const { usuarioId } = req.params;
 

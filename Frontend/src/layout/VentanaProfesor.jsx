@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../page/teacher/Dashboard';
-import Course from '../page/teacher/course';
+import Course from '../page/teacher/Course';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../page/admin/DashboardAdmin';
 import { Sidebar, Modal} from "../components/ui";

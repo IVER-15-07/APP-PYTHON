@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { authService } from "../../../services/auth.api";
+import PropTypes from "prop-types";
 
 const EmailVerification = ({ email, onVerified, onError }) => {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
@@ -112,4 +113,9 @@ const EmailVerification = ({ email, onVerified, onError }) => {
   );
 };
 
+EmailVerification.propTypes = {
+  email: PropTypes.string.isRequired,
+  onVerified: PropTypes.func,
+  onError: PropTypes.func,
+};
 export default EmailVerification;

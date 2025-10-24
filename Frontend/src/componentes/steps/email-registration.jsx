@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authService } from "../../../services/auth.api";
+import PropTypes from "prop-types";
 
 const EmailRegistration = ({ defaultRolId = 5, onNext, onError }) => {
   const [loading, setLoading] = useState(false);
@@ -118,4 +119,9 @@ const EmailRegistration = ({ defaultRolId = 5, onNext, onError }) => {
   );
 };
 
+EmailRegistration.propTypes = {
+  defaultRolId: PropTypes.number,
+  onNext: PropTypes.func,
+  onError: PropTypes.func,
+};
 export default EmailRegistration;

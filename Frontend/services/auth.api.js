@@ -89,6 +89,7 @@ export const authService = {
 
             return response.data;
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error("firebaseLogin (client) error:", error?.response ?? error);
             const serverMsg = error?.response?.data?.message ?? error.message ?? "Error en login con Firebase";
             throw new Error(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));

@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
-import Dashboard from '../page/student/Dashboard';
-import Course from '../page/student/course';
+import Dashboard from '../features/student/pages/Dashboard';
+import Course from '../features/student/pages/Course';
 import { Sidebar } from "../components/ui";
 
 const VentanaEstudiante = () => {

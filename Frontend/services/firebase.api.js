@@ -53,6 +53,7 @@ export const firebaseAuthService = {
             await signOut(auth);
             return { success: true };
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Error al cerrar sesión:', error);
             throw new Error('Error al cerrar sesión de Firebase');
         }

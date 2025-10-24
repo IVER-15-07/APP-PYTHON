@@ -1,12 +1,12 @@
 
 import { Routes, Route } from 'react-router-dom'
 import Home from './page/Home'
-import Login from './page/Login'
+import Login from './features/auth/pages/Login'
 import VentanaProfesor from './layout/VentanaProfesor'
 import VentanaEstudiante from './layout/VentanaEstudiante'
 import VentanaPublica from './layout/VentanaPublica'
 import ProtectedRoute from './page/ProtectedRoute'
-import Register from './page/Register'
+import Register from './features/auth/pages/Register'
 
 function App() {
   return (

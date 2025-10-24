@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
-import Dashboard from '../page/teacher/Dashboard';
-import Course from '../page/teacher/Course';
+import Dashboard from '../features/teacher/pages/Dashboard';
+import Course from '../features/teacher/pages/Course';
 import { teacherService } from '../../services/teacher.api';
-import DashboardAdmin from '../page/admin/DashboardAdmin';
+import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal} from "../components/ui";
 
 const VentanaProfesor = () => {

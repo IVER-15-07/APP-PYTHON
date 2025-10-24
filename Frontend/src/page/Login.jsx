@@ -35,10 +35,41 @@ const Login = () => {
     setLoading(true)
     setError("")
     try {
-      const response = await authService.login(formData)
-      if (response?.success) {
-        const user = response.data.usuario
-        redirectByRole(user.rol_usuarioId)
+      const response = await authService.login(formData);
+      if (response.success) {
+        const user = response.data.usuario;
+        console.log('Usuario logueado:', user);
+        if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2 || user.rol_usuarioId === 3 || user.rol_usuarioId === 5) {
+          navigate('/profesor');
+        } else if (user.rol_usuarioId === 4) {
+          navigate('/estudiante');
+        } else {
+          navigate('/login');
+        }
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const firebaseResult = await firebaseAuthService.loginWithGoogle();
+
+      console.log("firebaseResult:", firebaseResult);
+      if (firebaseResult.success) {
+        const roleId = rolParam === 'usuario' ? 5 : 4;
+        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
+        if (response.success) {
+          const user = response.data.usuario;
+          if (user.rol_usuarioId === 5) navigate('/profesor');
+          else if (user.rol_usuarioId === 4) navigate('/estudiante');
+          else navigate('/login');
+        }
       } else {
         setError(response?.message || "Error al iniciar sesión")
       }
@@ -49,38 +80,31 @@ const Login = () => {
     }
   }
 
-  const handleFirebaseLogin = async (provider) => {
-    setLoading(true)
-    setError("")
+
+  const handleMicrosoftLogin = async () => {
+    setLoading(true);
+    setError('');
     try {
-      const firebaseResult =
-        provider === "google"
-          ? await firebaseAuthService.loginWithGoogle()
-          : await firebaseAuthService.loginWithMicrosoft()
-
-      if (!firebaseResult?.success) {
-        setError(firebaseResult?.message || "Error en autenticación externa")
-        setLoading(false)
-        return
-      }
-
-      const roleId =
-        provider === "google" ? (rolParam === "usuario" ? 5 : 4) : rolParam === "profesor" ? 2 : 4
-
-      const response = await authService.firebaseLogin(firebaseResult.data, roleId)
-
-      if (response?.success) {
-        const user = response.data.usuario
-        redirectByRole(user.rol_usuarioId)
+      const firebaseResult = await firebaseAuthService.loginWithMicrosoft();
+      console.log("firebaseResult:", firebaseResult);
+      if (firebaseResult.success) {
+        const roleId = rolParam === 'usuario' ? 5 : 4; // igual que Google
+        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
+        if (response.success) {
+          const user = response.data.usuario;
+          if (user.rol_usuarioId === 5) navigate('/profesor');
+          else if (user.rol_usuarioId === 4) navigate('/estudiante');
+          else navigate('/login');
+        }
       } else {
-        setError(response?.message || "Error al registrar usuario")
+        setError(firebaseResult.message);
       }
-    } catch (err) {
-      setError(err?.message || "Error de red")
+    } catch (error) {
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-5">
@@ -106,7 +130,7 @@ const Login = () => {
 
           {rolParam && (
             <div className="mt-4 inline-flex items-center gap-2 bg-emerald-400/10 text-emerald-400 px-3 py-1 rounded-full text-sm">
-              <span>{rolParam === "profesor" ? "👨‍🏫" : "🎓"}</span>
+              <span>{rolParam === 'profesor' ? '👨‍🏫' : '🎓'}</span>
               <span>Inicia como {rolParam}</span>
             </div>
           )}

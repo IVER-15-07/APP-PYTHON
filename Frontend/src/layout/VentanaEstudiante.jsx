@@ -19,9 +19,9 @@ const VentanaEstudiante = () => {
     const menuItems = [
         { path: '/estudiante', icon: '🏠', label: 'Dashboard', exact: true },
         { path: '/estudiante/cursos', icon: '📚', label: 'Mis Cursos' },
-        { path: '/estudiante/progreso', icon: '📊', label: 'Mi Progreso' },
-        { path: '/estudiante/ejercicios', icon: '🎯', label: 'Ejercicios' },
-        { path: '/estudiante/perfil', icon: '👤', label: 'Mi Perfil' },
+       // { path: '/estudiante/progreso', icon: '📊', label: 'Mi Progreso' },
+        //{ path: '/estudiante/ejercicios', icon: '🎯', label: 'Ejercicios' },
+        //{ path: '/estudiante/perfil', icon: '👤', label: 'Mi Perfil' },
     ];
 
     return (

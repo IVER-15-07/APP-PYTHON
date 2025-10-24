@@ -86,10 +86,11 @@ const VentanaProfesor = () => {
         { path: '/profesor', icon: '🏠', label: 'Dashboard', exact: true },
         { path: '/profesor/cursos', icon: '📚', label: 'Mis Cursos' },
         { path: '/profesor/estudiantes', icon: '👥', label: 'Estudiantes' },
-        { path: '/profesor/ejercicios', icon: '📝', label: 'Crear Ejercicios' },
-        { path: '/profesor/estadisticas', icon: '📊', label: 'Estadísticas' },
-        { path: '/profesor/perfil', icon: '👤', label: 'Mi Perfil' },
+        //{ path: '/profesor/ejercicios', icon: '📝', label: 'Crear Ejercicios' },
+        //{ path: '/profesor/estadisticas', icon: '📊', label: 'Estadísticas' },
+        //{ path: '/profesor/perfil', icon: '👤', label: 'Mi Perfil' },
     ];
+    
 
     return (
         <div className="min-h-screen bg-slate-950 flex">

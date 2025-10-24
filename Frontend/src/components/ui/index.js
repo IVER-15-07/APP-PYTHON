@@ -10,3 +10,9 @@ export { default as Button } from './inputs/Button/Button';
 
 // Feedback
 export { default as Modal } from './feedback/Modal/Modal';
+
+export { default as BotonLink } from './BotonLink';
+export { default as RutaItem } from './RutaItem';
+export { default as InputField } from './InputField';
+export { default as SocialButton } from './SocialButton';
+export { default as Spinner } from './Spinner';

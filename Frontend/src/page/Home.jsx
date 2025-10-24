@@ -71,7 +71,7 @@ const Home = () => {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
         <h2 className="text-xl sm:text-2xl font-bold mb-4">Qué aprenderás</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {aprendizajes.map(({ titulo, descripcion }) => (
+          {(Array.isArray(aprendizajes) ? aprendizajes : []).map(({ titulo, descripcion }) => (
             <Card key={titulo} titulo={titulo} descripcion={descripcion} />
           ))}
         </div>

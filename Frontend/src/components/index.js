@@ -1,6 +1,0 @@
-export { default as BotonLink } from "./BotonLink"
-export { default as Card } from "./Card"
-export { default as RutaItem } from "./RutaItem"
-export { default as InputField } from "./InputField"
-export { default as SocialButton } from "./SocialButton"
-export { default as Spinner } from "./Spinner"

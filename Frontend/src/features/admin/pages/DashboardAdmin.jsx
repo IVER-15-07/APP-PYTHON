@@ -1,25 +1,23 @@
-// ...existing code...
 import { useEffect, useState } from "react";
 import { adminService } from "../../../../services/admin.api.js";
 import { Card, Button } from "../../../components/ui";
-
-
+import { Users, Clock, BookOpen, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 
 const DashboardAdmin = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [setActionLoading] = useState(null);
+    const [actionLoading, setActionLoading] = useState(null);
     const [message, setMessage] = useState(null);
 
     const fetchRequests = async () => {
         setLoading(true);
         setMessage(null);
         try {
-            const res = await adminService.getRoleRequests(); // adminService debe devolver response.data
+            const res = await adminService.getRoleRequests();
             const items = res?.data ?? res ?? [];
             setRequests(Array.isArray(items) ? items : []);
         } catch (err) {
-            setMessage(err.message || "Error al cargar solicitudes");
+            setMessage({ type: 'error', text: err.message || "Error al cargar solicitudes" });
             setRequests([]);
         } finally {
             setLoading(false);
@@ -36,10 +34,10 @@ const DashboardAdmin = () => {
         setMessage(null);
         try {
             await adminService.approveRoleRequest(requestId);
-            setMessage(`Solicitud ${requestId} aprobada.`);
+            setMessage({ type: 'success', text: `Solicitud ${requestId} aprobada correctamente.` });
             await fetchRequests();
         } catch (err) {
-            setMessage(err.message || "Error al aprobar la solicitud");
+            setMessage({ type: 'error', text: err.message || "Error al aprobar la solicitud" });
         } finally {
             setActionLoading(null);
         }
@@ -51,10 +49,10 @@ const DashboardAdmin = () => {
         setMessage(null);
         try {
             await adminService.rejectRoleRequest(requestId);
-            setMessage(`Solicitud ${requestId} rechazada.`);
+            setMessage({ type: 'success', text: `Solicitud ${requestId} rechazada.` });
             await fetchRequests();
         } catch (err) {
-            setMessage(err.message || "Error al rechazar la solicitud");
+            setMessage({ type: 'error', text: err.message || "Error al rechazar la solicitud" });
         } finally {
             setActionLoading(null);
         }
@@ -62,73 +60,148 @@ const DashboardAdmin = () => {
 
     const pendingCount = requests.filter((r) => r.estado === "pendiente").length;
 
+    const getStatusStyle = (estado) => {
+        switch (estado) {
+            case "pendiente":
+                return "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
+            case "aprobado":
+                return "bg-green-500/10 text-green-400 border-green-500/30";
+            case "rechazado":
+                return "bg-red-500/10 text-red-400 border-red-500/30";
+            default:
+                return "bg-slate-500/10 text-slate-400 border-slate-500/30";
+        }
+    };
+
     return (
-        <div style={{ padding: 20, color: "#e6eef8", fontFamily: "Inter, sans-serif" }}>
-            <header style={{ marginBottom: 20 }}>
-                <h1 style={{ fontSize: 28, margin: 0 }}>Panel de Administrador</h1>
-                <p style={{ color: "#9aa6b2", marginTop: 6 }}>Gestión de solicitudes de rol</p>
-            </header>
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <header className="mb-8">
+                    <h1 className="text-3xl font-bold text-white mb-2">Panel de Administrador</h1>
+                    <p className="text-slate-400">Gestión de solicitudes de rol</p>
+                </header>
 
-            <section style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                <Card title="Usuarios totales" value="—" />
-                <Card title="Solicitudes pendientes" value={pendingCount} />
-                <Card title="Cursos" value="—" />
-            </section>
+                {/* Stats Cards */}
+                <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                    <Card 
+                        title="Usuarios totales" 
+                        value="—"
+                        icon={<Users className="w-5 h-5 text-blue-400" />}
+                    />
+                    <Card 
+                        title="Solicitudes pendientes" 
+                        value={pendingCount}
+                        icon={<Clock className="w-5 h-5 text-yellow-400" />}
+                    />
+                    <Card 
+                        title="Cursos" 
+                        value="—"
+                        icon={<BookOpen className="w-5 h-5 text-green-400" />}
+                    />
+                </section>
 
-            {message && <div style={{ marginBottom: 12, color: "#a3e635" }}>{message}</div>}
-            {loading && <div style={{ marginBottom: 12 }}>Cargando solicitudes...</div>}
-
-            <section>
-                <h2 style={{ fontSize: 18, marginBottom: 10 }}>Solicitudes de rol</h2>
-
-                {requests.length === 0 ? (
-                    <div>No hay solicitudes</div>
-                ) : (
-                    <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", background: "#071026" }}>
-                            <thead>
-                                <tr style={{ textAlign: "left", borderBottom: "1px solid #213244" }}>
-                                    <th style={thStyle}>N</th>
-                                    <th style={thStyle}>Usuario</th>
-                                    <th style={thStyle}>Email</th>
-                                    <th style={thStyle}>Rol solicitado</th>
-                                    <th style={thStyle}>Fecha</th>
-                                    <th style={thStyle}>Hora</th>
-                                    <th style={thStyle}>Estado</th>
-                                    <th style={thStyle}>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {requests.map((r, index) => (
-                                    <tr key={r.id} style={{ borderBottom: "1px solid #132433" }}>
-                                        <td style={tdStyle}>{index + 1}</td>
-                                        <td style={tdStyle}>{r.usuario?.nombre ?? "—"}</td>
-                                        <td style={tdStyle}>{r.usuario?.email ?? "—"}</td>
-                                        <td style={tdStyle}>{r.rol_usuario?.nombre ?? r.rol_usuarioId ?? "—"}</td>
-                                        <td style={tdStyle}>{r.fecha_solicitud ? new Date(r.fecha_solicitud).toLocaleDateString() : "—"}</td>
-                                        <td style={tdStyle}>{r.fecha_solicitud ? new Date(r.fecha_solicitud).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
-                                        <td style={{ ...tdStyle, textTransform: "capitalize" }}>{r.estado}</td>
-                                        <td style={tdStyle}>
-                                            <div style={{ display: "flex", gap: 8 }}>
-                                                <Button variant="approve" onClick={() => handleApproveRemote(r.id)}>Aprobar</Button>
-                                                <Button variant="reject" onClick={() => handleRejectRemote(r.id)}>Rechazar</Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                {/* Messages */}
+                {message && (
+                    <div className={`flex items-center gap-3 p-4 rounded-xl border mb-6 ${
+                        message.type === 'success' 
+                            ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                            : 'bg-red-500/10 border-red-500/30 text-red-400'
+                    }`}>
+                        {message.type === 'success' ? (
+                            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                        ) : (
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                        )}
+                        <span className="text-sm font-medium">{message.text}</span>
                     </div>
                 )}
-            </section>
+
+                {loading && (
+                    <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl mb-6">
+                        <div className="w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-slate-300">Cargando solicitudes...</span>
+                    </div>
+                )}
+
+                {/* Requests Table */}
+                <section className="bg-slate-900/80 border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+                    <div className="p-6 border-b border-slate-700/50">
+                        <h2 className="text-xl font-bold text-white">Solicitudes de rol</h2>
+                    </div>
+
+                    {requests.length === 0 ? (
+                        <div className="p-8 text-center text-slate-400">
+                            No hay solicitudes
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-slate-800/50">
+                                    <tr className="border-b border-slate-700/50">
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">N°</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Usuario</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Email</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Rol solicitado</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Fecha</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Hora</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-700/50">
+                                    {requests.map((r, index) => (
+                                        <tr key={r.id} className="hover:bg-slate-800/30 transition-colors duration-150">
+                                            <td className="px-6 py-4 text-sm text-slate-300">{index + 1}</td>
+                                            <td className="px-6 py-4 text-sm font-medium text-white">{r.usuario?.nombre ?? "—"}</td>
+                                            <td className="px-6 py-4 text-sm text-slate-300">{r.usuario?.email ?? "—"}</td>
+                                            <td className="px-6 py-4 text-sm text-slate-300">{r.rol_usuario?.nombre ?? r.rol_usuarioId ?? "—"}</td>
+                                            <td className="px-6 py-4 text-sm text-slate-300">
+                                                {r.fecha_solicitud ? new Date(r.fecha_solicitud).toLocaleDateString() : "—"}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-slate-300">
+                                                {r.fecha_solicitud ? new Date(r.fecha_solicitud).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusStyle(r.estado)}`}>
+                                                    {r.estado === "pendiente" && <Clock className="w-3 h-3" />}
+                                                    {r.estado === "aprobado" && <CheckCircle2 className="w-3 h-3" />}
+                                                    {r.estado === "rechazado" && <XCircle className="w-3 h-3" />}
+                                                    <span className="capitalize">{r.estado}</span>
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        variant="success" 
+                                                        size="sm"
+                                                        onClick={() => handleApproveRemote(r.id)}
+                                                        disabled={actionLoading === r.id || r.estado !== "pendiente"}
+                                                    >
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                        Aprobar
+                                                    </Button>
+                                                    <Button 
+                                                        variant="danger" 
+                                                        size="sm"
+                                                        onClick={() => handleRejectRemote(r.id)}
+                                                        disabled={actionLoading === r.id || r.estado !== "pendiente"}
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
+                                                        Rechazar
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
 };
-
-
-
-const thStyle = { padding: "12px 10px", fontSize: 13, color: "#9aa6b2" };
-const tdStyle = { padding: "12px 10px", fontSize: 14, color: "#cfe6ff" };
-
 
 export default DashboardAdmin;

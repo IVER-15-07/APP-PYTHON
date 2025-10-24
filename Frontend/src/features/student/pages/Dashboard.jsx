@@ -17,7 +17,7 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-200 mb-2">
-            ¡Bienvenido, {user?.nombre || 'Estudiante'}! 👋
+            ¡Bienvenid@, {user?.nombre || 'Estudiante'}! 👋
           </h1>
           <p className="text-slate-400">Panel de control del estudiante</p>
         </div>

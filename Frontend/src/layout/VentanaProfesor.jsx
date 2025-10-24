@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
@@ -6,14 +5,14 @@ import Dashboard from '../features/teacher/pages/Dashboard';
 import Course from '../features/teacher/pages/Course';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
-import { Sidebar, Modal} from "../components/ui";
+import { Sidebar, Modal } from "../components/ui";
+import { Home, BookOpen, Users, Code2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [user] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
-
 
     const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
     const [requestLoading, setRequestLoading] = useState(false);
@@ -33,7 +32,7 @@ const VentanaProfesor = () => {
     useEffect(() => {
         const fetchpending = async () => {
             try {
-                const token = authService.obtenerToken?.(); // asegúrate que retorna token
+                const token = authService.obtenerToken?.();
                 const solicitud = await teacherService.getMyRoleRequest(token);
                 if (solicitud?.data) {
                     setPendingRequest(solicitud.data);
@@ -61,14 +60,11 @@ const VentanaProfesor = () => {
         setRequestSuccess(null);
         setRequestLoading(true);
         try {
-            // ids según tu Prisma: 2 = Profesor ejecutor, 3 = Profesor editor
             const desiredRolId = professorVariant === 'ejecutor' ? 2 : 3;
-            const token = authService.obtenerToken?.(); // asegúrate que retorna token
+            const token = authService.obtenerToken?.();
             await teacherService.requestRoleChange({ rolId: desiredRolId }, token);
             setRequestSuccess('Solicitud enviada correctamente. El administrador la revisará.');
-            // opcional: cerrar modal tras éxito
             setTimeout(() => setModalOpen(false), 1400);
-            // actualizar pending
             setPendingRequest({ rol_usuarioId: desiredRolId, estado: 'pendiente' });
         } catch (err) {
             // eslint-disable-next-line no-console
@@ -79,22 +75,42 @@ const VentanaProfesor = () => {
         }
     };
 
-
-
-
     const menuItems = [
-        { path: '/profesor', icon: '🏠', label: 'Dashboard', exact: true },
-        { path: '/profesor/cursos', icon: '📚', label: 'Mis Cursos' },
-        { path: '/profesor/estudiantes', icon: '👥', label: 'Estudiantes' },
-        //{ path: '/profesor/ejercicios', icon: '📝', label: 'Crear Ejercicios' },
-        //{ path: '/profesor/estadisticas', icon: '📊', label: 'Estadísticas' },
-        //{ path: '/profesor/perfil', icon: '👤', label: 'Mi Perfil' },
+        { 
+            path: '/profesor', 
+            icon: <Home className="w-5 h-5" />, 
+            label: 'Dashboard', 
+            exact: true 
+        },
+        { 
+            path: '/profesor/cursos', 
+            icon: <BookOpen className="w-5 h-5" />, 
+            label: 'Mis Cursos' 
+        },
+        { 
+            path: '/profesor/estudiantes', 
+            icon: <Users className="w-5 h-5" />, 
+            label: 'Estudiantes' 
+        },
+        // { 
+        //     path: '/profesor/ejercicios', 
+        //     icon: <FileEdit className="w-5 h-5" />, 
+        //     label: 'Crear Ejercicios' 
+        // },
+        // { 
+        //     path: '/profesor/estadisticas', 
+        //     icon: <BarChart3 className="w-5 h-5" />, 
+        //     label: 'Estadísticas' 
+        // },
+        // { 
+        //     path: '/profesor/perfil', 
+        //     icon: <User className="w-5 h-5" />, 
+        //     label: 'Mi Perfil' 
+        // },
     ];
-    
 
     return (
-        <div className="min-h-screen bg-slate-950 flex">
-
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex">
             <Sidebar
                 user={user}
                 items={menuItems}
@@ -102,16 +118,21 @@ const VentanaProfesor = () => {
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
                 onLogout={handleLogout}
-                brand={{ icon: "🎓", name: "PyLearn" }}
+                brand={{ 
+                    icon: <Code2 className="w-6 h-6" />, 
+                    name: "PyLearn" 
+                }}
             />
 
-            <main className="flex-1 h-screenoverflow-auto">
+            <main className="flex-1 h-screen overflow-auto">
                 <Routes>
                     <Route index element={
                         user ? ((user.rol_usuarioId ?? user.rol?.id ?? user.rol_usuario?.id) === 1
                             ? <DashboardAdmin />
                             : <Dashboard />)
-                            : <div style={{ padding: 20 }}>Cargando...</div>
+                            : <div className="flex items-center justify-center h-full">
+                                <div className="text-slate-400">Cargando...</div>
+                              </div>
                     }
                     />
                     <Route path="cursos" element={<Course />} />
@@ -128,12 +149,17 @@ const VentanaProfesor = () => {
                 title="Solicitar rol de Profesor"
                 size="md"
                 footer={
-                    <div className="flex justify-end gap-2">
-                        <button onClick={() => navigate('/login')} className="px-3 py-2 rounded bg-slate-700 text-slate-200">Cerrar</button>
+                    <div className="flex justify-end gap-3">
+                        <button 
+                            onClick={() => navigate('/login')} 
+                            className="px-4 py-2.5 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 border border-slate-600/50 font-semibold transition-all duration-200"
+                        >
+                            Cerrar
+                        </button>
                         <button
                             onClick={handleSendRequest}
-                            disabled={requestLoading || !!pendingRequest} // deshabilita si ya hay pendiente
-                            className="px-3 py-2 rounded bg-emerald-500 text-white disabled:opacity-60"
+                            disabled={requestLoading || !!pendingRequest}
+                            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold border border-emerald-400/30 shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                         >
                             {requestLoading ? 'Enviando...' : 'Enviar solicitud'}
                         </button>
@@ -142,47 +168,52 @@ const VentanaProfesor = () => {
             >
                 {pendingRequest ? (
                     <div className="space-y-4">
-                        <div className="text-sm text-yellow-400 space-y-1">
-                            <div className="font-semibold">Solicitud pendiente</div>
+                        <div className="flex items-start gap-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                            <Clock className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                            <div className="space-y-2 text-sm">
+                                <div className="font-semibold text-yellow-400">Solicitud pendiente</div>
 
-                            <div>
-                                <span className="text-slate-300">Rol solicitado: </span>
-                                <span className="font-medium">
-                                    {pendingRequest.rol_usuario?.nombre
-                                        || (pendingRequest.rol_usuarioId === 2 ? 'Profesor ejecutor'
-                                            : pendingRequest.rol_usuarioId === 3 ? 'Profesor editor'
-                                                : `ID ${pendingRequest.rol_usuarioId}`)}
-                                </span>
+                                <div className="text-slate-300">
+                                    <span className="text-slate-400">Rol solicitado: </span>
+                                    <span className="font-medium text-white">
+                                        {pendingRequest.rol_usuario?.nombre
+                                            || (pendingRequest.rol_usuarioId === 2 ? 'Profesor ejecutor'
+                                                : pendingRequest.rol_usuarioId === 3 ? 'Profesor editor'
+                                                    : `ID ${pendingRequest.rol_usuarioId}`)}
+                                    </span>
+                                </div>
+
+                                <div className="text-slate-300">
+                                    <span className="text-slate-400">Solicitado por: </span>
+                                    <span className="font-medium text-white">{pendingRequest.usuario?.nombre || user?.nombre || '—'}</span>
+                                </div>
+
+                                <div className="text-slate-300">
+                                    <span className="text-slate-400">Fecha: </span>
+                                    <span className="font-medium text-white">
+                                        {pendingRequest.fecha_solicitud
+                                            ? new Date(pendingRequest.fecha_solicitud).toLocaleString()
+                                            : '—'}
+                                    </span>
+                                </div>
+
+                                <div className="text-slate-300">
+                                    <span className="text-slate-400">Estado: </span>
+                                    <span className="font-medium capitalize text-yellow-400">{pendingRequest.estado || 'pendiente'}</span>
+                                </div>
+
+                                <div className="text-xs text-slate-400 pt-1">
+                                    Mientras la solicitud esté pendiente no podrás enviar otra.
+                                </div>
                             </div>
-
-                            <div>
-                                <span className="text-slate-300">Solicitado por: </span>
-                                <span className="font-medium">{pendingRequest.usuario?.nombre || user?.nombre || '—'}</span>
-                            </div>
-
-                            <div>
-                                <span className="text-slate-300">Fecha: </span>
-                                <span className="font-medium">
-                                    {pendingRequest.fecha_solicitud
-                                        ? new Date(pendingRequest.fecha_solicitud).toLocaleString()
-                                        : '—'}
-                                </span>
-                            </div>
-
-                            <div>
-                                <span className="text-slate-300">Estado: </span>
-                                <span className="font-medium capitalize">{pendingRequest.estado || 'pendiente'}</span>
-                            </div>
-
-                            <div className="text-xs text-slate-400">Mientras la solicitud esté pendiente no podrás enviar otra.</div>
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         <p className="text-slate-300">Tienes el rol usuario. Selecciona el tipo de profesor que deseas solicitar:</p>
 
-                        <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 text-slate-200">
+                        <div className="space-y-3">
+                            <label className="flex items-start gap-3 p-4 rounded-xl border border-slate-700/50 hover:border-green-500/30 hover:bg-slate-800/30 cursor-pointer transition-all duration-200">
                                 <input
                                     type="radio"
                                     name="variant_modal"
@@ -190,11 +221,17 @@ const VentanaProfesor = () => {
                                     checked={professorVariant === 'ejecutor'}
                                     onChange={() => setProfessorVariant('ejecutor')}
                                     disabled={requestLoading}
+                                    className="mt-1"
                                 />
-                                Profesor ejecutor
+                                <div>
+                                    <div className="text-slate-200 font-semibold">Profesor ejecutor</div>
+                                    <div className="text-xs text-slate-400 mt-1">
+                                        Podrás crear grupos y gestionar evaluaciones.
+                                    </div>
+                                </div>
                             </label>
 
-                            <label className="flex items-center gap-2 text-slate-200">
+                            <label className="flex items-start gap-3 p-4 rounded-xl border border-slate-700/50 hover:border-green-500/30 hover:bg-slate-800/30 cursor-pointer transition-all duration-200">
                                 <input
                                     type="radio"
                                     name="variant_modal"
@@ -202,19 +239,30 @@ const VentanaProfesor = () => {
                                     checked={professorVariant === 'editor'}
                                     onChange={() => setProfessorVariant('editor')}
                                     disabled={requestLoading}
+                                    className="mt-1"
                                 />
-                                Profesor editor
+                                <div>
+                                    <div className="text-slate-200 font-semibold">Profesor editor</div>
+                                    <div className="text-xs text-slate-400 mt-1">
+                                        Podrás crear y editar cursos.
+                                    </div>
+                                </div>
                             </label>
                         </div>
 
-                        <p className="text-xs text-slate-400">
-                            {professorVariant === 'editor'
-                                ? 'Como editor podrás crear y editar cursos.'
-                                : 'Como ejecutor podrás crear grupos y gestionar evaluaciones.'}
-                        </p>
-
-                        {requestError && <div className="text-sm text-red-400">{requestError}</div>}
-                        {requestSuccess && <div className="text-sm text-emerald-400">{requestSuccess}</div>}
+                        {requestError && (
+                            <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                {requestError}
+                            </div>
+                        )}
+                        
+                        {requestSuccess && (
+                            <div className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+                                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                {requestSuccess}
+                            </div>
+                        )}
                     </div>
                 )}
             </Modal>

@@ -64,7 +64,10 @@ const VentanaProfesor = () => {
             const token = authService.obtenerToken?.();
             await teacherService.requestRoleChange({ rolId: desiredRolId }, token);
             setRequestSuccess('Solicitud enviada correctamente. El administrador la revisará.');
-            setTimeout(() => setModalOpen(false), 1400);
+            setTimeout(() => {
+                setModalOpen(false);
+                navigate('/login');
+            }, 1400);
             setPendingRequest({ rol_usuarioId: desiredRolId, estado: 'pendiente' });
         } catch (err) {
             // eslint-disable-next-line no-console

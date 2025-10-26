@@ -56,31 +56,36 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const firebaseResult = await firebaseAuthService.loginWithGoogle();
-      // eslint-disable-next-line no-console
-      console.log("firebaseResult:", firebaseResult);
-      if (firebaseResult.success) {
-        const roleId = rolParam === 'usuario' ? 5 : 4;
-        const response = await authService.firebaseLogin(firebaseResult.data, roleId);
-        if (response.success) {
-          const user = response.data.usuario;
-          if (user.rol_usuarioId === 5) navigate('/profesor');
-          else if (user.rol_usuarioId === 4) navigate('/estudiante');
-          else navigate('/login');
-        }
-      } else {
-        setError(firebaseResult?.message || "Error al iniciar sesión")
+ const handleGoogleLogin = async () => {
+  setLoading(true);
+  setError('');
+  try {
+    const firebaseResult = await firebaseAuthService.loginWithGoogle();
+    console.log("firebaseResult:", firebaseResult);
+
+    if (firebaseResult.success) {
+      const roleId = rolParam === 'usuario' ? 5 : 4;
+
+      const response = await authService.firebaseLogin({
+        idToken: firebaseResult.data.idToken,
+        roleId
+      });
+
+      if (response.success) {
+        const user = response.data.usuario;
+
+        // Redirección centralizada
+        redirectByRole(user.rol_usuarioId);
       }
-    } catch (err) {
-      setError(err?.message || "Error de red")
-    } finally {
-      setLoading(false)
+    } else {
+      setError(firebaseResult?.message || "Error al iniciar sesión");
     }
+  } catch (err) {
+    setError(err?.message || "Error de red");
+  } finally {
+    setLoading(false);
   }
+};
 
   const handleMicrosoftLogin = async () => {
     setLoading(true);

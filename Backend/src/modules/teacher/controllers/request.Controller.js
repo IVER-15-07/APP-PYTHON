@@ -34,3 +34,19 @@ export const getMyRequest = async (req, res) => {
     }
 
 }
+
+export const GroupRequest = async (req, res) => {
+    try {
+        const usuarioId = req.user?.id;
+        if (!usuarioId) return res.status(401).json({ success: false, message: "No autenticado" });
+
+        const groupData = req.body;
+        const grupo = await solicitudService.createGroupRequest(usuarioId, groupData);
+        return res.json({ success: true, message: "Grupo creado", data: grupo });
+    } catch (error) {
+        console.error("error en solicitudController:", error);
+        const status = error.status || 500;
+        res.status(status).json({ success: false,
+        message: error.message || "Error interno" });
+    }
+}

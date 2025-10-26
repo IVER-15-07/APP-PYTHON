@@ -58,7 +58,8 @@ CREATE TABLE "Grupo" (
     "descripcion" TEXT NOT NULL,
     "fecha_ini" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "fecha_fin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "codigo" INTEGER NOT NULL,
+    "codigo" INTEGER,
+    "esAprobado" BOOLEAN NOT NULL DEFAULT false,
     "cursoId" INTEGER NOT NULL,
 
     CONSTRAINT "Grupo_pkey" PRIMARY KEY ("id")
@@ -88,6 +89,7 @@ CREATE TABLE "Grupo_Topico" (
 CREATE TABLE "Curso" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
+    "descripcion" TEXT,
 
     CONSTRAINT "Curso_pkey" PRIMARY KEY ("id")
 );

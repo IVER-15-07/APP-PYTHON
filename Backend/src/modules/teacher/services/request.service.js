@@ -1,5 +1,6 @@
 import { solicitudRepository } from "../repositories/request.repository.js";
 import { roleRepository } from "../repositories/role.repository.js";
+import { teamRepository } from "../repositories/team.repository.js";
 
 
 export const solicitudService = {
@@ -36,4 +37,27 @@ export const solicitudService = {
         const pendiente = await solicitudRepository.myrequest(usuarioId);
         return pendiente || null;
     },
+
+
+    async createGroupRequest(usuarioId, groupData) {
+        const { titulo, descripcion, fecha_ini, fecha_fin, cursoId } = groupData;
+
+        const grupo = await teamRepository.createTeam({
+            titulo,
+            descripcion: descripcion || "",
+            fecha_ini: new Date(fecha_ini),
+            fecha_fin: new Date(fecha_fin),
+            esAprobado: false,
+            codigo: null,
+            cursoId: Number(cursoId),
+        });
+
+        if (usuarioId) {
+            await teamRepository.addCreatorRegistro({ usuarioId, grupoId: grupo.id });
+        }
+
+        return grupo;
+    }
+
+
 };

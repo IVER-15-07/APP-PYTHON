@@ -1,11 +1,12 @@
-import { courseRepository } from "../repositories/course.repository.js";
+import { GroupRepository } from "../repositories/group.repository.js";
 
 
 export const courseService = {
-
-  async getCourse() {
-    return await courseRepository.findAll();
+    async listPending() {
+    return GroupRepository.listPendingTeams();
   },
+
+
 
 
 

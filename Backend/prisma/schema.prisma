@@ -76,7 +76,9 @@ model Grupo {
   descripcion String
   fecha_ini   DateTime @default(now())
   fecha_fin   DateTime @default(now())
-  codigo      Int      @unique
+  codigo      Int?      @unique
+
+  esAprobado Boolean @default(false)
 
   curso   Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   cursoId Int
@@ -113,6 +115,7 @@ model Grupo_Topico {
 model Curso {
   id     Int    @id @default(autoincrement())
   nombre String @unique
+  descripcion String? 
 
   nivel Nivel[]
   grupo Grupo[]

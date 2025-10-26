@@ -31,7 +31,10 @@ const Group = () => {
         }
     };
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+        if (error) setError(''); // Limpia el error cuando el usuario edita
+    };
 
     const copyToClipboard = async (text, id) => {
         try {
@@ -48,10 +51,13 @@ const Group = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        
         if (new Date(form.endDate) < new Date(form.startDate)) {
             setError('La fecha de finalización debe ser posterior a la fecha de inicio');
+            setLoading(false);
             return;
         }
+        
         try {
             const payload = {
                 title: form.title,
@@ -95,7 +101,9 @@ const Group = () => {
                         onSubmit={handleSubmit}
                         loading={loading}
                         error={error}
-                        onBack={() => navigate('/profesor')}
+                        cancel={() => {
+                            setForm({ title: '', description: '', startDate: '', endDate: '' });
+                        }}
                     />
 
                     {/* Sidebar resumen (componente) */}

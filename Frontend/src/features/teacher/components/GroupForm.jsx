@@ -1,7 +1,10 @@
-import { Plus, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Plus, Send, Ban, AlertCircle, Calendar } from 'lucide-react';
 import PropTypes from 'prop-types';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './datepicker-custom.css';
 
-const GroupForm = ({ form, onChange, onSubmit, loading, error, onBack }) => {
+const GroupForm = ({ form, onChange, onSubmit, loading, error, cancel }) => {
     return (
         <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-2 mb-6">
@@ -29,35 +32,54 @@ const GroupForm = ({ form, onChange, onSubmit, loading, error, onBack }) => {
                         disabled={loading}
                     />
                 </div>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Fecha de inicio *</label>
+                        <div className="relative">
+                            <DatePicker
+                                selected={form.startDate ? new Date(form.startDate) : null}
+                                onChange={(date) => onChange({ 
+                                    target: { 
+                                        name: 'startDate', 
+                                        value: date ? date.toISOString().split('T')[0] : '' 
+                                    } 
+                                })}
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText="Selecciona fecha de inicio"
+                                minDate={new Date()}
+                                maxDate={form.endDate ? new Date(form.endDate) : null}
+                                required
+                                disabled={loading}
+                                className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white placeholder-slate-500 border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
+                                calendarClassName="dark-calendar"
+                            />
+                            <Calendar className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                    </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Fecha de inicio *</label>
-                    <input
-                        name="startDate"
-                        type="date"
-                        value={form.startDate}
-                        onChange={onChange}
-                        placeholder="Ej: Grupo de Python A"
-                        required
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white placeholder-slate-500 border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
-                        disabled={loading}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Fecha de finalización *</label>
+                        <div className="relative">
+                            <DatePicker
+                                selected={form.endDate ? new Date(form.endDate) : null}
+                                onChange={(date) => onChange({ 
+                                    target: { 
+                                        name: 'endDate', 
+                                        value: date ? date.toISOString().split('T')[0] : '' 
+                                    } 
+                                })}
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText="Selecciona fecha de fin"
+                                minDate={form.startDate ? new Date(form.startDate) : new Date()}
+                                required
+                                disabled={loading}
+                                className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white placeholder-slate-500 border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
+                                calendarClassName="dark-calendar"
+                            />
+                            <Calendar className="w-5 h-5 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Fecha de finalización *</label>
-                    <input
-                        name="endDate"
-                        type="date"
-                        value={form.endDate}
-                        onChange={onChange}
-                        placeholder="Ej: Grupo de Python A"
-                        required
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white placeholder-slate-500 border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
-                        disabled={loading}
-                    />
-                </div>
-
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Descripción</label>
                     <textarea
@@ -77,17 +99,17 @@ const GroupForm = ({ form, onChange, onSubmit, loading, error, onBack }) => {
                         disabled={loading}
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Send className="w-4 h-4" />
                         Enviar solicitud
                     </button>
 
                     <button
                         type="button"
-                        onClick={onBack}
+                        onClick={cancel}
                         className="flex items-center gap-2 px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-xl border border-slate-600/50 transition-all duration-200 font-medium"
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        Volver
+                        <Ban className="w-4 h-4" />
+                        Cancelar
                     </button>
                 </div>
             </form>
@@ -109,5 +131,5 @@ GroupForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     loading: PropTypes.bool,
     error: PropTypes.string,
-    onBack: PropTypes.func.isRequired,
+    cancel: PropTypes.func.isRequired,
 };

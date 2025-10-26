@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../features/teacher/pages/Dashboard';
-import Course from '../features/teacher/pages/Course';
+import Group from '../features/teacher/pages/Group';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
@@ -88,7 +88,7 @@ const VentanaProfesor = () => {
         { 
             path: '/profesor/cursos', 
             icon: <BookOpen className="w-5 h-5" />, 
-            label: 'Mis Cursos' 
+            label: 'Mis Grupos' 
         },
         { 
             path: '/profesor/estudiantes', 
@@ -138,7 +138,7 @@ const VentanaProfesor = () => {
                               </div>
                     }
                     />
-                    <Route path="cursos" element={<Course />} />
+                    <Route path="cursos" element={<Group/>} />
                     {/* <Route path="estudiantes" element={<GestionEstudiantes />} /> */}
                     {/* <Route path="ejercicios" element={<CrearEjercicios />} /> */}
                     {/* <Route path="estadisticas" element={<Estadisticas />} /> */}

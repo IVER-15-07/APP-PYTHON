@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { authService } from '../../../../services/auth.api.js';
 import { Link } from 'react-router-dom';
+import { BookOpen, Users, Activity, Target, Plus, BarChart3 } from 'lucide-react';
+import { StatCard, GroupListItem, DashboardSummary } from '../components';
 
 const Dashboard = () => {
   const user = authService.obtenerUsuarioActual();
@@ -18,83 +20,80 @@ const Dashboard = () => {
 
   const totalStudents = courses.reduce((s, c) => s + c.students, 0);
 
+  
   return (
-    <div className="p-6 lg:p-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
       <div className="max-w-7xl mx-auto">
-        <header className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-100">Panel del Profesor</h1>
-            <p className="text-sm text-slate-400 mt-1">Bienvenido{user?.nombre ? `, ${user.nombre}` : ''} — aquí tienes un resumen rápido</p>
-          </div>
+        {/* Header */}
+        <header className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <h1 className="text-3xl font-bold text-white">Panel del Profesor</h1>
+              </div>
+              <p className="text-slate-400 ml-14">
+                Bienvenido{user?.nombre ? `, ${user.nombre}` : ''} — aquí tienes un resumen rápido
+              </p>
+            </div>
 
-          <div className="flex items-center gap-3">
-            <Link to="/profesor/cursos" className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md">Crear Curso</Link>
-            <Link to="/profesor/estadisticas" className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md">Ver estadísticas</Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/profesor/cursos"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30"
+              >
+                <Plus className="w-4 h-4" />
+                Crear Grupo
+              </Link>
+              <Link
+                to="/profesor/estadisticas"
+                className="flex items-center gap-2 px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-xl border border-slate-600/50 transition-all duration-200 font-medium"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Estadísticas
+              </Link>
+            </div>
           </div>
         </header>
 
         {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
-            <p className="text-sm text-slate-400">Cursos</p>
-            <div className="text-2xl font-semibold text-slate-100">{courses.length}</div>
-          </div>
-
-          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
-            <p className="text-sm text-slate-400">Estudiantes en total</p>
-            <div className="text-2xl font-semibold text-emerald-400">{totalStudents}</div>
-          </div>
-
-          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
-            <p className="text-sm text-slate-400">Ejercicios activos</p>
-            <div className="text-2xl font-semibold text-blue-400">12</div>
-          </div>
-
-          <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
-            <p className="text-sm text-slate-400">Actividad reciente</p>
-            <div className="text-2xl font-semibold text-purple-400">Buen rendimiento</div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <StatCard label="Grupos" value={courses.length} variant="default" icon={BookOpen} />
+          <StatCard label="Estudiantes en total" value={totalStudents} variant="primary" icon={Users} />
+          <StatCard label="Ejercicios activos" value={12} variant="secondary" icon={Activity} />
+          <StatCard label="Tasa de completado" value="87%" variant="accent" icon={Target} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Lista cursos recientes */}
-          <section className="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-4">Cursos recientes</h2>
+          {/* Lista grupos recientes */}
+          <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-6">Grupos recientes</h2>
 
             {courses.length === 0 ? (
-              <div className="text-slate-400">No has creado cursos aún.</div>
+              <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-12 text-center">
+                <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-10 h-10 text-slate-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-300 mb-2">No has creado grupos aún</h3>
+                <p className="text-slate-500 text-sm">Comienza creando tu primer grupo de estudio.</p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {courses.map((c) => (
-                  <div key={c.id} className="p-4 bg-slate-800/70 border border-slate-700 rounded-lg flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-100">{c.title}</h3>
-                      <p className="text-sm text-slate-400 mt-1">{c.level} • {c.students} estudiantes</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Link to={`/profesor/cursos/${c.id}`} className="text-sm px-3 py-1 bg-slate-700 rounded text-slate-100">Administrar</Link>
-                      <button className="text-xs px-2 py-1 bg-red-600 rounded text-white hover:bg-red-500">Eliminar</button>
-                    </div>
-                  </div>
+                  <GroupListItem key={c.id} group={c} />
                 ))}
               </div>
             )}
           </section>
 
           {/* Panel derecho: resumen y acciones */}
-          <aside className="bg-slate-800/70 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-sm font-medium text-slate-200 mb-3">Resumen rápido</h3>
-            <ul className="text-sm text-slate-400 space-y-2">
-              <li>• Cursos publicados: <span className="text-slate-100 font-medium ml-2">{courses.length}</span></li>
-              <li>• Estudiantes inscritos: <span className="text-emerald-400 font-medium ml-2">{totalStudents}</span></li>
-              <li>• Última actividad: <span className="text-slate-100 font-medium ml-2">hace 2 días</span></li>
-            </ul>
-
-            <div className="mt-6">
-              <button className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">Enviar anuncio</button>
-              <button className="w-full px-4 py-2 mt-3 bg-slate-700 hover:bg-slate-600 text-white rounded-md">Gestionar estudiantes</button>
-            </div>
-          </aside>
+          <DashboardSummary
+            coursesCount={courses.length}
+            studentsCount={totalStudents}
+            lastActivity="hace 2 días"
+          />
         </div>
       </div>
     </div>

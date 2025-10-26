@@ -23,7 +23,7 @@ export const solicitudService = {
                 fecha_solicitud: new Date(),
             });
 
-        }
+        } 
 
         return solicitudRepository.createSolicitud({
             usuarioId,

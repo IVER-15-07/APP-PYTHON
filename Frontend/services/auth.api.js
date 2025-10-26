@@ -48,16 +48,17 @@ export const authService = {
 
     // Login Firebase
 
-   async firebaseLogin({ idToken, roleId }) {
-    const { data } = await axiosInstance.post("/api/firebase-login", { idToken, roleId }); // roleId solo se usa si el usuario NO existe
-    if (data?.success) {
-      const { token, usuario } = data.data;
-      localStorage.setItem("userToken", token);
-      localStorage.setItem("user", JSON.stringify(usuario));
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
-    return data;
-  },
+    async firebaseLogin({ idToken, roleId }) {
+        const { data } = await axiosInstance.post("/api/firebase-login", { idToken, roleId });
+        if (data?.success) {
+            const { token, usuario } = data.data;
+            localStorage.setItem("userToken", token);
+            localStorage.setItem("user", JSON.stringify(usuario));
+            axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        }
+        return data;
+    },
+
 
     // Obtener perfil (requiere token)
     async obtenerPerfil() {

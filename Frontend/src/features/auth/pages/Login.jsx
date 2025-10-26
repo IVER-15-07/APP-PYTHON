@@ -56,36 +56,36 @@ const Login = () => {
     }
   };
 
- const handleGoogleLogin = async () => {
-  setLoading(true);
-  setError('');
-  try {
-    const firebaseResult = await firebaseAuthService.loginWithGoogle();
-    console.log("firebaseResult:", firebaseResult);
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const firebaseResult = await firebaseAuthService.loginWithGoogle();
 
-    if (firebaseResult.success) {
-      const roleId = rolParam === 'usuario' ? 5 : 4;
 
-      const response = await authService.firebaseLogin({
-        idToken: firebaseResult.data.idToken,
-        roleId
-      });
+      if (firebaseResult.success) {
+        const roleId = rolParam === 'usuario' ? 5 : 4;
 
-      if (response.success) {
-        const user = response.data.usuario;
+        const response = await authService.firebaseLogin({
+          idToken: firebaseResult.data.idToken,
+          roleId
+        });
 
-        // Redirección centralizada
-        redirectByRole(user.rol_usuarioId);
+        if (response.success) {
+          const user = response.data.usuario;
+
+          // Redirección centralizada
+          redirectByRole(user.rol_usuarioId);
+        }
+      } else {
+        setError(firebaseResult?.message || "Error al iniciar sesión");
       }
-    } else {
-      setError(firebaseResult?.message || "Error al iniciar sesión");
+    } catch (err) {
+      setError(err?.message || "Error de red");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    setError(err?.message || "Error de red");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleMicrosoftLogin = async () => {
     setLoading(true);
@@ -151,10 +151,10 @@ const Login = () => {
         </div>
 
         <div className="space-y-3 mb-6">
-          <SocialButton 
-            onClick={handleGoogleLogin} 
-            loading={loading} 
-            ariaLabel="Continuar con Google" 
+          <SocialButton
+            onClick={handleGoogleLogin}
+            loading={loading}
+            ariaLabel="Continuar con Google"
             icon={
               <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -167,10 +167,10 @@ const Login = () => {
             {loading ? "Conectando..." : "Continuar con Google"}
           </SocialButton>
 
-          <SocialButton 
-            onClick={handleMicrosoftLogin} 
-            loading={loading} 
-            ariaLabel="Continuar con Microsoft" 
+          <SocialButton
+            onClick={handleMicrosoftLogin}
+            loading={loading}
+            ariaLabel="Continuar con Microsoft"
             icon={
               <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
                 <rect x="2" y="2" width="9" height="9" fill="#f35325" />
@@ -233,8 +233,8 @@ const Login = () => {
         <div className="text-center mt-6 space-y-3">
           <p className="text-slate-400 text-sm">
             ¿No tienes cuenta?{" "}
-            <Link 
-              to={rolParam ? `/register?rol=${rolParam}` : "/register"} 
+            <Link
+              to={rolParam ? `/register?rol=${rolParam}` : "/register"}
               className="text-green-400 hover:text-green-300 font-semibold transition-colors duration-200 hover:underline"
             >
               Regístrate{rolParam ? ` como ${rolParam}` : ""}

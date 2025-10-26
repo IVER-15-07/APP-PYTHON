@@ -19,7 +19,7 @@ export const solicitudService = {
             return solicitudRepository.update(existing.id, {
 
                 rol_usuarioId: rolId,
-                estad: 'pendiente',
+                estado: 'pendiente',
                 fecha_solicitud: new Date(),
             });
 

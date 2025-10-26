@@ -50,3 +50,18 @@ export const GroupRequest = async (req, res) => {
         message: error.message || "Error interno" });
     }
 }
+
+export const getMyGroupRequests = async (req, res) => {
+    try {
+        const usuarioId = req.user?.id;
+        const { estado } = req.query;
+        if (!usuarioId) return res.status(401).json({ success: false, message: "No autenticado" });
+        const data = await solicitudService.listMyCreatedGroups(usuarioId, estado);
+        return res.json({ success: true, data });
+    } catch (error) {
+        console.error("error en solicitudController:", error);
+        const status = error.status || 500;
+        res.status(status).json({ success: false,
+        message: error.message || "Error interno" });
+    }
+}

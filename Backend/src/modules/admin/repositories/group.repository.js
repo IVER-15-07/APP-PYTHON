@@ -8,7 +8,7 @@ export const GroupRepository = {
   listPendingTeams: () => prisma.grupo.findMany({ where: { esAprobado: false }, orderBy: { id: 'desc' } }),
 
 
-  tokencode: (codigo) => prisma.grupo.findUnique({ where: { codigo } }),
+  tokencode: (codigo) => prisma.grupo.findUnique({ where: { codigo: Number(codigo) } }),
 
   aprobarsetCode: (id, codigo) => prisma.grupo.update({
     where: { id },

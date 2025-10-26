@@ -57,7 +57,20 @@ export const solicitudService = {
         }
 
         return grupo;
-    }
+    },
 
+
+    async listMyCreatedGroups(usuarioId, estado ) {
+        let esAprobado;
+        if (estado === 'aprobado') {
+            esAprobado = true;
+        } else if (estado === 'pendiente') {
+            esAprobado = false;
+        } else {
+            esAprobado = null;
+        }
+
+        return teamRepository.listCreatedBy(usuarioId, esAprobado);
+    }
 
 };

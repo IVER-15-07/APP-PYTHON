@@ -37,14 +37,12 @@ export async function login(req, res) {
 
 export async function firebaseLogin(req, res) {
   try {
-    console.log("POST /api/firebase-login body:", req.body); // <<-- debug
-    const { idToken, roleId } = req.body;
-    const result = await authService.firebaseLogin({ idToken, roleId });
-    res.json({ success: true, data: result });
-  } catch (err) {
-    console.error(err);
-    res.status(err.status || 500).json({ success: false, message: err.message || "Error interno" });
-  }
+      const { idToken, roleId } = req.body;
+      const result = await authService.firebaseLogin({ idToken, roleId });
+      res.json(result);
+    } catch (err) {
+      res.status(err.status || 500).json({ success: false, message: err.message });
+    }
 }
 
 export async function me(req, res) {

@@ -4,7 +4,10 @@ import { authService } from '../../services/auth.api';
 import Dashboard from '../features/student/pages/Dashboard';
 import Course from '../features/student/pages/Course';
 import { Sidebar } from "../components/ui";
-import { Home, BookOpen, Code2 } from 'lucide-react';
+import { Home, BookOpen, Code2, FlaskConical, BookMarked } from 'lucide-react';
+import Lab1 from '../features/student/pages/Lab1';
+import Topic1 from '../features/student/pages/Topic1';
+import Topic2 from '../features/student/pages/Topic2';
 
 const VentanaEstudiante = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -28,21 +31,21 @@ const VentanaEstudiante = () => {
             icon: <BookOpen className="w-5 h-5" />, 
             label: 'Mis Cursos' 
         },
-        // { 
-        //     path: '/estudiante/progreso', 
-        //     icon: <BarChart3 className="w-5 h-5" />, 
-        //     label: 'Mi Progreso' 
-        // },
-        // { 
-        //     path: '/estudiante/ejercicios', 
-        //     icon: <Target className="w-5 h-5" />, 
-        //     label: 'Ejercicios' 
-        // },
-        // { 
-        //     path: '/estudiante/perfil', 
-        //     icon: <User className="w-5 h-5" />, 
-        //     label: 'Mi Perfil' 
-        // },
+        { 
+            path: '/estudiante/lab1', 
+            icon: <FlaskConical className="w-5 h-5" />, 
+            label: 'Laboratorio 1' 
+        },
+        { 
+            path: '/estudiante/topic1', 
+            icon: <BookMarked className="w-5 h-5" />, 
+            label: 'Tipo tópico 1' 
+        },
+        { 
+            path: '/estudiante/topic2', 
+            icon: <BookMarked className="w-5 h-5" />, 
+            label: 'Tipo tópico 2' 
+        },
     ];
 
     return (
@@ -64,9 +67,9 @@ const VentanaEstudiante = () => {
                 <Routes>
                     <Route index element={<Dashboard />} />
                     <Route path="cursos" element={<Course />} /> 
-                    {/* <Route path="progreso" element={<Progress />} /> */}
-                    {/* <Route path="ejercicios" element={<Exercises />} /> */}
-                    {/* <Route path="perfil" element={<Profile />} /> */}
+                    <Route path="lab1" element={<Lab1 />} />
+                    <Route path="topic1" element={<Topic1 />} />
+                    <Route path="topic2" element={<Topic2 />} />
                 </Routes>
             </main>
         </div>

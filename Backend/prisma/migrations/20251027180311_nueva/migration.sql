@@ -146,7 +146,9 @@ CREATE TABLE "Recursos" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
     "url" TEXT NOT NULL,
-    "descripcion" TEXT,
+    "audiourl" TEXT,
+    "subtitulo" TEXT,
+    "imagenurl" TEXT,
     "topicoId" INTEGER NOT NULL,
     "tipo_recursoId" INTEGER NOT NULL,
 
@@ -167,9 +169,10 @@ CREATE TABLE "Evaluacion" (
     "evaluacion" TEXT NOT NULL,
     "descripcion" TEXT,
     "puntaje_evaluacion" INTEGER NOT NULL,
-    "fecha_ini" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "fecha_fin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fecha_ini" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "fecha_fin" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "topicoId" INTEGER NOT NULL,
+    "tipo_evaluacionId" INTEGER NOT NULL,
 
     CONSTRAINT "Evaluacion_pkey" PRIMARY KEY ("id")
 );
@@ -178,7 +181,6 @@ CREATE TABLE "Evaluacion" (
 CREATE TABLE "Tipo_evaluacion" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
-    "evaluacionId" INTEGER NOT NULL,
 
     CONSTRAINT "Tipo_evaluacion_pkey" PRIMARY KEY ("id")
 );
@@ -188,7 +190,6 @@ CREATE TABLE "Evaluacion_pregunta" (
     "id" SERIAL NOT NULL,
     "evaluacionId" INTEGER NOT NULL,
     "preguntaId" INTEGER NOT NULL,
-    "parametroId" INTEGER NOT NULL,
 
     CONSTRAINT "Evaluacion_pregunta_pkey" PRIMARY KEY ("id")
 );
@@ -197,6 +198,7 @@ CREATE TABLE "Evaluacion_pregunta" (
 CREATE TABLE "Pregunta" (
     "id" SERIAL NOT NULL,
     "pregunta" TEXT NOT NULL,
+    "parametroId" INTEGER NOT NULL,
 
     CONSTRAINT "Pregunta_pkey" PRIMARY KEY ("id")
 );
@@ -214,7 +216,7 @@ CREATE TABLE "Respuesta" (
 -- CreateTable
 CREATE TABLE "Parametro" (
     "id" SERIAL NOT NULL,
-    "Parametro" TEXT NOT NULL,
+    "nombre" TEXT NOT NULL,
 
     CONSTRAINT "Parametro_pkey" PRIMARY KEY ("id")
 );
@@ -259,7 +261,7 @@ CREATE UNIQUE INDEX "Tipo_recurso_nombre_key" ON "Tipo_recurso"("nombre");
 CREATE UNIQUE INDEX "Tipo_evaluacion_nombre_key" ON "Tipo_evaluacion"("nombre");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Parametro_Parametro_key" ON "Parametro"("Parametro");
+CREATE UNIQUE INDEX "Parametro_nombre_key" ON "Parametro"("nombre");
 
 -- AddForeignKey
 ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_rol_usuarioId_fkey" FOREIGN KEY ("rol_usuarioId") REFERENCES "Rol_usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -316,7 +318,7 @@ ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_tipo_recursoId_fkey" FOREIGN KEY
 ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Tipo_evaluacion" ADD CONSTRAINT "Tipo_evaluacion_evaluacionId_fkey" FOREIGN KEY ("evaluacionId") REFERENCES "Evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_tipo_evaluacionId_fkey" FOREIGN KEY ("tipo_evaluacionId") REFERENCES "Tipo_evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Evaluacion_pregunta" ADD CONSTRAINT "Evaluacion_pregunta_evaluacionId_fkey" FOREIGN KEY ("evaluacionId") REFERENCES "Evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -325,7 +327,7 @@ ALTER TABLE "Evaluacion_pregunta" ADD CONSTRAINT "Evaluacion_pregunta_evaluacion
 ALTER TABLE "Evaluacion_pregunta" ADD CONSTRAINT "Evaluacion_pregunta_preguntaId_fkey" FOREIGN KEY ("preguntaId") REFERENCES "Pregunta"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Evaluacion_pregunta" ADD CONSTRAINT "Evaluacion_pregunta_parametroId_fkey" FOREIGN KEY ("parametroId") REFERENCES "Parametro"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Pregunta" ADD CONSTRAINT "Pregunta_parametroId_fkey" FOREIGN KEY ("parametroId") REFERENCES "Parametro"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Respuesta" ADD CONSTRAINT "Respuesta_preguntaId_fkey" FOREIGN KEY ("preguntaId") REFERENCES "Pregunta"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -27,9 +27,6 @@ model RegistroPendiente {
   @@index([email])
 }
 
-
-
-
 model Usuario {
   id               Int       @id @default(autoincrement())
   nombre           String
@@ -76,7 +73,7 @@ model Grupo {
   descripcion String
   fecha_ini   DateTime @default(now())
   fecha_fin   DateTime @default(now())
-  codigo      Int?      @unique
+  codigo      Int?     @unique
 
   esAprobado Boolean @default(false)
 
@@ -113,9 +110,9 @@ model Grupo_Topico {
 }
 
 model Curso {
-  id     Int    @id @default(autoincrement())
-  nombre String @unique
-  descripcion String? 
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique
+  descripcion String?
 
   nivel Nivel[]
   grupo Grupo[]
@@ -177,10 +174,12 @@ model Tipo_topico {
 }
 
 model Recursos {
-  id          Int     @id @default(autoincrement())
-  nombre      String
-  url         String
-  descripcion String?
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  url       String
+  audiourl  String?
+  subtitulo String?
+  imagenurl String?
 
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
@@ -202,13 +201,15 @@ model Evaluacion {
   descripcion        String?
   puntaje_evaluacion Int
 
-  fecha_ini DateTime @default(now())
-  fecha_fin DateTime @default(now())
+  fecha_ini DateTime? @default(now())
+  fecha_fin DateTime? @default(now())
 
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
-  tipo_evaluacion     Tipo_evaluacion[]
+  tipo_evaluacion   Tipo_evaluacion @relation(fields: [tipo_evaluacionId], references: [id], onDelete: Cascade)
+  tipo_evaluacionId Int
+
   evaluacion_pregunta Evaluacion_pregunta[]
 }
 
@@ -216,8 +217,7 @@ model Tipo_evaluacion {
   id     Int    @id @default(autoincrement())
   nombre String @unique
 
-  evaluacion   Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
-  evaluacionId Int
+  evaluacion Evaluacion[]
 }
 
 model Evaluacion_pregunta {
@@ -229,13 +229,15 @@ model Evaluacion_pregunta {
   pregunta   Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
   preguntaId Int
 
-  parametro   Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
-  parametroId Int
+ 
 }
 
 model Pregunta {
   id       Int    @id @default(autoincrement())
   pregunta String
+
+  parametro  Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
+  parametroId Int
 
   evaluacion_pregunta Evaluacion_pregunta[]
   respuesta           Respuesta[]
@@ -252,7 +254,7 @@ model Respuesta {
 
 model Parametro {
   id        Int    @id @default(autoincrement())
-  Parametro String @unique
+  nombre    String @unique
 
-  evaluacion_pregunta Evaluacion_pregunta[]
+  pregunta Pregunta[]
 }

@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { adminService } from "../../../../services/admin.api.js";
 import { Card, Button } from "../../../components/ui";
 import { Users, Clock, BookOpen, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { PendingGroupCard } from "../components";
 
 const DashboardAdmin = () => {
     const [requests, setRequests] = useState([]);
+    const [pendingGroups, setPendingGroups] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [groupsLoading, setGroupsLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
+    const [groupActionLoading, setGroupActionLoading] = useState(null);
     const [message, setMessage] = useState(null);
 
     const fetchRequests = async () => {
@@ -24,8 +28,24 @@ const DashboardAdmin = () => {
         }
     };
 
+    const fetchPendingGroups = async () => {
+        setGroupsLoading(true);
+        try {
+            const res = await adminService.getRequestedGroups();
+            const items = res?.data ?? res ?? [];
+            setPendingGroups(Array.isArray(items) ? items : []);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("Error al cargar grupos pendientes:", err);
+            setPendingGroups([]);
+        } finally {
+            setGroupsLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchRequests();
+        fetchPendingGroups();
     }, []);
 
     const handleApproveRemote = async (requestId) => {
@@ -58,6 +78,21 @@ const DashboardAdmin = () => {
         }
     };
 
+    const handleApproveGroup = async (groupId) => {
+        if (!window.confirm("¿Confirmas aprobar este grupo? Se le asignará un código único.")) return;
+        setGroupActionLoading(groupId);
+        setMessage(null);
+        try {
+            await adminService.approveRequestedGroup(groupId);
+            setMessage({ type: 'success', text: 'Grupo aprobado exitosamente' });
+            await fetchPendingGroups();
+        } catch (err) {
+            setMessage({ type: 'error', text: err.message || "Error al aprobar el grupo" });
+        } finally {
+            setGroupActionLoading(null);
+        }
+    };
+
     const pendingCount = requests.filter((r) => r.estado === "pendiente").length;
 
     const getStatusStyle = (estado) => {
@@ -85,19 +120,19 @@ const DashboardAdmin = () => {
                 {/* Stats Cards */}
                 <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
                     <Card 
-                        title="Usuarios totales" 
-                        value="—"
-                        icon={<Users className="w-5 h-5 text-blue-400" />}
-                    />
-                    <Card 
-                        title="Solicitudes pendientes" 
+                        title="Solicitudes de rol" 
                         value={pendingCount}
                         icon={<Clock className="w-5 h-5 text-yellow-400" />}
                     />
                     <Card 
-                        title="Cursos" 
-                        value="—"
-                        icon={<BookOpen className="w-5 h-5 text-green-400" />}
+                        title="Grupos pendientes" 
+                        value={pendingGroups.length}
+                        icon={<Users className="w-5 h-5 text-emerald-400" />}
+                    />
+                    <Card 
+                        title="Cursos activos" 
+                        value="1"
+                        icon={<BookOpen className="w-5 h-5 text-blue-400" />}
                     />
                 </section>
 
@@ -196,6 +231,40 @@ const DashboardAdmin = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    )}
+                </section>
+
+                {/* Pending Groups Section */}
+                <section className="mt-10">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-white mb-2">Grupos pendientes de aprobación</h2>
+                        <p className="text-slate-400">Revisa y aprueba las solicitudes de creación de grupos</p>
+                    </div>
+
+                    {groupsLoading ? (
+                        <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl">
+                            <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-slate-300">Cargando grupos pendientes...</span>
+                        </div>
+                    ) : pendingGroups.length === 0 ? (
+                        <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-12 text-center shadow-2xl">
+                            <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <BookOpen className="w-10 h-10 text-slate-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-slate-300 mb-2">No hay grupos pendientes</h3>
+                            <p className="text-slate-500 text-sm">Todas las solicitudes han sido procesadas.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {pendingGroups.map((group) => (
+                                <PendingGroupCard
+                                    key={group.id}
+                                    group={group}
+                                    onApprove={handleApproveGroup}
+                                    loading={groupActionLoading}
+                                />
+                            ))}
                         </div>
                     )}
                 </section>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/course.api';
+import { coursesService } from '../../../../services/group.api';
 import { Library } from 'lucide-react';
 import { TopicForm, SummarySidebar, GroupCard } from '../components';
 

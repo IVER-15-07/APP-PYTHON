@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/course.api';
+import { coursesService } from '../../../../services/group.api';
 import { BookOpen } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
 
@@ -22,9 +22,22 @@ const Group = () => {
 
     const fetchGroups = async () => {
         try {
-            const res = await coursesService.getMyCourses();
+            const res = await coursesService.getGroupRequests();
             const data = res?.data ?? res ?? [];
-            setGroups(Array.isArray(data) ? data : []);
+            
+            // Transformar datos del backend (español) al formato del componente (inglés)
+            const transformedGroups = (Array.isArray(data) ? data : []).map(group => ({
+                id: group.id,
+                title: group.titulo,
+                description: group.descripcion,
+                code: group.codigo,
+                level: group.curso?.nombre || 'Sin curso',
+                startDate: group.fecha_ini,
+                endDate: group.fecha_fin,
+                isApproved: group.esAprobado
+            }));
+            
+            setGroups(transformedGroups);
         } catch (err) {
             // eslint-disable-next-line no-console
             console.error(err);
@@ -59,14 +72,16 @@ const Group = () => {
         }
         
         try {
+            // Transformar datos al formato que espera el backend
             const payload = {
-                title: form.title,
-                description: form.description,
-                startDate: form.startDate,
-                endDate: form.endDate,
-                profesorId: user.id
+                titulo: form.title,
+                descripcion: form.description,
+                fecha_ini: form.startDate,
+                fecha_fin: form.endDate,
+                cursoId: 1 
             };
-            await coursesService.createCourse(payload);
+            
+            await coursesService.createGroup(payload);
             setForm({ title: '', description: '', startDate: '', endDate: '' });
             await fetchGroups();
         } catch (err) {
@@ -107,7 +122,7 @@ const Group = () => {
                     />
 
                     {/* Sidebar resumen (componente) */}
-                    <SummarySidebar groupsCount={groups.length} />
+                    <SummarySidebar groups={groups} />
                 </div>
 
                 {/* Lista de grupos */}

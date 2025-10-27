@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { getUserGroup as apiGetUserGroup, joinGroupByCode as apiJoinGroupByCode} from "../../../../services/grupo.api.js";
+
 
 const Course = () => {
   const [curso] = useState({
@@ -15,17 +16,16 @@ const Course = () => {
   const [niveles, setNiveles] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  // Al cargar, verificar en el backend si el usuario pertenece a un grupo
   useEffect(() => {
     const usuario = JSON.parse(localStorage.getItem("user"));
     if (!usuario?.id) return;
 
     const fetchUserGroup = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/grupo/user/${usuario.id}`);
-        if (res.data.grupo) {
-          setGrupo(res.data.grupo);
-          setNiveles(res.data.niveles);
+        const res = await apiGetUserGroup(usuario.id);
+        if (res.grupo) {
+          setGrupo(res.grupo);
+          setNiveles(res.niveles || []);
         } else {
           setGrupo(null);
           setNiveles([]);
@@ -38,7 +38,6 @@ const Course = () => {
     fetchUserGroup();
   }, []);
 
-  // Unirse por código
   const joinByCode = async () => {
     setMsg("");
     if (!codigo.trim()) {
@@ -56,14 +55,11 @@ const Course = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/api/grupo/join-by-code", {
-        codigo,
-        usuarioId,
-      });
-
-      setGrupo(res.data.grupo);
-      setNiveles(res.data.niveles);
-      setMsg(res.data.message);
+      // envio de solo números (tu backend parsea)
+      const res = await apiJoinGroupByCode({ codigo: parseInt(codigo, 10), usuarioId });
+      setGrupo(res.grupo);
+      setNiveles(res.niveles || []);
+      setMsg(res.message);
       setShowForm(false);
     } catch (error) {
       setMsg(error.response?.data?.message || "Código inválido o error del servidor.");
@@ -101,7 +97,6 @@ const Course = () => {
               </div>
             </div>
 
-            {/* Botón solo si el usuario no tiene grupo */}
             {!grupo && (
               <div className="flex flex-col items-end gap-2">
                 <button
@@ -117,7 +112,6 @@ const Course = () => {
             )}
           </div>
 
-          {/* Formulario de unión por código */}
           {showForm && !grupo && (
             <div className="mt-4 bg-slate-900 p-4 rounded border border-slate-700">
               <label className="text-sm text-slate-300 block mb-2">Unirse por código</label>
@@ -144,7 +138,6 @@ const Course = () => {
             </div>
           )}
 
-          {/* Lista de niveles */}
           {grupo && niveles.length > 0 && (
             <div className="mt-6 bg-slate-900 p-4 rounded border border-slate-700">
               <h2 className="text-lg font-semibold text-emerald-400 mb-3">Niveles disponibles</h2>

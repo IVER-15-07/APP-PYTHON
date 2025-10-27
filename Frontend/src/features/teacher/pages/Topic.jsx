@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
 import { coursesService } from '../../../../services/group.api';
-import { Library } from 'lucide-react';
-import { TopicForm, SummarySidebar, GroupCard } from '../components';
+import { Library, FileText, Video, Presentation } from 'lucide-react';
+import { TopicForm, TopicSummary, TopicCard } from '../components';
 
 const Topic = () => {
     const navigate = useNavigate();
@@ -13,7 +13,6 @@ const Topic = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [topics, setTopics] = useState([]);
-    const [copied, setCopied] = useState(null);
 
     useEffect(() => {
         if (!user) return navigate('/login');
@@ -45,17 +44,6 @@ const Topic = () => {
         }
     };
 
-    const copyToClipboard = async (text, id) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopied(id);
-            setTimeout(() => setCopied(null), 2000);
-        } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('No se pudo copiar', err);
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -76,11 +64,6 @@ const Topic = () => {
             formData.append('level', form.level);
             formData.append('file', selectedFile);
             formData.append('profesorId', user.id);
-
-            // Aquí debes llamar a tu servicio API que maneje FormData
-            // await topicService.createTopic(formData);
-            
-            // Por ahora simulo el éxito
             // eslint-disable-next-line no-console
             console.log('FormData a enviar:', {
                 title: form.title,
@@ -103,6 +86,17 @@ const Topic = () => {
         }
     };
 
+    const handleEditTopic = (topic) => {
+        // eslint-disable-next-line no-console
+        console.log('Editar tópico:', topic);
+        // TODO: Implementar lógica de edición
+    };
+
+    // Filtrar tópicos por tipo
+    const textoTopics = topics.filter(t => t.contentType === 'texto');
+    const videoTopics = topics.filter(t => t.contentType === 'video');
+    const slidesTopics = topics.filter(t => t.contentType === 'slides');
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
             <div className="max-w-6xl mx-auto">
@@ -120,7 +114,7 @@ const Topic = () => {
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Formulario (ahora como componente) */}
+                    {/* Formulario */}
                     <TopicForm
                         form={form}
                         onChange={handleChange}
@@ -136,11 +130,11 @@ const Topic = () => {
                         }}
                     />
 
-                    {/* Sidebar resumen (componente) */}
-                    <SummarySidebar topicsCount={topics.length} />
+                    {/* Resumen de tópicos */}
+                    <TopicSummary topics={topics} />
                 </div>
 
-                {/* Lista de grupos */}
+                {/* Lista de tópicos organizados por tipo */}
                 <section className="mt-10">
                     <h2 className="text-2xl font-bold text-white mb-6">Tópicos creados</h2>
 
@@ -153,10 +147,72 @@ const Topic = () => {
                             <p className="text-slate-500 text-sm">Crea tu primer tópico usando el formulario de arriba.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {topics.map((t) => (
-                                <GroupCard key={t.id} t={t} copied={copied} onCopy={copyToClipboard} onEdit={() => { }} onDelete={() => { }} />
-                            ))}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Columna 1: Tópicos de Texto */}
+                            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                                        <FileText className="w-5 h-5 text-blue-400" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white">Texto</h3>
+                                    <span className="ml-auto text-sm font-semibold text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full border border-blue-500/30">
+                                        {textoTopics.length}
+                                    </span>
+                                </div>
+                                <div className="space-y-3">
+                                    {textoTopics.length === 0 ? (
+                                        <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de texto</p>
+                                    ) : (
+                                        textoTopics.map((topic) => (
+                                            <TopicCard key={topic.id} topic={topic} onEdit={handleEditTopic} />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Columna 2: Tópicos de Video */}
+                            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/30">
+                                        <Video className="w-5 h-5 text-red-400" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white">Video</h3>
+                                    <span className="ml-auto text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full border border-red-500/30">
+                                        {videoTopics.length}
+                                    </span>
+                                </div>
+                                <div className="space-y-3">
+                                    {videoTopics.length === 0 ? (
+                                        <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de video</p>
+                                    ) : (
+                                        videoTopics.map((topic) => (
+                                            <TopicCard key={topic.id} topic={topic} onEdit={handleEditTopic} />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Columna 3: Tópicos de Slides */}
+                            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/30">
+                                        <Presentation className="w-5 h-5 text-orange-400" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white">Slides</h3>
+                                    <span className="ml-auto text-sm font-semibold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/30">
+                                        {slidesTopics.length}
+                                    </span>
+                                </div>
+                                <div className="space-y-3">
+                                    {slidesTopics.length === 0 ? (
+                                        <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de slides</p>
+                                    ) : (
+                                        slidesTopics.map((topic) => (
+                                            <TopicCard key={topic.id} topic={topic} onEdit={handleEditTopic} />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </section>

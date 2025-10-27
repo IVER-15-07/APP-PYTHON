@@ -1,42 +1,48 @@
-import { Link } from 'react-router-dom';
-import { Edit2, Trash2, Users } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { Users, CheckCircle2} from 'lucide-react';
 
-const GroupListItem = ({ group, onDelete }) => {
+const GroupListItem = ({ group }) => {
   return (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 hover:border-green-500/30 transition-all duration-200 shadow-xl hover:shadow-2xl group">
-      <div className="flex justify-between items-start gap-4 mb-4">
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4 hover:border-green-500/30 transition-all duration-200 shadow-lg hover:shadow-xl group">
+      <div className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-white mb-2 truncate group-hover:text-green-400 transition-colors">
-            {group.title}
-          </h3>
-          <div className="flex items-center gap-4 text-sm text-slate-400">
-            <span className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700/50">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-base font-semibold text-white truncate group-hover:text-green-400 transition-colors">
+              {group.title}
+            </h3>
+            {/* Status Badge */}
+            {group.isApproved ? (
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/30 shrink-0">
+                <CheckCircle2 className="w-3 h-3" />
+                Aprobado
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-yellow-500/10 text-yellow-400 text-xs font-medium rounded-full border border-yellow-500/30 shrink-0">
+                <Users className="w-3 h-3" />
+                Pendiente
+              </span>
+            )}
+          </div>
+          
+          <p className="text-sm text-slate-400 line-clamp-1 mb-3">
+            {group.description || 'Sin descripción'}
+          </p>
+          
+          <div className="flex items-center gap-4 text-xs text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5" />
+              {group.students || 0} estudiantes
+            </span>
+            <span className="px-2 py-1 bg-slate-700/50 rounded-full">
               {group.level}
             </span>
-            <div className="flex items-center gap-1.5">
-              <Users className="w-4 h-4" />
-              <span>{group.students} estudiantes</span>
-            </div>
+            {group.isApproved && group.code && (
+              <span className="px-2 py-1 bg-green-500/10 text-green-400 rounded-full border border-green-500/30 font-mono">
+                {group.code}
+              </span>
+            )}
           </div>
         </div>
-      </div>
-
-      <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-700/50">
-        <Link
-          to={`/profesor/cursos/${group.id}`}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-all duration-200"
-        >
-          <Edit2 className="w-3.5 h-3.5" />
-          Administrar
-        </Link>
-        <button
-          onClick={() => onDelete(group.id)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs font-medium border border-red-500/30 transition-all duration-200"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          Eliminar
-        </button>
       </div>
     </div>
   );
@@ -45,11 +51,13 @@ const GroupListItem = ({ group, onDelete }) => {
 GroupListItem.propTypes = {
   group: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    title: PropTypes.string.isRequired,
-    level: PropTypes.string.isRequired,
-    students: PropTypes.number.isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    level: PropTypes.string,
+    code: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    isApproved: PropTypes.bool,
+    students: PropTypes.number,
   }).isRequired,
-  onDelete: PropTypes.func,
 };
 
 export default GroupListItem;

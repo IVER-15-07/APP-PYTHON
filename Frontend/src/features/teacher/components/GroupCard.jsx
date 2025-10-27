@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const GroupCard = ({ g, copied, onCopy }) => {
   return (
     <article
-      key={g.id}
+      key={g.id} 
       className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 hover:border-green-500/30 transition-all duration-200 shadow-xl hover:shadow-2xl group"
     >
       <div className="flex justify-between items-start gap-4 mb-4">

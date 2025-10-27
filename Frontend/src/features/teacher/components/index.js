@@ -6,4 +6,6 @@ export { default as StatCard } from './StatCard';
 export { default as GroupListItem } from './GroupListItem';
 export { default as DashboardSummary } from './DashboardSummary';
 export { default as TopicForm } from './TopicForm';
+export { default as TopicSummary } from './TopicSummary';
+export { default as TopicCard } from './TopicCard';
 export { default as CustomDropdown } from './CustomDropdown';

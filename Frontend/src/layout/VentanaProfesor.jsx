@@ -3,10 +3,11 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../features/teacher/pages/Dashboard';
 import Group from '../features/teacher/pages/Group';
+import Topic from '../features/teacher/pages/Topic';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
-import { Home, BookOpen, Users, Code2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -91,9 +92,9 @@ const VentanaProfesor = () => {
             label: 'Mis Grupos' 
         },
         { 
-            path: '/profesor/estudiantes', 
-            icon: <Users className="w-5 h-5" />, 
-            label: 'Estudiantes' 
+            path: '/profesor/topicos', 
+            icon: <Library className="w-5 h-5" />, 
+            label: 'Mis tópicos' 
         },
         // { 
         //     path: '/profesor/ejercicios', 
@@ -139,7 +140,7 @@ const VentanaProfesor = () => {
                     }
                     />
                     <Route path="cursos" element={<Group/>} />
-                    {/* <Route path="estudiantes" element={<GestionEstudiantes />} /> */}
+                    <Route path="topicos" element={<Topic/>} /> 
                     {/* <Route path="ejercicios" element={<CrearEjercicios />} /> */}
                     {/* <Route path="estadisticas" element={<Estadisticas />} /> */}
                     {/* <Route path="perfil" element={<Perfil />} /> */}

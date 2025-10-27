@@ -3,6 +3,25 @@ import axiosInstance from "../helpers/axios-config";
 export const adminService = {
 
 
+    //lista los grupos solicitados por los usuarios   
+    async getRequestedGroups() {
+        try {
+            const response = await axiosInstance.get('/api/admin/groups/pending');  
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los grupos solicitados');
+        }
+    },
+
+    // apueba un grupo solicitado
+    async approveRequestedGroup(groupId) {
+        try {
+            const response = await axiosInstance.patch(`/api/admin/groups/${groupId}/aprobar`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al aprobar el grupo solicitado');
+        }
+    },
 
     async changeUserRole(userId, newRoleId) {
         try {

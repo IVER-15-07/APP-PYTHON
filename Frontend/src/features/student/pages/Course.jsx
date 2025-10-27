@@ -1,218 +1,169 @@
 import { useState, useEffect } from "react";
-import { Users, Copy, LogOut, UserPlus, CheckCircle2, AlertCircle, BookOpen } from "lucide-react";
+import axios from "axios";
 
 const Course = () => {
-  // curso fijo (card principal)
   const [curso] = useState({
     id: 1,
     nombre: "Introducción a Python",
     descripcion: "Curso introductorio de Python: variables, control y funciones.",
   });
 
-  // datos simulados de grupos (no se muestran en la UI, solo para validar código)
-  const [grupos] = useState([
-    { id: 1, nombre: "Grupo A", codigo: "ABC123", miembrosCount: 4 },
-    { id: 2, nombre: "Grupo B", codigo: "DEF456", miembrosCount: 2 },
-    { id: 3, nombre: "Grupo C", codigo: "GHI789", miembrosCount: 0 },
-  ]);
-
-  // estado del usuario en este curso
-  const [currentGroup, setCurrentGroup] = useState(null); // { id, nombre, codigo, miembrosCount }
-  const [showForm, setShowForm] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState({ type: '', text: '' });
-  const [copied, setCopied] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [grupo, setGrupo] = useState(null);
+  const [niveles, setNiveles] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
+  // Al cargar, verificar en el backend si el usuario pertenece a un grupo
   useEffect(() => {
-    // si quieres cargar el grupo real desde el backend, hazlo aquí
+    const usuario = JSON.parse(localStorage.getItem("user"));
+    if (!usuario?.id) return;
+
+    const fetchUserGroup = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/grupo/user/${usuario.id}`);
+        if (res.data.grupo) {
+          setGrupo(res.data.grupo);
+          setNiveles(res.data.niveles);
+        } else {
+          setGrupo(null);
+          setNiveles([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener grupo del usuario:", error);
+      }
+    };
+
+    fetchUserGroup();
   }, []);
 
-  const joinByCode = () => {
-    setMsg({ type: '', text: '' });
+  // Unirse por código
+  const joinByCode = async () => {
+    setMsg("");
     if (!codigo.trim()) {
-      setMsg({ type: 'error', text: 'Ingresa un código válido.' });
+      setMsg("Ingresa un código válido.");
       return;
     }
+
+    const usuario = JSON.parse(localStorage.getItem("user"));
+    const usuarioId = usuario?.id;
+
+    if (!usuarioId) {
+      setMsg("Error: no se encontró el usuario en sesión.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      const found = grupos.find(g => g.codigo.toLowerCase() === codigo.trim().toLowerCase());
-      if (!found) {
-        setMsg({ type: 'error', text: 'Código inválido.' });
-        setLoading(false);
-        return;
-      }
-      // simular unión: establecer currentGroup
-      setCurrentGroup(found);
-      setCodigo("");
-      setShowForm(false);
-      setMsg({ type: 'success', text: 'Te has unido correctamente al grupo.' });
-      setLoading(false);
-    }, 500);
-  };
-
-  const leaveGroup = () => {
-    if (!window.confirm('¿Estás seguro de que quieres salir del grupo?')) return;
-    setCurrentGroup(null);
-    setMsg({ type: 'success', text: 'Has salido del grupo correctamente.' });
-  };
-
-  const copyToClipboard = async (text, label) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      setMsg({ type: 'error', text: `No se pudo copiar el ${label}` });
+      const res = await axios.post("http://localhost:3000/api/grupo/join-by-code", {
+        codigo,
+        usuarioId,
+      });
+
+      setGrupo(res.data.grupo);
+      setNiveles(res.data.niveles);
+      setMsg(res.data.message);
+      setShowForm(false);
+    } catch (error) {
+      setMsg(error.response?.data?.message || "Código inválido o error del servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header del curso */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <h1 className="text-3xl font-bold text-white">{curso.nombre}</h1>
-          </div>
-          <p className="text-slate-400 ml-14">{curso.descripcion}</p>
-        </div>
+    <div className="p-6 flex justify-center">
+      <div className="w-[90%]">
+        <div className="bg-slate-800 p-6 rounded-lg shadow-md">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl font-bold text-slate-100 truncate">{curso.nombre}</h1>
+              <p className="text-slate-400 mt-2">{curso.descripcion}</p>
 
-        {/* Mensajes globales */}
-        {msg.text && (
-          <div className={`flex items-start gap-3 p-4 rounded-xl border mb-6 ${
-            msg.type === 'success' 
-              ? 'bg-green-500/10 border-green-500/30 text-green-400' 
-              : 'bg-red-500/10 border-red-500/30 text-red-400'
-          }`}>
-            {msg.type === 'success' ? (
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            ) : (
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            )}
-            <span className="text-sm font-medium">{msg.text}</span>
-          </div>
-        )}
-
-        {/* Card principal */}
-        <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-start justify-between gap-4 mb-6">
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-white mb-2">Estado del Grupo</h2>
-                <p className="text-slate-400 text-sm">
-                  {currentGroup 
-                    ? 'Estás participando en un grupo de estudio' 
-                    : 'Únete a un grupo para empezar a colaborar'}
-                </p>
-              </div>
-
-              <button
-                onClick={() => { setShowForm(s => !s); setMsg({ type: '', text: '' }); }}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30"
-              >
-                <UserPlus className="w-4 h-4" />
-                {currentGroup ? "Cambiar grupo" : "Unirse"}
-              </button>
-            </div>
-
-            {/* Estado actual del grupo */}
-            {currentGroup ? (
-              <div className="bg-gradient-to-r from-green-500/10 to-cyan-500/10 border border-green-500/30 rounded-xl p-5">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-slate-400">Grupo actual</div>
-                      <div className="text-xl font-bold text-white">{currentGroup.nombre}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">Código: {currentGroup.codigo}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className="text-sm text-slate-400">Miembros</div>
-                    <div className="text-2xl font-bold text-green-400">{currentGroup.miembrosCount}</div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => copyToClipboard(currentGroup.nombre, 'nombre')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 border border-slate-600/50 transition-all duration-200 text-sm font-medium"
-                  >
-                    <Copy className="w-4 h-4" />
-                    {copied ? 'Copiado!' : 'Copiar nombre'}
-                  </button>
-                  
-                  <button
-                    onClick={() => copyToClipboard(currentGroup.codigo, 'código')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 border border-slate-600/50 transition-all duration-200 text-sm font-medium"
-                  >
-                    <Copy className="w-4 h-4" />
-                    {copied ? 'Copiado!' : 'Copiar código'}
-                  </button>
-                  
-                  <button
-                    onClick={leaveGroup}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 transition-all duration-200 text-sm font-medium ml-auto"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Salir del grupo
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-8 text-center">
-                <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-slate-500" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-300 mb-2">No perteneces a ningún grupo</h3>
-                <p className="text-slate-500 text-sm">Únete a un grupo usando un código de acceso</p>
-              </div>
-            )}
-
-            {/* Formulario para unirse */}
-            {showForm && !currentGroup && (
-              <div className="mt-6 bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <label className="text-sm font-semibold text-slate-300 block mb-3 flex items-center gap-2">
-                  <UserPlus className="w-4 h-4 text-green-400" />
-                  Unirse por código de acceso
-                </label>
-                <div className="flex gap-3">
-                  <input
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && !loading && joinByCode()}
-                    placeholder="Ejemplo: ABC123"
-                    className="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
-                    disabled={loading}
-                  />
-                  <button
-                    onClick={joinByCode}
-                    disabled={loading || !codigo.trim()}
-                    className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Uniendo...
+              <div className="mt-4">
+                {grupo ? (
+                  <div className="bg-emerald-700/10 border border-emerald-700/20 text-emerald-200 px-4 py-3 rounded">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm text-emerald-100">Te uniste al grupo</div>
+                        <div className="font-semibold text-emerald-200 text-lg">{grupo.titulo}</div>
                       </div>
-                    ) : (
-                      'Unirse'
-                    )}
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500 mt-3">
-                  Ingresa el código que te proporcionó tu profesor o compañero
-                </p>
+                      <div className="text-right">
+                        <div className="text-sm text-slate-300">Código</div>
+                        <div className="font-medium text-slate-100">{grupo.codigo}</div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-slate-300">No perteneces a ningún grupo aún.</div>
+                )}
+              </div>
+            </div>
+
+            {/* Botón solo si el usuario no tiene grupo */}
+            {!grupo && (
+              <div className="flex flex-col items-end gap-2">
+                <button
+                  onClick={() => {
+                    setShowForm((s) => !s);
+                    setMsg("");
+                  }}
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded"
+                >
+                  Unirse por código
+                </button>
               </div>
             )}
           </div>
+
+          {/* Formulario de unión por código */}
+          {showForm && !grupo && (
+            <div className="mt-4 bg-slate-900 p-4 rounded border border-slate-700">
+              <label className="text-sm text-slate-300 block mb-2">Unirse por código</label>
+              <div className="flex gap-2">
+                <input
+                  value={codigo}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setCodigo(val);
+                  }}
+                  placeholder="Introduce el código"
+                  className="flex-1 px-3 py-2 rounded bg-slate-800 text-slate-200"
+                  maxLength={6}
+                />
+                <button
+                  onClick={joinByCode}
+                  disabled={loading}
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded"
+                >
+                  {loading ? "Verificando..." : "Unirse"}
+                </button>
+              </div>
+              {msg && <p className="text-xs text-red-400 mt-2">{msg}</p>}
+            </div>
+          )}
+
+          {/* Lista de niveles */}
+          {grupo && niveles.length > 0 && (
+            <div className="mt-6 bg-slate-900 p-4 rounded border border-slate-700">
+              <h2 className="text-lg font-semibold text-emerald-400 mb-3">Niveles disponibles</h2>
+              <ul className="space-y-2">
+                {niveles.map((nivel) => (
+                  <li
+                    key={nivel.id}
+                    className="bg-slate-800 px-3 py-2 rounded text-slate-200 border border-slate-700"
+                  >
+                    {nivel.nombre}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!showForm && !grupo && msg && (
+            <div className="mt-4 text-sm text-red-400">{msg}</div>
+          )}
         </div>
       </div>
     </div>

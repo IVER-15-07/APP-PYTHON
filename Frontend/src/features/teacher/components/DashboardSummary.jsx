@@ -1,7 +1,7 @@
 import { BookOpen, Users, TrendingUp } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const DashboardSummary = ({ coursesCount, studentsCount, lastActivity }) => {
+const DashboardSummary = ({ coursesCount,  lastActivity }) => {
   return (
     <aside className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
       <div className="flex items-center gap-2 mb-6">
@@ -27,7 +27,7 @@ const DashboardSummary = ({ coursesCount, studentsCount, lastActivity }) => {
             </div>
             <span className="text-sm text-slate-400">Estudiantes inscritos</span>
           </div>
-          <span className="text-lg font-bold text-emerald-400">{studentsCount}</span>
+          <span className="text-lg font-bold text-emerald-400">-----</span>
         </div>
 
         <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
@@ -37,7 +37,7 @@ const DashboardSummary = ({ coursesCount, studentsCount, lastActivity }) => {
             </div>
             <span className="text-sm text-slate-400">Última actividad</span>
           </div>
-          <span className="text-sm font-medium text-white">{lastActivity}</span>
+          <span className="text-sm font-medium text-white">-----</span>
         </div>
       </div>
 

@@ -99,9 +99,7 @@ const Login = () => {
         const response = await authService.firebaseLogin(firebaseResult.data, roleId);
         if (response.success) {
           const user = response.data.usuario;
-          if (user.rol_usuarioId === 5) navigate('/profesor');
-          else if (user.rol_usuarioId === 4) navigate('/estudiante');
-          else navigate('/login');
+          redirectByRole(user.rol_usuarioId);
         }
       } else {
         setError(firebaseResult.message);

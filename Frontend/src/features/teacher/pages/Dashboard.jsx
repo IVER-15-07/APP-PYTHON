@@ -80,7 +80,7 @@ const Dashboard = () => {
         {/* Estadísticas rápidas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard label="Grupos" value={groups.length} variant="default" icon={BookOpen} />
-          <StatCard label="Estudiantes en total" value={totalStudents} variant="primary" icon={Users} />
+          <StatCard label="Estudiantes en total" value="---" variant="primary" icon={Users} />
           <StatCard label="Grupos aprobados" value={groups.filter(g => g.isApproved).length} variant="secondary" icon={Activity} />
           <StatCard label="Grupos pendientes" value={groups.filter(g => !g.isApproved).length} variant="accent" icon={Target} />
         </div>

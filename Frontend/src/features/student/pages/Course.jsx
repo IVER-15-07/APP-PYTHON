@@ -62,7 +62,7 @@ const Course = () => {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch  {
       setMsg({ type: 'error', text: `No se pudo copiar el ${label}` });
     }
   };
@@ -179,7 +179,7 @@ const Course = () => {
             {/* Formulario para unirse */}
             {showForm && !currentGroup && (
               <div className="mt-6 bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <label className="text-sm font-semibold text-slate-300 block mb-3 flex items-center gap-2">
+                <label className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
                   <UserPlus className="w-4 h-4 text-green-400" />
                   Unirse por código de acceso
                 </label>

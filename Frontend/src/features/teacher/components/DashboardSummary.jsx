@@ -1,7 +1,7 @@
 import { BookOpen, Users, TrendingUp } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const DashboardSummary = ({ coursesCount,  lastActivity }) => {
+const DashboardSummary = ({ coursesCount }) => {
   return (
     <aside className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
       <div className="flex items-center gap-2 mb-6">

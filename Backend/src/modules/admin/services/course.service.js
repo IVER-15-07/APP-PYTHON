@@ -17,19 +17,12 @@ import { GroupRepository } from "../repositories/group.repository.js";
 }*/
 async function generateUniqueGroupCode() {
   let code, exists = true;
-
   do {
-    // Genera un número entero de 6 dígitos (entre 100000 y 999999)
     code = Math.floor(100000 + Math.random() * 900000);
-
-    // Verifica si ya existe el código
     exists = !!(await GroupRepository.tokencode(code));
   } while (exists);
-
-  return code; // <-- Devuelve un número, no un string
+  return code;
 }
-
-
 
 export const groupService = {
 
@@ -38,8 +31,6 @@ export const groupService = {
   },
 
   async approveAndSetCode({ grupoId }) {
-
-
     const found = await GroupRepository.findById(grupoId);
     if (!found) {
       throw { status: 404, message: "Grupo no encontrado" };
@@ -47,7 +38,6 @@ export const groupService = {
     if (found.esAprobado && found.codigo) {
       return { status: 200, message: "Grupo aprobado y código asignado", code: found.codigo };
     }
-
     const codigoUnico = await generateUniqueGroupCode();
     return GroupRepository.aprobarsetCode(grupoId, codigoUnico);
   },

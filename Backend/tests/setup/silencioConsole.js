@@ -1,3 +1,4 @@
+/* eslint-env jest */
 // Silencia logs durante los tests
 process.env.NODE_ENV = 'test';
 

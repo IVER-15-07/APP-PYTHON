@@ -4,23 +4,28 @@ import pluginReact from "eslint-plugin-react";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
-  { 
-    files: ["**/*.{js,mjs,cjs,jsx}"], 
-    plugins: { js }, 
-    extends: ["js/recommended"], 
-    languageOptions: { 
-      globals: globals.node
-    } 
-  },
-  // Configuración específica para archivos de test
   {
-    files: ["**/*.test.{js,jsx}", "**/*.spec.{js,jsx}"],
+    files: ["**/*.{js,mjs,cjs,jsx}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: globals.node,
+    },
+    rules: {
+      "no-console": "off",
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "prefer-const": "warn",
+    },
+  },
+  {
+    files: ["**/tests/**/*.js", "**/*.test.js", "**/*.spec.js"],
     languageOptions: {
       globals: {
         ...globals.node,
-        ...globals.jest
-      }
-    }
+        ...globals.jest,
+      },
+    },
   },
   pluginReact.configs.flat.recommended,
+  js.configs.recommended,
 ]);

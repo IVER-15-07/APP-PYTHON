@@ -50,6 +50,7 @@ export async function me(req, res) {
     // req.user viene de middleware verifyToken
     res.json({ success: true, user: req.user });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false });
   }
 }

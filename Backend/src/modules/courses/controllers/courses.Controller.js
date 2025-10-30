@@ -20,7 +20,7 @@ export const createTopicWithResource = async (req, res) => {
         return res.status(201).json(result);
     } catch (error) {
         console.error("Error al crear el tópico con recurso:", error);
-        return res.status(500).json({ error: "Error al crear el tópico con recurso" });
+        return res.status(500).json({success: false, error: "Error al crear el tópico con recurso" });
     }
 };
 
@@ -30,7 +30,7 @@ export const getAllTopics = async (req, res) => {
         return res.status(200).json(topics);
     } catch (error) {
         console.error("Error al obtener los tópicos:", error);
-        return res.status(500).json({ error: "Error al obtener los tópicos" });
+        return res.status(500).json({ success: false, error: "Error al obtener los tópicos" });
         
     }
 };

@@ -1,6 +1,7 @@
 import axiosInstance from "../helpers/axios-config";
 
 export const topicsService = {
+    //recuperar todos los tópicos
     async getAllTopics() {
         try {
             const response = await axiosInstance.get("/api/topics");
@@ -10,6 +11,7 @@ export const topicsService = {
         }
     },
 
+    //crea todos los tópicos con recursos
     async createTopic(topicData, files) {
         try {
             const formData = new FormData();

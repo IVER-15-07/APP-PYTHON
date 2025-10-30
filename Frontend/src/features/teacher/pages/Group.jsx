@@ -5,6 +5,8 @@ import { coursesService } from '../../../../services/group.api';
 import { BookOpen } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
 
+
+
 const Group = () => {
     const navigate = useNavigate();
     const [user] = useState(authService.obtenerUsuarioActual());
@@ -14,17 +16,28 @@ const Group = () => {
     const [groups, setGroups] = useState([]);
     const [copied, setCopied] = useState(null);
 
+    const [cursos, setCursos] = useState([]);
+    const [cursoId, setCursoId] = useState("");
     useEffect(() => {
         if (!user) return navigate('/login');
         fetchGroups();
         // eslint-disable-next-line
     }, [user]);
 
+    useEffect(() => {
+        // Llama a tu API para obtener cursos
+        coursesService.getMyCourses().then(data => {
+            setCursos(data);
+            if (data.length > 0) setCursoId(data[0].id); // selecciona el primero por defecto
+        });
+    }, []);
+
+
     const fetchGroups = async () => {
         try {
             const res = await coursesService.getGroupRequests();
             const data = res?.data ?? res ?? [];
-            
+
             // Transformar datos del backend (español) al formato del componente (inglés)
             const transformedGroups = (Array.isArray(data) ? data : []).map(group => ({
                 id: group.id,
@@ -36,7 +49,7 @@ const Group = () => {
                 endDate: group.fecha_fin,
                 isApproved: group.esAprobado
             }));
-            
+
             setGroups(transformedGroups);
         } catch (err) {
             // eslint-disable-next-line no-console
@@ -64,13 +77,13 @@ const Group = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-        
+
         if (new Date(form.endDate) < new Date(form.startDate)) {
             setError('La fecha de finalización debe ser posterior a la fecha de inicio');
             setLoading(false);
             return;
         }
-        
+
         try {
             // Transformar datos al formato que espera el backend
             const payload = {
@@ -78,9 +91,9 @@ const Group = () => {
                 descripcion: form.description,
                 fecha_ini: form.startDate,
                 fecha_fin: form.endDate,
-                cursoId: 1 
+                cursoId: 1
             };
-            
+
             await coursesService.createGroup(payload);
             setForm({ title: '', description: '', startDate: '', endDate: '' });
             await fetchGroups();
@@ -119,11 +132,16 @@ const Group = () => {
                         cancel={() => {
                             setForm({ title: '', description: '', startDate: '', endDate: '' });
                         }}
+
+
+
+
                     />
 
                     {/* Sidebar resumen (componente) */}
                     <SummarySidebar groups={groups} />
                 </div>
+           
 
                 {/* Lista de grupos */}
                 <section className="mt-10">

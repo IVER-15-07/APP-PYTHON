@@ -11,13 +11,6 @@ export const topicoRepository = {
                 nivel: true,
                 tipo_topico: true,
                 recursos: true,
-                
-                
             },
         }),
-
-
-
-
-
 };

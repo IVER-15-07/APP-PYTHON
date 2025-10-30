@@ -1,0 +1,23 @@
+import prisma from '../../../config/database.js';
+
+export const topicoRepository = {
+
+    createTopic: (data) =>
+        prisma.topico.create({ data }),
+
+    getAllTopics: () =>
+        prisma.topico.findMany({
+            include: {
+                nivel: true,
+                tipo_topico: true,
+                recursos: true,
+                
+                
+            },
+        }),
+
+
+
+
+
+};

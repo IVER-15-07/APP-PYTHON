@@ -1,7 +1,7 @@
 import axiosInstance from "../helpers/axios-config";
 
 export const coursesService = {
-    
+
     async getCourses() {
         try {
             const response = await axiosInstance.get("/api/my-courses");

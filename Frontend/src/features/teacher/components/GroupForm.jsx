@@ -1,10 +1,10 @@
-import { Plus, Send, Ban, AlertCircle, Calendar } from 'lucide-react';
+import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen } from 'lucide-react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const GroupForm = ({ form, onChange, onSubmit, loading, error, cancel }) => {
+const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel }) => {
     return (
         <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-2 mb-6">
@@ -32,6 +32,36 @@ const GroupForm = ({ form, onChange, onSubmit, loading, error, cancel }) => {
                         disabled={loading}
                     />
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                        <div className="flex items-center gap-2">
+                            <BookOpen className="w-4 h-4 text-emerald-400" />
+                            Curso *
+                        </div>
+                    </label>
+                    <select
+                        name="courseId"
+                        value={form.courseId}
+                        onChange={onChange}
+                        required
+                        className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
+                        disabled={loading || courses.length === 0}
+                    >
+                        <option value="" disabled>Selecciona un curso</option>
+                        {courses.map((course) => (
+                            <option key={course.id} value={course.id}>
+                                {course.nombre}
+                            </option>
+                        ))}
+                    </select>
+                    {courses.length === 1 && (
+                        <p className="text-xs text-slate-500 mt-1.5">
+                            Solo hay un curso disponible actualmente
+                        </p>
+                    )}
+                </div>
+
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-2">Fecha de inicio *</label>
@@ -126,7 +156,14 @@ GroupForm.propTypes = {
         // Fechas en formato string (formato ISO: 'YYYY-MM-DD' para input[type="date"])
         startDate: PropTypes.string,
         endDate: PropTypes.string,
+        courseId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
+    courses: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            nombre: PropTypes.string.isRequired,
+        })
+    ),
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     loading: PropTypes.bool,

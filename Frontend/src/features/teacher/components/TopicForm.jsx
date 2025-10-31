@@ -44,9 +44,7 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                         options={topicTypes.map(type => ({
                             value: type.id.toString(),
                             label: type.nombre.charAt(0).toUpperCase() + type.nombre.slice(1),
-                            emoji: type.nombre === 'texto' ? '📄' : type.nombre === 'video' ? '🎥' : '📊',
-                            description: type.nombre === 'texto' ? 'Archivo de texto' : type.nombre === 'video' ? 'Archivo de video' : 'Presentación'
-                        }))}
+                            }))}
                     />
 
                     <CustomDropdown

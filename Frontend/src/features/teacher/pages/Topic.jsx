@@ -83,31 +83,39 @@ const Topic = () => {
         }
 
         try {
-            // Crear FormData para enviar archivo
-            const formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('description', form.description);
-            formData.append('contentType', form.contentType);
-            formData.append('level', form.level);
-            formData.append('file', selectedFile);
-            formData.append('profesorId', user.id);
+            // Preparar datos para el backend
+            const topicData = {
+                nombre: form.title,
+                tipo_topicoId: Number(form.contentType),  // Convertir a número
+                nivelId: Number(form.level),              // Convertir a número
+                aprobado: false
+            };
+
+            // Archivos en array (backend espera 'files' en plural)
+            const files = [selectedFile];
+
             // eslint-disable-next-line no-console
-            console.log('FormData a enviar:', {
-                title: form.title,
-                description: form.description,
-                contentType: form.contentType,
-                level: form.level,
-                fileName: selectedFile.name,
-                fileSize: selectedFile.size,
-                profesorId: user.id
-            });
+            console.log('Datos a enviar:', topicData);
+            // eslint-disable-next-line no-console
+            console.log('Archivos a enviar:', files);
+
+            // Llamar al servicio para crear el tópico
+            const response = await topicsService.createTopic(topicData, files);
+
+            // eslint-disable-next-line no-console
+            console.log('Tópico creado exitosamente:', response);
 
             // Limpiar formulario
             setForm({ title: '', description: '', contentType: '', level: '' });
             setSelectedFile(null);
+
+            // Recargar la lista de tópicos
             await fetchTopics();
+
         } catch (err) {
-            setError(err.message || err?.response?.data?.message || 'Error al crear tópico');
+            // eslint-disable-next-line no-console
+            console.error('Error al crear tópico:', err);
+            setError(err.message || 'Error al crear el tópico');
         } finally {
             setLoading(false);
         }
@@ -119,11 +127,10 @@ const Topic = () => {
         // TODO: Implementar lógica de edición
     };
 
-    // Filtrar tópicos por tipo
-    const textoTopics = topics.filter(t => t.contentType === 'texto');
-    const videoTopics = topics.filter(t => t.contentType === 'video');
-    const slidesTopics = topics.filter(t => t.contentType === 'slides');
-
+    // Filtrar tópicos por tipo usando el ID
+    const textoTopics = topics.filter(t => t.tipo_topicoId === 1);
+    const videoTopics = topics.filter(t => t.tipo_topicoId === 2);
+    const slidesTopics = topics.filter(t => t.tipo_topicoId === 3);
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
             <div className="max-w-6xl mx-auto">

@@ -3,9 +3,9 @@ import { FileText, Video, Presentation, Library } from 'lucide-react';
 
 const TopicSummary = ({ topics }) => {
   // Contar tópicos por tipo
-  const textCount = topics.filter(t => t.contentType === 'texto').length;
-  const videoCount = topics.filter(t => t.contentType === 'video').length;
-  const slidesCount = topics.filter(t => t.contentType === 'slides').length;
+  const textCount = topics.filter(t => t.tipo_topicoId === 1).length;
+  const videoCount = topics.filter(t => t.tipo_topicoId === 2).length;
+  const slidesCount = topics.filter(t => t.tipo_topicoId === 3).length;
   const totalCount = topics.length;
 
   return (

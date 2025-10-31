@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/group.api';
+import { coursesService as groupService } from '../../../../services/group.api';
+import { coursesService } from '../../../../services/courses.api.js';
 import { BookOpen } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
 
@@ -26,16 +27,18 @@ const Group = () => {
 
     const fetchCourses = async () => {
         try {
-            // Por ahora, hardcodeamos el curso único
-            // Cuando tengas el endpoint, usa: const data = await coursesService.getCourses();
-            const mockCourses = [
-                { id: 1, nombre: 'Introducción a Python' }
-            ];
-            setCourses(mockCourses);
+            const courseResponse = await coursesService.getCourses();
+            // eslint-disable-next-line no-console
+            console.log('Courses Response:', courseResponse);
+            
+            // El backend retorna { success: true, data: [...] }
+            const courseData = courseResponse?.data || [];
+            
+            setCourses(courseData);
             
             // Selecciona el primer curso por defecto
-            if (mockCourses.length > 0) {
-                setForm(prev => ({ ...prev, courseId: mockCourses[0].id }));
+            if (courseData.length > 0) {
+                setForm(prev => ({ ...prev, courseId: courseData[0].id }));
             }
         } catch (err) {
             // eslint-disable-next-line no-console
@@ -46,7 +49,7 @@ const Group = () => {
 
     const fetchGroups = async () => {
         try {
-            const res = await coursesService.getGroupRequests();
+            const res = await groupService.getGroupRequests();
             const data = res?.data ?? res ?? [];
 
             // Transformar datos del backend (español) al formato del componente (inglés)
@@ -105,7 +108,7 @@ const Group = () => {
                 cursoId: Number(form.courseId) || 1
             };
 
-            await coursesService.createGroup(payload);
+            await groupService.createGroup(payload);
             setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
             await fetchGroups();
         } catch (err) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/group.api';
+import { topicsService } from '../../../../services/topic.api.js';
 import { Library, FileText, Video, Presentation } from 'lucide-react';
 import { TopicForm, TopicSummary, TopicCard } from '../components';
 
@@ -13,21 +13,48 @@ const Topic = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [topics, setTopics] = useState([]);
+    const [topicTypes, setTopicTypes] = useState([]);
+    const [levels, setLevels] = useState([]);
 
     useEffect(() => {
         if (!user) return navigate('/login');
         fetchTopics();
+        fetchTopicTypes();
+        fetchLevels();
         // eslint-disable-next-line
     }, [user]);
 
     const fetchTopics = async () => {
         try {
-            const res = await coursesService.getMyCourses();
-            const data = res?.data ?? res ?? [];
-            setTopics(Array.isArray(data) ? data : []);
+            const response = await topicsService.getAllTopics();
+            // El backend retorna { success: true, data: [...] }
+            const topicsData = response?.data || [];
+            setTopics(Array.isArray(topicsData) ? topicsData : []);
         } catch (err) {
             // eslint-disable-next-line no-console
-            console.error(err);
+            console.error('Error al obtener tópicos:', err);
+        }
+    };
+
+    const fetchTopicTypes = async () => {
+        try {
+            const response = await topicsService.getTopicTypes();
+            const typesData = response?.data || [];
+            setTopicTypes(Array.isArray(typesData) ? typesData : []);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error al obtener tipos de tópico:', err);
+        }
+    };
+
+    const fetchLevels = async () => {
+        try {
+            const response = await topicsService.getLevels();
+            const levelsData = response?.data || [];
+            setLevels(Array.isArray(levelsData) ? levelsData : []);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error al obtener niveles:', err);
         }
     };
 
@@ -48,7 +75,7 @@ const Topic = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-        
+
         if (!selectedFile) {
             setError('Por favor selecciona un archivo');
             setLoading(false);
@@ -123,6 +150,8 @@ const Topic = () => {
                         loading={loading}
                         error={error}
                         selectedFile={selectedFile}
+                        topicTypes={topicTypes}
+                        levels={levels}
                         cancel={() => {
                             setForm({ title: '', description: '', contentType: '', level: '' });
                             setSelectedFile(null);

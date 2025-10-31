@@ -1,6 +1,7 @@
 import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen } from 'lucide-react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
+import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
@@ -33,34 +34,26 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel }
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                        <div className="flex items-center gap-2">
-                            <BookOpen className="w-4 h-4 text-emerald-400" />
-                            Curso *
-                        </div>
-                    </label>
-                    <select
-                        name="courseId"
-                        value={form.courseId}
-                        onChange={onChange}
-                        required
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
-                        disabled={loading || courses.length === 0}
-                    >
-                        <option value="" disabled>Selecciona un curso</option>
-                        {courses.map((course) => (
-                            <option key={course.id} value={course.id}>
-                                {course.nombre}
-                            </option>
-                        ))}
-                    </select>
-                    {courses.length === 1 && (
-                        <p className="text-xs text-slate-500 mt-1.5">
-                            Solo hay un curso disponible actualmente
-                        </p>
-                    )}
-                </div>
+                <CustomDropdown
+                    label="Curso"
+                    icon={BookOpen}
+                    name="courseId"
+                    value={form.courseId}
+                    onChange={onChange}
+                    placeholder="Selecciona un curso"
+                    required
+                    disabled={loading || courses.length === 0}
+                    options={courses.map((course) => ({
+                        value: course.id,
+                        label: course.nombre,
+                        description: course.descripcion 
+                    }))}
+                />
+                {courses.length === 1 && (
+                    <p className="text-xs text-slate-500 mt-1.5">
+                        Solo hay un curso disponible actualmente
+                    </p>
+                )}
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <div>

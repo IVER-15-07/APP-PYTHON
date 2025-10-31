@@ -19,10 +19,18 @@ export default function Course() {
     try {
         setLoading(true);
         
-        // Obtener curso
-        const courseData = await coursesService.getCourses(); 
+        // Obtener curso, tipos de tópico y niveles
+        const courseResponse = await coursesService.getCourses(); 
         // eslint-disable-next-line no-console
-        console.log('Course Data:', courseData);
+        console.log('Course Response:', courseResponse);
+        
+        // El backend ahora retorna { success: true, data: { cursos: [...], tipoTopicos: [...] } }
+        const responseData = courseResponse?.data || {};
+        const courseData = responseData.cursos || [];
+        
+        // eslint-disable-next-line no-console
+        console.log('Course Array:', courseData);
+        
         if (Array.isArray(courseData) && courseData.length > 0) {  
             setCourse(courseData[0]); 
         }

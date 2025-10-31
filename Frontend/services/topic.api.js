@@ -29,4 +29,23 @@ export const topicsService = {
             throw new Error(error.response?.data?.message || "Error al crear el tópico");
         }
     },
+        //obtener tipos de tópico
+    async getTopicTypes() {
+        try {
+            const response = await axiosInstance.get("/api/topic-types");
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los tipos de tópico');
+        }
+    },
+
+    //obtener niveles
+    async getLevels() {
+        try {
+            const response = await axiosInstance.get("/api/levels");
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los niveles');
+        }
+    },
 }

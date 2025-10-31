@@ -19,15 +19,13 @@ export default function Course() {
     try {
         setLoading(true);
         
-        // Obtener curso, tipos de tópico y niveles
+        // Obtener curso
         const courseResponse = await coursesService.getCourses(); 
         // eslint-disable-next-line no-console
         console.log('Course Response:', courseResponse);
         
-        // El backend ahora retorna { success: true, data: { cursos: [...], tipoTopicos: [...] } }
-        const responseData = courseResponse?.data || {};
-        const courseData = responseData.cursos || [];
-        
+        // El backend retorna { success: true, data: [...] }
+        const courseData = courseResponse?.data || [];
         // eslint-disable-next-line no-console
         console.log('Course Array:', courseData);
         

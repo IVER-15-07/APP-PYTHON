@@ -195,7 +195,7 @@ const Topic = () => {
                                         {textoTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {textoTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de texto</p>
                                     ) : (
@@ -217,7 +217,7 @@ const Topic = () => {
                                         {videoTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {videoTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de video</p>
                                     ) : (
@@ -239,7 +239,7 @@ const Topic = () => {
                                         {slidesTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {slidesTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de slides</p>
                                     ) : (

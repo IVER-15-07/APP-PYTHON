@@ -150,17 +150,8 @@ CREATE TABLE "Recursos" (
     "subtitulo" TEXT,
     "imagenurl" TEXT,
     "topicoId" INTEGER NOT NULL,
-    "tipo_recursoId" INTEGER NOT NULL,
 
     CONSTRAINT "Recursos_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Tipo_recurso" (
-    "id" SERIAL NOT NULL,
-    "nombre" TEXT NOT NULL,
-
-    CONSTRAINT "Tipo_recurso_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -255,9 +246,6 @@ CREATE UNIQUE INDEX "Estado_nombre_key" ON "Estado"("nombre");
 CREATE UNIQUE INDEX "Tipo_topico_nombre_key" ON "Tipo_topico"("nombre");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Tipo_recurso_nombre_key" ON "Tipo_recurso"("nombre");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Tipo_evaluacion_nombre_key" ON "Tipo_evaluacion"("nombre");
 
 -- CreateIndex
@@ -310,9 +298,6 @@ ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId"
 
 -- AddForeignKey
 ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_tipo_recursoId_fkey" FOREIGN KEY ("tipo_recursoId") REFERENCES "Tipo_recurso"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;

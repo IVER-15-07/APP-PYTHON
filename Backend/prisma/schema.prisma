@@ -184,16 +184,8 @@ model Recursos {
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
-  tipo_recurso   Tipo_recurso @relation(fields: [tipo_recursoId], references: [id], onDelete: Cascade)
-  tipo_recursoId Int
 }
 
-model Tipo_recurso {
-  id     Int    @id @default(autoincrement())
-  nombre String @unique
-
-  recursos Recursos[]
-}
 
 model Evaluacion {
   id                 Int     @id @default(autoincrement())

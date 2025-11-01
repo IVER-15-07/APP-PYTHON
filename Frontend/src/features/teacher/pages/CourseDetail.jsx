@@ -13,6 +13,7 @@ export default function CourseDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
 
     useEffect(() => {
         fetchCourseDetail();
@@ -47,14 +48,29 @@ export default function CourseDetail() {
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
     
-    const handleSave = (updatedData) => {
-        // Por ahora solo console.log y cerrar modal
-        // Aquí irá la lógica para actualizar el curso en el backend
-        // eslint-disable-next-line no-console
-        console.log('Datos a guardar:', updatedData);
-        handleCloseModal();
-        // Recargar los datos del curso
-        fetchCourseDetail();
+    const handleSave = async (updatedData) => {
+        try {
+            setSaveLoading(true);
+            
+            const response = await coursesService.updateCourse(course.id, updatedData);
+            
+            setCourse(prevCourse => ({
+                ...prevCourse,
+                ...updatedData
+            }));
+            
+            handleCloseModal();
+            
+            console.log('Curso actualizado exitosamente:', response);
+            
+            alert('Curso actualizado exitosamente');
+            
+        } catch (error) {
+            console.error('Error al actualizar curso:', error);
+            alert(error.message || 'Error al actualizar el curso');
+        } finally {
+            setSaveLoading(false);
+        }
     };
 
     if (loading) {
@@ -196,6 +212,7 @@ export default function CourseDetail() {
                         onClose={handleCloseModal}
                         course={course}
                         onSave={handleSave}
+                        isLoading={saveLoading}
                     />
                 )}
             </div>

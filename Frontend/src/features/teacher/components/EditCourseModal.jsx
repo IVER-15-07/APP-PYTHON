@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { X, Save } from 'lucide-react';
 
+
 export default function EditCourseModal({ isOpen, onClose, course, onSave }) {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -104,5 +105,6 @@ EditCourseModal.propTypes = {
         nombre: PropTypes.string,
         descripcion: PropTypes.string
     }),
-    onSave: PropTypes.func.isRequired
+    onSave: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool
 };

@@ -5,6 +5,7 @@ import Dashboard from '../features/teacher/pages/Dashboard';
 import Group from '../features/teacher/pages/Group';
 import Topic from '../features/teacher/pages/Topic';
 import Course from '../features/teacher/pages/Course';
+import CourseDetail from '../features/teacher/pages/CourseDetail';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
@@ -146,6 +147,7 @@ const VentanaProfesor = () => {
                     }
                     />
                     <Route path="cursos" element={<Course />} />
+                    <Route path="cursos/:id" element={<CourseDetail />} />
                     <Route path="grupos" element={<Group/>} />
                     <Route path="topicos" element={<Topic/>} /> 
                     {/* <Route path="estadisticas" element={<Estadisticas />} /> */}

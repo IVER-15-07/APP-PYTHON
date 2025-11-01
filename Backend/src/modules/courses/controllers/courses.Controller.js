@@ -73,3 +73,29 @@ export const getLevels = async (req, res) => {
         });
     }
 };
+
+export const updateCourse = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, descripcion } = req.body;
+        console.log('Course ID:', id);
+        console.log('Request body:', req.body);
+
+        const updatedCourse = await coursesService.updateCourse(id, { 
+            nombre, 
+            descripcion 
+        });
+        
+        res.status(200).json({
+            success: true,
+            data: updatedCourse,
+            message: 'Curso actualizado exitosamente'
+        });
+    } catch (error) {
+        console.error('Error in updateCourse:', error);
+        res.status(error.status || 500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

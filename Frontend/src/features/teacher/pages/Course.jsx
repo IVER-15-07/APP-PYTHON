@@ -84,7 +84,7 @@ export default function Course() {
                             {/* Total de Estudiantes */}
                             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-emerald-500/50 transition-all">
                                 <p className="text-slate-400 text-sm mb-2">Total de Estudiantes</p>
-                                <p className="text-4xl font-bold text-white">320</p>
+                                <p className="text-4xl font-bold text-white">---</p>
                             </div>
                         </div>
 

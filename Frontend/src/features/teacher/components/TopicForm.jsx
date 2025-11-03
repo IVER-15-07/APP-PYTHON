@@ -1,16 +1,17 @@
-import { Plus, Upload, Ban, AlertCircle, FileText, Video, Presentation } from 'lucide-react';
+import { Plus, Upload, Ban, AlertCircle, FileText, Video, Presentation, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, cancel, selectedFile, topicTypes = [], levels = [] }) => {
-    return (
-        <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, cancel, selectedFile, topicTypes = [], levels = [], isModal = false, onClose }) => {
+    const formContent = (
+        <>
             <div className="flex items-center gap-2 mb-6">
                 <Plus className="w-5 h-5 text-green-400" />
                 <h2 className="text-xl font-semibold text-white">Crear nuevo tópico</h2>
             </div>
+
 
             {error && (
                 <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-red-400 text-sm">
@@ -78,11 +79,11 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                 {form.contentType && (
                     <div className="border-t border-slate-700/50 pt-5">
                         <div className="flex items-center gap-2 mb-4">
-                            {form.contentType === 'texto' && <FileText className="w-5 h-5 text-green-400" />}
-                            {form.contentType === 'video' && <Video className="w-5 h-5 text-green-400" />}
-                            {form.contentType === 'slides' && <Presentation className="w-5 h-5 text-green-400" />}
+                            {form.contentType === '1' && <FileText className="w-5 h-5 text-green-400" />}
+                            {form.contentType === '2' && <Video className="w-5 h-5 text-green-400" />}
+                            {form.contentType === '3' && <Presentation className="w-5 h-5 text-green-400" />}
                             <h3 className="text-lg font-semibold text-white">
-                                Subir {form.contentType === 'texto' ? 'archivo de texto' : form.contentType === 'video' ? 'video' : 'presentación'}
+                                Subir {form.contentType === '1' ? 'archivo de texto' : form.contentType === '2' ? 'video' : 'presentación'}
                             </h3>
                         </div>
 
@@ -98,9 +99,9 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                         name="file"
                                         onChange={onFileChange}
                                         accept={
-                                            form.contentType === 'texto'
+                                            form.contentType === '1'
                                                 ? '.txt,.md,.doc,.docx'
-                                                : form.contentType === 'video'
+                                                : form.contentType === '2'
                                                     ? '.mp4,.avi,.mov,.mkv,.webm'
                                                     : '.ppt,.pptx,.pdf,.key'
                                         }
@@ -131,9 +132,9 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                                         Haz clic para seleccionar un archivo
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        {form.contentType === 'texto' && 'TXT, MD, DOC, DOCX'}
-                                                        {form.contentType === 'video' && 'MP4, AVI, MOV, MKV, WEBM'}
-                                                        {form.contentType === 'slides' && 'PPT, PPTX, PDF, KEY'}
+                                                        {form.contentType === '1' && 'TXT, MD, DOC, DOCX'}
+                                                        {form.contentType === '2' && 'MP4, AVI, MOV, MKV, WEBM'}
+                                                        {form.contentType === '3' && 'PPT, PPTX, PDF, KEY'}
                                                     </p>
                                                 </>
                                             )}
@@ -145,9 +146,9 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                             {/* Información adicional según el tipo */}
                             <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
                                 <p className="text-sm text-slate-400">
-                                    {form.contentType === 'texto' && 'Puedes subir archivos de texto plano, Markdown o documentos de Word.'}
-                                    {form.contentType === 'video' && 'Asegúrate de que el video esté en un formato compatible y no sea muy pesado.'}
-                                    {form.contentType === 'slides' && 'Puedes subir presentaciones de PowerPoint o archivos PDF.'}
+                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano, Markdown o documentos de Word.'}
+                                    {form.contentType === '2' && 'Asegúrate de que el video esté en un formato compatible y no sea muy pesado.'}
+                                    {form.contentType === '3' && 'Puedes subir presentaciones de PowerPoint o archivos PDF.'}
                                 </p>
                             </div>
                         </div>
@@ -166,7 +167,7 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
 
                     <button
                         type="button"
-                        onClick={cancel}
+                        onClick={isModal ? onClose : cancel}
                         className="flex items-center gap-2 px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-xl border border-slate-600/50 transition-all duration-200 font-medium"
                     >
                         <Ban className="w-4 h-4" />
@@ -174,6 +175,36 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                     </button>
                 </div>
             </form>
+        </>
+    );
+
+    if (isModal) {
+        return (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+                <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    {/* Header del modal */}
+                    <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 px-6 py-4 flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-white">Crear nuevo tópico</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    
+                    {/* Contenido del modal */}
+                    <div className="p-6">
+                        {formContent}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+            {formContent}
         </section>
     );
 };
@@ -203,4 +234,6 @@ TopicForm.propTypes = {
         nombre: PropTypes.string,
         cursoId: PropTypes.number,
     })),
+    isModal: PropTypes.bool,
+    onClose: PropTypes.func,
 };

@@ -1,4 +1,3 @@
-// Backend/src/modules/grupo/routes/grupo.routes.js
 import { Router } from "express";
 import { joinGroupByCode, getUserGroup } from "../controllers/grupo.controller.js";
 

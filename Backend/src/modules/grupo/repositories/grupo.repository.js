@@ -1,27 +1,36 @@
-// Backend/src/modules/grupo/repositories/grupo.repository.js
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export const findGroupByCode = async (codigo) => {
-  // codigo: number
-  return prisma.grupo.findUnique({
-    where: { codigo: codigo },
-  });
-};
+export const grupoRepository = {
+  findByCodigo: (codigo) => {
+    return prisma.grupo.findUnique({
+      where: { codigo: parseInt(codigo) }
+    });
+  },
 
-export const findRegistroByUsuario = async (usuarioId) => {
-  return prisma.registro.findFirst({
-    where: { usuarioId },
-    include: { grupo: true },
-  });
-};
+  findRegistroByUsuarioId: (usuarioId) => {
+    return prisma.registro.findFirst({
+      where: { usuarioId: parseInt(usuarioId) }
+    });
+  },
 
-export const createRegistro = async ({ usuarioId, grupoId }) => {
-  return prisma.registro.create({
-    data: { usuarioId, grupoId },
-  });
-};
+  createRegistro: (usuarioId, grupoId) => {
+    return prisma.registro.create({
+      data: {
+        usuarioId: parseInt(usuarioId),
+        grupoId: grupoId,
+      }
+    });
+  },
 
-export const getAllNiveles = async () => {
-  return prisma.nivel.findMany();
+  findNiveles: () => {
+    return prisma.nivel.findMany();
+  },
+
+  findGroupByUser: (usuarioId) => {
+    return prisma.registro.findFirst({
+      where: { usuarioId: parseInt(usuarioId) },
+      include: { grupo: true },
+    });
+  },
 };

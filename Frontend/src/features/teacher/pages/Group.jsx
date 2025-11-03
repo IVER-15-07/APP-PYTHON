@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
 import { coursesService as groupService } from '../../../../services/group.api';
 import { coursesService } from '../../../../services/courses.api.js';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Plus } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
 
 
@@ -17,6 +17,7 @@ const Group = () => {
     const [groups, setGroups] = useState([]);
     const [copied, setCopied] = useState(null);
     const [courses, setCourses] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return navigate('/login');
@@ -111,6 +112,7 @@ const Group = () => {
             await groupService.createGroup(payload);
             setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
             await fetchGroups();
+            setIsModalOpen(false); // Cerrar modal después de crear
         } catch (err) {
             setError(err.message || err?.response?.data?.message || 'Error al crear grupo');
         } finally {
@@ -121,59 +123,71 @@ const Group = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <header className="mb-8">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
-                            <BookOpen className="w-5 h-5" />
+            <div className="max-w-7xl mx-auto">
+                {/* Header con botón */}
+                <header className="mb-8 flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
+                                <BookOpen className="w-5 h-5" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-white">Mis grupos</h1>
                         </div>
-                        <h1 className="text-3xl font-bold text-white">Mis grupos</h1>
+                        <p className="text-slate-400 ml-14">
+                            Profesor: <span className="font-semibold text-white">{user?.nombre}</span>
+                        </p>
                     </div>
-                    <p className="text-slate-400 ml-14">
-                        Profesor: <span className="font-semibold text-white">{user?.nombre}</span>
-                    </p>
+                    
+                    {/* Botón para abrir modal */}
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 rounded-lg text-emerald-400 font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/20"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Nuevo Grupo
+                    </button>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Formulario (ahora como componente) */}
-                    <GroupForm
-                        form={form}
-                        courses={courses}
-                        onChange={handleChange}
-                        onSubmit={handleSubmit}
-                        loading={loading}
-                        error={error}
-                        cancel={() => {
-                            setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
-                        }}
-                    />
+                {/* Layout con sidebar a la derecha */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Contenido principal (Lista de grupos) */}
+                    <section className="lg:col-span-3">
+                        <h2 className="text-2xl font-bold text-white mb-6">Grupos creados</h2>
 
-                    {/* Sidebar resumen (componente) */}
-                    <SummarySidebar groups={groups} />
-                </div>
-           
-
-                {/* Lista de grupos */}
-                <section className="mt-10">
-                    <h2 className="text-2xl font-bold text-white mb-6">Grupos creados</h2>
-
-                    {groups.length === 0 ? (
-                        <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-12 text-center shadow-2xl">
-                            <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <BookOpen className="w-10 h-10 text-slate-600" />
+                        {groups.length === 0 ? (
+                            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-12 text-center shadow-2xl">
+                                <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <BookOpen className="w-10 h-10 text-slate-600" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-slate-300 mb-2">Aún no tienes grupos</h3>
+                                <p className="text-slate-500 text-sm">Crea tu primer grupo haciendo click en el botón &quot;Nuevo Grupo&quot;.</p>
                             </div>
-                            <h3 className="text-xl font-semibold text-slate-300 mb-2">Aún no tienes grupos</h3>
-                            <p className="text-slate-500 text-sm">Crea tu primer grupo usando el formulario de arriba.</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {groups.map((g) => (
-                                <GroupCard key={g.id} g={g} copied={copied} onCopy={copyToClipboard} onEdit={() => { }} onDelete={() => { }} />
-                            ))}
-                        </div>
-                    )}
-                </section>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {groups.map((g) => (
+                                    <GroupCard key={g.id} g={g} copied={copied} onCopy={copyToClipboard} onEdit={() => { }} onDelete={() => { }} />
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Sidebar resumen a la derecha */}
+                    <aside className="lg:col-span-1">
+                        <SummarySidebar groups={groups} />
+                    </aside>
+                </div>
+
+                {/* Modal para crear grupo */}
+                <GroupForm
+                    isModal={true}
+                    onClose={isModalOpen ? () => setIsModalOpen(false) : null}
+                    form={form}
+                    courses={courses}
+                    onChange={handleChange}
+                    onSubmit={handleSubmit}
+                    loading={loading}
+                    error={error}
+                />
             </div>
         </div>
     );

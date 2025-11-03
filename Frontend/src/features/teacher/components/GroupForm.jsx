@@ -1,13 +1,17 @@
-import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen } from 'lucide-react';
+import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel }) => {
-    return (
-        <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, isModal = false, onClose }) => {
+    
+    // Si es modal y está cerrado, no renderizar nada
+    if (isModal && !onClose) return null;
+
+    const formContent = (
+        <>
             <div className="flex items-center gap-2 mb-6">
                 <Plus className="w-5 h-5 text-green-400" />
                 <h2 className="text-xl font-semibold text-white">Crear nuevo grupo</h2>
@@ -123,12 +127,12 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel }
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Send className="w-4 h-4" />
-                        Enviar solicitud
+                        {loading ? 'Creando...' : 'Enviar solicitud'}
                     </button>
 
                     <button
                         type="button"
-                        onClick={cancel}
+                        onClick={isModal ? onClose : cancel}
                         className="flex items-center gap-2 px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 rounded-xl border border-slate-600/50 transition-all duration-200 font-medium"
                     >
                         <Ban className="w-4 h-4" />
@@ -136,6 +140,38 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel }
                     </button>
                 </div>
             </form>
+        </>
+    );
+
+    // Si es modal, envolver en la estructura del modal
+    if (isModal) {
+        return (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    {/* Header del Modal */}
+                    <div className="flex items-center justify-between p-6 border-b border-slate-700/50 sticky top-0 bg-slate-900/95 backdrop-blur-sm z-10">
+                        <h2 className="text-2xl font-bold text-white">Crear Nuevo Grupo</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-700/50 rounded-lg"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    
+                    {/* Contenido del Modal */}
+                    <div className="p-6">
+                        {formContent}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Si no es modal, renderizar como card normal
+    return (
+        <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
+            {formContent}
         </section>
     );
 };
@@ -161,5 +197,7 @@ GroupForm.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     loading: PropTypes.bool,
     error: PropTypes.string,
-    cancel: PropTypes.func.isRequired,
+    cancel: PropTypes.func,
+    isModal: PropTypes.bool,
+    onClose: PropTypes.func,
 };

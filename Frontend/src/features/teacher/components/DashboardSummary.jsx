@@ -40,15 +40,6 @@ const DashboardSummary = ({ coursesCount }) => {
           <span className="text-sm font-medium text-white">-----</span>
         </div>
       </div>
-
-      <div className="space-y-3 pt-4 border-t border-slate-700/50">
-        <button className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25">
-          Enviar anuncio
-        </button>
-        <button className="w-full px-4 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 font-medium rounded-xl border border-slate-600/50 transition-all duration-200">
-          Gestionar estudiantes
-        </button>
-      </div>
     </aside>
   );
 };

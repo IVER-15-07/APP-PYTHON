@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
 import { coursesService as groupService } from '../../../../services/group.api';
 import { coursesService } from '../../../../services/courses.api.js';
-import { BookOpen, Plus } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
+import { CreateButton } from '../../../components/ui';
 
 
 
@@ -126,26 +127,15 @@ const Group = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header con botón */}
                 <header className="mb-8 flex items-center justify-between">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
-                                <BookOpen className="w-5 h-5" />
-                            </div>
-                            <h1 className="text-3xl font-bold text-white">Mis grupos</h1>
-                        </div>
-                        <p className="text-slate-400 ml-14">
-                            Profesor: <span className="font-semibold text-white">{user?.nombre}</span>
-                        </p>
-                    </div>
+                    <div className="mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-2">Mis Grupos</h1>
+                    <p className="text-slate-400">Administra todos los grupos que has creado</p>
+                </div>
                     
                     {/* Botón para abrir modal */}
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 rounded-lg text-emerald-400 font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/20"
-                    >
-                        <Plus className="w-5 h-5" />
+                    <CreateButton onClick={() => setIsModalOpen(true)}>
                         Nuevo Grupo
-                    </button>
+                    </CreateButton>
                 </header>
 
                 {/* Layout con sidebar a la derecha */}

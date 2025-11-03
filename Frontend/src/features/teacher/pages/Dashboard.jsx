@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { authService } from '../../../../services/auth.api.js';
 import { coursesService } from '../../../../services/group.api.js';
-import { Link } from 'react-router-dom';
-import { BookOpen, Users, Activity, Target, Plus } from 'lucide-react';
+import { BookOpen, Users, Activity, Target} from 'lucide-react';
 import { StatCard, GroupListItem, DashboardSummary } from '../components';
 
 const Dashboard = () => {
@@ -63,16 +62,6 @@ const Dashboard = () => {
               <p className="text-slate-400 ml-14">
                 Bienvenid@{user?.nombre ? `, ${user.nombre}` : ''} — aquí tienes un resumen rápido
               </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link
-                to="/profesor/cursos"
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30"
-              >
-                <Plus className="w-4 h-4" />
-                Crear Grupo
-              </Link>
             </div>
           </div>
         </header>

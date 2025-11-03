@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
 import { topicsService } from '../../../../services/topic.api.js';
-import { Library, FileText, Video, Presentation, Plus } from 'lucide-react';
+import { Library, FileText, Video, Presentation } from 'lucide-react';
 import { TopicForm, TopicSummary } from '../components';
+import { CreateButton } from '../../../components/ui';
 
 const Topic = () => {
     const navigate = useNavigate();
@@ -155,23 +156,14 @@ const Topic = () => {
                 {/* Header */}
                 <header className="mb-8">
                     <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                            <div className="text-green-400 bg-green-500/10 p-2 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20">
-                                <Library className="w-5 h-5" />
-                            </div>
-                            <h1 className="text-3xl font-bold text-white">Mis tópicos</h1>
+                        <div className="mb-8">
+                            <h1 className="text-4xl font-bold text-white mb-2">Mis Tópicos</h1>
+                            <p className="text-slate-400">Administra el contenido educativo de tus cursos</p>
                         </div>
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30"
-                        >
-                            <Plus className="w-5 h-5" />
+                        <CreateButton onClick={() => setIsModalOpen(true)}>
                             Nuevo tópico
-                        </button>
+                        </CreateButton>
                     </div>
-                    <p className="text-slate-400 ml-14">
-                        Profesor: <span className="font-semibold text-white">{user?.nombre}</span>
-                    </p>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -192,7 +184,7 @@ const Topic = () => {
                                 {topics.map((topic) => {
                                     const { icon: Icon, color } = getTopicTypeIcon(topic.tipo_topicoId);
                                     const typeName = getTopicTypeName(topic.tipo_topicoId);
-                                    
+
                                     return (
                                         <div
                                             key={topic.id}

@@ -100,7 +100,7 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                         onChange={onFileChange}
                                         accept={
                                             form.contentType === '1'
-                                                ? '.txt,.md,.doc,.docx'
+                                                ? '.txt,.md,.doc,.docx,.pdf'
                                                 : form.contentType === '2'
                                                     ? '.mp4,.avi,.mov,.mkv,.webm'
                                                     : '.ppt,.pptx,.pdf,.key'
@@ -132,7 +132,7 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                                         Haz clic para seleccionar un archivo
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        {form.contentType === '1' && 'TXT, MD, DOC, DOCX'}
+                                                        {form.contentType === '1' && 'TXT, MD, DOC, DOCX, PDF'}
                                                         {form.contentType === '2' && 'MP4, AVI, MOV, MKV, WEBM'}
                                                         {form.contentType === '3' && 'PPT, PPTX, PDF, KEY'}
                                                     </p>

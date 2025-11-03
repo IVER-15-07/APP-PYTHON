@@ -4,7 +4,7 @@ import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, cancel, selectedFile }) => {
+const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, cancel, selectedFile, topicTypes = [], levels = [] }) => {
     return (
         <section className="lg:col-span-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-2 mb-6">
@@ -41,11 +41,10 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                         placeholder="Selecciona tipo de contenido"
                         required
                         disabled={loading}
-                        options={[
-                            { value: 'texto', label: 'Texto', description: 'Archivo de texto (.txt, .md)' },
-                            { value: 'video', label: 'Video', description: 'Archivo de video (.mp4, .avi)' },
-                            { value: 'slides', label: 'Slides', description: 'Presentación (.ppt, .pdf)' },
-                        ]}
+                        options={topicTypes.map(type => ({
+                            value: type.id.toString(),
+                            label: type.nombre.charAt(0).toUpperCase() + type.nombre.slice(1),
+                            }))}
                     />
 
                     <CustomDropdown
@@ -56,11 +55,10 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                         placeholder="Selecciona un nivel"
                         required
                         disabled={loading}
-                        options={[
-                            { value: 'principiante', label: 'Principiante', description: 'Sin conocimientos previos' },
-                            { value: 'intermedio', label: 'Intermedio', description: 'Con bases sólidas' },
-                            { value: 'avanzado', label: 'Avanzado', description: 'Experto en el tema' },
-                        ]}
+                        options={levels.map(level => ({
+                            value: level.id.toString(),
+                            label: level.nombre,
+                        }))}
                     />
                 </div>
                 <div>
@@ -100,11 +98,11 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                         name="file"
                                         onChange={onFileChange}
                                         accept={
-                                            form.contentType === 'texto' 
-                                                ? '.txt,.md,.doc,.docx' 
-                                                : form.contentType === 'video' 
-                                                ? '.mp4,.avi,.mov,.mkv,.webm' 
-                                                : '.ppt,.pptx,.pdf,.key'
+                                            form.contentType === 'texto'
+                                                ? '.txt,.md,.doc,.docx'
+                                                : form.contentType === 'video'
+                                                    ? '.mp4,.avi,.mov,.mkv,.webm'
+                                                    : '.ppt,.pptx,.pdf,.key'
                                         }
                                         required
                                         disabled={loading}
@@ -113,11 +111,10 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                     />
                                     <label
                                         htmlFor="file-upload"
-                                        className={`flex items-center justify-center gap-3 w-full px-4 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
-                                            selectedFile 
-                                                ? 'border-green-500/50 bg-green-500/5' 
-                                                : 'border-slate-700/50 bg-slate-800/50 hover:border-green-500/30 hover:bg-slate-800'
-                                        } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`flex items-center justify-center gap-3 w-full px-4 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${selectedFile
+                                            ? 'border-green-500/50 bg-green-500/5'
+                                            : 'border-slate-700/50 bg-slate-800/50 hover:border-green-500/30 hover:bg-slate-800'
+                                            } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <Upload className={`w-6 h-6 ${selectedFile ? 'text-green-400' : 'text-slate-400'}`} />
                                         <div className="text-center">
@@ -197,4 +194,13 @@ TopicForm.propTypes = {
     error: PropTypes.string,
     cancel: PropTypes.func.isRequired,
     selectedFile: PropTypes.object,
+    topicTypes: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number,
+        nombre: PropTypes.string,
+    })),
+    levels: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number,
+        nombre: PropTypes.string,
+        cursoId: PropTypes.number,
+    })),
 };

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/group.api';
+import { coursesService as groupService } from '../../../../services/group.api';
+import { coursesService } from '../../../../services/courses.api.js';
 import { BookOpen } from 'lucide-react';
 import { GroupForm, SummarySidebar, GroupCard } from '../components';
 
@@ -10,32 +11,45 @@ import { GroupForm, SummarySidebar, GroupCard } from '../components';
 const Group = () => {
     const navigate = useNavigate();
     const [user] = useState(authService.obtenerUsuarioActual());
-    const [form, setForm] = useState({ title: '', description: '', startDate: '', endDate: '' });
+    const [form, setForm] = useState({ title: '', description: '', startDate: '', endDate: '', courseId: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [groups, setGroups] = useState([]);
     const [copied, setCopied] = useState(null);
+    const [courses, setCourses] = useState([]);
 
-    const [cursos, setCursos] = useState([]);
-    const [cursoId, setCursoId] = useState("");
     useEffect(() => {
         if (!user) return navigate('/login');
         fetchGroups();
+        fetchCourses();
         // eslint-disable-next-line
     }, [user]);
 
-    useEffect(() => {
-        // Llama a tu API para obtener cursos
-        coursesService.getMyCourses().then(data => {
-            setCursos(data);
-            if (data.length > 0) setCursoId(data[0].id); // selecciona el primero por defecto
-        });
-    }, []);
+    const fetchCourses = async () => {
+        try {
+            const courseResponse = await coursesService.getCourses();
+            // eslint-disable-next-line no-console
+            console.log('Courses Response:', courseResponse);
+            
+            // El backend retorna { success: true, data: [...] }
+            const courseData = courseResponse?.data || [];
+            
+            setCourses(courseData);
+            
+            // Selecciona el primer curso por defecto
+            if (courseData.length > 0) {
+                setForm(prev => ({ ...prev, courseId: courseData[0].id }));
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error al cargar cursos:', err);
+        }
+    };
 
 
     const fetchGroups = async () => {
         try {
-            const res = await coursesService.getGroupRequests();
+            const res = await groupService.getGroupRequests();
             const data = res?.data ?? res ?? [];
 
             // Transformar datos del backend (español) al formato del componente (inglés)
@@ -91,11 +105,11 @@ const Group = () => {
                 descripcion: form.description,
                 fecha_ini: form.startDate,
                 fecha_fin: form.endDate,
-                cursoId: 1
+                cursoId: Number(form.courseId) || 1
             };
 
-            await coursesService.createGroup(payload);
-            setForm({ title: '', description: '', startDate: '', endDate: '' });
+            await groupService.createGroup(payload);
+            setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
             await fetchGroups();
         } catch (err) {
             setError(err.message || err?.response?.data?.message || 'Error al crear grupo');
@@ -125,17 +139,14 @@ const Group = () => {
                     {/* Formulario (ahora como componente) */}
                     <GroupForm
                         form={form}
+                        courses={courses}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
                         loading={loading}
                         error={error}
                         cancel={() => {
-                            setForm({ title: '', description: '', startDate: '', endDate: '' });
+                            setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
                         }}
-
-
-
-
                     />
 
                     {/* Sidebar resumen (componente) */}

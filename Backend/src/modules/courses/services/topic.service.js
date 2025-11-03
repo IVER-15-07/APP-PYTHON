@@ -8,7 +8,7 @@ export const topicService = {
         try {
             const newTopic = await topicoRepository.createTopic({
                 nombre: data.nombre,
-                aprobado: data.aprobado ?? false,
+                aprobado: data.aprobado === 'true' || data.aprobado === true,
                 tipo_topicoId: Number(data.tipo_topicoId),
                 nivelId: Number(data.nivelId),
             });
@@ -48,7 +48,7 @@ export const topicService = {
 
         } catch (error) {
             console.error("Error al crear el tópico con recurso:", error);
-            throw new Error("Error al crear el tópico con recurso");
+            throw new Error(error.message || "Error al crear el tópico con recurso");
 
         }
     },

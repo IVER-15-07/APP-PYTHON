@@ -5,7 +5,7 @@ const TopicCard = ({ topic, onEdit }) => {
   // Determinar icono y color según tipo
   const getTypeConfig = (type) => {
     switch (type) {
-      case 'texto':
+      case '1':
         return {
           icon: FileText,
           bgColor: 'bg-blue-500/10',
@@ -13,7 +13,7 @@ const TopicCard = ({ topic, onEdit }) => {
           textColor: 'text-blue-400',
           hoverBorder: 'hover:border-blue-500/50'
         };
-      case 'video':
+      case '2':
         return {
           icon: Video,
           bgColor: 'bg-red-500/10',
@@ -21,7 +21,7 @@ const TopicCard = ({ topic, onEdit }) => {
           textColor: 'text-red-400',
           hoverBorder: 'hover:border-red-500/50'
         };
-      case 'slides':
+      case '3':
         return {
           icon: Presentation,
           bgColor: 'bg-orange-500/10',
@@ -40,7 +40,7 @@ const TopicCard = ({ topic, onEdit }) => {
     }
   };
 
-  const config = getTypeConfig(topic.contentType);
+  const config = getTypeConfig(topic.tipo_topicoId);
   const Icon = config.icon;
 
   return (
@@ -50,7 +50,7 @@ const TopicCard = ({ topic, onEdit }) => {
           <Icon className={`w-4 h-4 ${config.textColor}`} />
         </div>
         <h3 className="text-sm font-semibold text-white truncate flex-1 group-hover:text-green-400 transition-colors">
-          {topic.title}
+          {topic.nombre}
         </h3>
       </div>
 
@@ -68,8 +68,8 @@ const TopicCard = ({ topic, onEdit }) => {
 TopicCard.propTypes = {
   topic: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    title: PropTypes.string.isRequired,
-    contentType: PropTypes.oneOf(['texto', 'video', 'slides']).isRequired,
+    nombre: PropTypes.string.isRequired,
+    tipo_topicoId: PropTypes.oneOf([1, 2, 3]).isRequired,
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
 };

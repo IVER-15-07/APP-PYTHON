@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { coursesService } from '../../../../services/group.api';
+import { topicsService } from '../../../../services/topic.api.js';
 import { Library, FileText, Video, Presentation } from 'lucide-react';
 import { TopicForm, TopicSummary, TopicCard } from '../components';
 
@@ -13,21 +13,48 @@ const Topic = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [topics, setTopics] = useState([]);
+    const [topicTypes, setTopicTypes] = useState([]);
+    const [levels, setLevels] = useState([]);
 
     useEffect(() => {
         if (!user) return navigate('/login');
         fetchTopics();
+        fetchTopicTypes();
+        fetchLevels();
         // eslint-disable-next-line
     }, [user]);
 
     const fetchTopics = async () => {
         try {
-            const res = await coursesService.getMyCourses();
-            const data = res?.data ?? res ?? [];
-            setTopics(Array.isArray(data) ? data : []);
+            const response = await topicsService.getAllTopics();
+            // El backend retorna { success: true, data: [...] }
+            const topicsData = response?.data || [];
+            setTopics(Array.isArray(topicsData) ? topicsData : []);
         } catch (err) {
             // eslint-disable-next-line no-console
-            console.error(err);
+            console.error('Error al obtener tópicos:', err);
+        }
+    };
+
+    const fetchTopicTypes = async () => {
+        try {
+            const response = await topicsService.getTopicTypes();
+            const typesData = response?.data || [];
+            setTopicTypes(Array.isArray(typesData) ? typesData : []);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error al obtener tipos de tópico:', err);
+        }
+    };
+
+    const fetchLevels = async () => {
+        try {
+            const response = await topicsService.getLevels();
+            const levelsData = response?.data || [];
+            setLevels(Array.isArray(levelsData) ? levelsData : []);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Error al obtener niveles:', err);
         }
     };
 
@@ -48,7 +75,7 @@ const Topic = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-        
+
         if (!selectedFile) {
             setError('Por favor selecciona un archivo');
             setLoading(false);
@@ -56,31 +83,39 @@ const Topic = () => {
         }
 
         try {
-            // Crear FormData para enviar archivo
-            const formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('description', form.description);
-            formData.append('contentType', form.contentType);
-            formData.append('level', form.level);
-            formData.append('file', selectedFile);
-            formData.append('profesorId', user.id);
+            // Preparar datos para el backend
+            const topicData = {
+                nombre: form.title,
+                tipo_topicoId: Number(form.contentType),  // Convertir a número
+                nivelId: Number(form.level),              // Convertir a número
+                aprobado: false
+            };
+
+            // Archivos en array (backend espera 'files' en plural)
+            const files = [selectedFile];
+
             // eslint-disable-next-line no-console
-            console.log('FormData a enviar:', {
-                title: form.title,
-                description: form.description,
-                contentType: form.contentType,
-                level: form.level,
-                fileName: selectedFile.name,
-                fileSize: selectedFile.size,
-                profesorId: user.id
-            });
+            console.log('Datos a enviar:', topicData);
+            // eslint-disable-next-line no-console
+            console.log('Archivos a enviar:', files);
+
+            // Llamar al servicio para crear el tópico
+            const response = await topicsService.createTopic(topicData, files);
+
+            // eslint-disable-next-line no-console
+            console.log('Tópico creado exitosamente:', response);
 
             // Limpiar formulario
             setForm({ title: '', description: '', contentType: '', level: '' });
             setSelectedFile(null);
+
+            // Recargar la lista de tópicos
             await fetchTopics();
+
         } catch (err) {
-            setError(err.message || err?.response?.data?.message || 'Error al crear tópico');
+            // eslint-disable-next-line no-console
+            console.error('Error al crear tópico:', err);
+            setError(err.message || 'Error al crear el tópico');
         } finally {
             setLoading(false);
         }
@@ -92,11 +127,10 @@ const Topic = () => {
         // TODO: Implementar lógica de edición
     };
 
-    // Filtrar tópicos por tipo
-    const textoTopics = topics.filter(t => t.contentType === 'texto');
-    const videoTopics = topics.filter(t => t.contentType === 'video');
-    const slidesTopics = topics.filter(t => t.contentType === 'slides');
-
+    // Filtrar tópicos por tipo usando el ID
+    const textoTopics = topics.filter(t => t.tipo_topicoId === 1);
+    const videoTopics = topics.filter(t => t.tipo_topicoId === 2);
+    const slidesTopics = topics.filter(t => t.tipo_topicoId === 3);
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
             <div className="max-w-6xl mx-auto">
@@ -123,6 +157,8 @@ const Topic = () => {
                         loading={loading}
                         error={error}
                         selectedFile={selectedFile}
+                        topicTypes={topicTypes}
+                        levels={levels}
                         cancel={() => {
                             setForm({ title: '', description: '', contentType: '', level: '' });
                             setSelectedFile(null);
@@ -159,7 +195,7 @@ const Topic = () => {
                                         {textoTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {textoTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de texto</p>
                                     ) : (
@@ -181,7 +217,7 @@ const Topic = () => {
                                         {videoTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {videoTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de video</p>
                                     ) : (
@@ -203,7 +239,7 @@ const Topic = () => {
                                         {slidesTopics.length}
                                     </span>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                                     {slidesTopics.length === 0 ? (
                                         <p className="text-sm text-slate-500 text-center py-8">No hay tópicos de slides</p>
                                     ) : (

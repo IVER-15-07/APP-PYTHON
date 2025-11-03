@@ -60,12 +60,13 @@ export default function CourseDetail() {
             }));
             
             handleCloseModal();
-            
+            //eslint-disable-next-line no-console
             console.log('Curso actualizado exitosamente:', response);
             
             alert('Curso actualizado exitosamente');
             
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Error al actualizar curso:', error);
             alert(error.message || 'Error al actualizar el curso');
         } finally {

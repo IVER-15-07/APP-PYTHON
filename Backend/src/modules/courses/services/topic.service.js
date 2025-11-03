@@ -25,7 +25,7 @@ export const topicService = {
 
                 });
 
-                let recursoData = {
+                const recursoData = {
                     nombre: file.originalname,
                     url: upload.secure_url,
                     topicoId: newTopic.id,

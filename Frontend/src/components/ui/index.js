@@ -18,4 +18,5 @@ export { default as BotonLink } from './BotonLink';
 export { default as RutaItem } from './RutaItem';
 export { default as InputField } from './InputField';
 export { default as SocialButton } from './SocialButton';
+export { default as CreateButton } from './CreateButton';
 export { default as Spinner } from './Spinner';

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { grupoService } from "../../../../services/grupo.api.js";
+import { grupoService } from "../services/grupo.api.js";
 
 
 const Course = () => {
@@ -37,6 +36,7 @@ useEffect(() => {
       }
 
     } catch (error) {
+      //eslint-disable-next-line no-console
       console.error("Error al obtener grupo del usuario:", error);
     }
   };

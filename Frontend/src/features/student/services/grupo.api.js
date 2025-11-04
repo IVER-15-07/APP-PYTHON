@@ -1,4 +1,4 @@
-import axiosInstance from "../helpers/axios-config";
+import axiosInstance from "../../../../helpers/axios-config";
 
 export const grupoService = {
 

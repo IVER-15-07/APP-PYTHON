@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { grupoService } from "../../../../services/grupo.api.js";
 
 
 const Course = () => {
@@ -19,68 +20,62 @@ const Course = () => {
 
 
  // Al cargar, verificar en el backend si el usuario pertenece a un grupo
- useEffect(() => {
-   const usuario = JSON.parse(localStorage.getItem("user"));
-   if (!usuario?.id) return;
+useEffect(() => {
+  const usuario = JSON.parse(localStorage.getItem("user"));
+  if (!usuario?.id) return;
+
+  const fetchUserGroup = async () => {
+    try {
+      const data = await grupoService.getUserGroup(usuario.id);
+
+      if (data.grupo) {
+        setGrupo(data.grupo);
+        setNiveles(data.niveles);
+      } else {
+        setGrupo(null);
+        setNiveles([]);
+      }
+
+    } catch (error) {
+      console.error("Error al obtener grupo del usuario:", error);
+    }
+  };
+
+  fetchUserGroup();
+}, []);
 
 
-   const fetchUserGroup = async () => {
-     try {
-       const res = await axios.get(`http://localhost:3000/api/grupo/user/${usuario.id}`);
-       if (res.data.grupo) {
-         setGrupo(res.data.grupo);
-         setNiveles(res.data.niveles);
-       } else {
-         setGrupo(null);
-         setNiveles([]);
-       }
-     } catch (error) {
-       console.error("Error al obtener grupo del usuario:", error);
-     }
-   };
 
+const joinByCode = async () => {
+  setMsg("");
+  if (!codigo.trim()) {
+    setMsg("Ingresa un código válido.");
+    return;
+  }
 
-   fetchUserGroup();
- }, []);
+  const usuario = JSON.parse(localStorage.getItem("user"));
+  const usuarioId = usuario?.id;
 
+  if (!usuarioId) {
+    setMsg("Error: no se encontró el usuario en sesión.");
+    return;
+  }
 
- // Unirse por código
- const joinByCode = async () => {
-   setMsg("");
-   if (!codigo.trim()) {
-     setMsg("Ingresa un código válido.");
-     return;
-   }
+  setLoading(true);
+  try {
+    const data = await grupoService.joinGroupByCode({ codigo, usuarioId });
 
+    setGrupo(data.grupo);
+    setNiveles(data.niveles);
+    setMsg(data.message);
+    setShowForm(false);
 
-   const usuario = JSON.parse(localStorage.getItem("user"));
-   const usuarioId = usuario?.id;
-
-
-   if (!usuarioId) {
-     setMsg("Error: no se encontró el usuario en sesión.");
-     return;
-   }
-
-
-   setLoading(true);
-   try {
-     const res = await axios.post("http://localhost:3000/api/grupo/join-by-code", {
-       codigo,
-       usuarioId,
-     });
-
-
-     setGrupo(res.data.grupo);
-     setNiveles(res.data.niveles);
-     setMsg(res.data.message);
-     setShowForm(false);
-   } catch (error) {
-     setMsg(error.response?.data?.message || "Código inválido o error del servidor.");
-   } finally {
-     setLoading(false);
-   }
- };
+  } catch (error) {
+    setMsg(error.response?.data?.message || "Código inválido o error del servidor.");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
  return (

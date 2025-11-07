@@ -1,8 +1,8 @@
 import CopyButton from './CopyButton';
-import { Clock, CheckCircle2, Edit, Trash2 } from 'lucide-react';
+import { Clock, CheckCircle2, Edit } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const GroupCard = ({ g, copied, onCopy, onEdit, onDelete }) => {
+const GroupCard = ({ g, copied, onCopy, onEdit }) => {
   return (
     <article
       key={g.id}

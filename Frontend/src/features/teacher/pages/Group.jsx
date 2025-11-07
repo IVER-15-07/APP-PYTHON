@@ -114,10 +114,7 @@ const Group = () => {
             };
 
             if (isEditing && editingGroupId) {
-                // TODO: Implementar cuando el endpoint esté listo
-                setError('La funcionalidad de edición estará disponible próximamente');
-                setLoading(false);
-                return;
+                await groupService.updateGroup(editingGroupId, payload);
             } else {
                 // Crear nuevo grupo
                 await groupService.createGroup(payload);

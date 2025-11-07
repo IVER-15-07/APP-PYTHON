@@ -11,3 +11,5 @@ export { default as TopicCard } from './TopicCard';
 export { default as CustomDropdown } from './CustomDropdown';
 export { default as CourseCard } from './CourseCard';
 export { default as EditCourseModal } from './EditCourseModal';
+export { default as FilePreview } from './FilePreview';
+

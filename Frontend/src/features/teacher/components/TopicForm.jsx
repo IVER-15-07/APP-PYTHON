@@ -1,10 +1,32 @@
-import { Plus, Upload, Ban, AlertCircle, FileText, Video, Presentation, X } from 'lucide-react';
+import { Plus, Upload, Ban, AlertCircle, FileText, Video, Presentation, Image as ImageIcon, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, cancel, selectedFile, topicTypes = [], levels = [], isModal = false, onClose }) => {
+const TopicForm = ({ 
+    form, 
+    onChange, 
+    onSubmit, 
+    onFileChange,
+    onImageChange,
+    onShowPreview,
+    loading, 
+    error, 
+    cancel, 
+    selectedFile,
+    selectedImage, 
+    textPreview,           
+    imagePreview,          
+    videoPreview,          
+    pdfPreview,            
+    docxPreview,
+    selectedImagePreview,  // eslint-disable-line no-unused-vars
+    topicTypes = [], 
+    levels = [], 
+    isModal = false, 
+    onClose 
+}) => {
     const formContent = (
         <>
             <div className="flex items-center gap-2 mb-6">
@@ -143,10 +165,72 @@ const TopicForm = ({ form, onChange, onSubmit, onFileChange, loading, error, can
                                 </div>
                             </div>
 
+                            {/* Campo adicional para imagen (solo cuando es tipo texto) */}
+                            {form.contentType === '1' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                        Imagen ilustrativa (opcional)
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            name="image"
+                                            onChange={onImageChange}
+                                            accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
+                                            disabled={loading}
+                                            className="hidden"
+                                            id="image-upload"
+                                        />
+                                        <label
+                                            htmlFor="image-upload"
+                                            className={`flex items-center justify-center gap-3 w-full px-4 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer ${selectedImage
+                                                ? 'border-blue-500/50 bg-blue-500/5'
+                                                : 'border-slate-700/50 bg-slate-800/50 hover:border-blue-500/30 hover:bg-slate-800'
+                                                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                            <ImageIcon className={`w-5 h-5 ${selectedImage ? 'text-blue-400' : 'text-slate-400'}`} />
+                                            <div className="text-center">
+                                                {selectedImage ? (
+                                                    <>
+                                                        <p className="text-blue-400 font-medium text-sm">{selectedImage.name}</p>
+                                                        <p className="text-xs text-slate-500 mt-1">
+                                                            {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p className="text-slate-300 text-sm font-medium">
+                                                            Agregar imagen al tópico
+                                                        </p>
+                                                        <p className="text-xs text-slate-500 mt-1">
+                                                            JPG, PNG, GIF, WEBP, SVG
+                                                        </p>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Botón para ver previsualización */}
+                            {selectedFile && (textPreview || imagePreview || videoPreview || pdfPreview || docxPreview) && (
+                                <div className="text-center">
+                                    <button
+                                        type="button"
+                                        onClick={onShowPreview}
+                                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-xl transition-all font-medium"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        Ver previsualización del archivo
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Información adicional según el tipo */}
                             <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
                                 <p className="text-sm text-slate-400">
-                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano, Markdown o documentos de Word.'}
+                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano (.txt), Markdown (.md) o documentos de Word (.docx). Opcionalmente, agrega una imagen ilustrativa.'}
                                     {form.contentType === '2' && 'Asegúrate de que el video esté en un formato compatible y no sea muy pesado.'}
                                     {form.contentType === '3' && 'Puedes subir presentaciones de PowerPoint o archivos PDF.'}
                                 </p>
@@ -221,10 +305,19 @@ TopicForm.propTypes = {
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onFileChange: PropTypes.func.isRequired,
+    onImageChange: PropTypes.func,
+    onShowPreview: PropTypes.func,
     loading: PropTypes.bool,
     error: PropTypes.string,
     cancel: PropTypes.func.isRequired,
     selectedFile: PropTypes.object,
+    selectedImage: PropTypes.object,
+    textPreview: PropTypes.string,
+    imagePreview: PropTypes.string,
+    videoPreview: PropTypes.string,
+    pdfPreview: PropTypes.string,
+    docxPreview: PropTypes.string,
+    selectedImagePreview: PropTypes.string,
     topicTypes: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number,
         nombre: PropTypes.string,

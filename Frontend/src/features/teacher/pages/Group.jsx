@@ -19,6 +19,8 @@ const Group = () => {
     const [copied, setCopied] = useState(null);
     const [courses, setCourses] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingGroupId, setEditingGroupId] = useState(null);
 
     useEffect(() => {
         if (!user) return navigate('/login');
@@ -61,6 +63,7 @@ const Group = () => {
                 description: group.descripcion,
                 code: group.codigo,
                 level: group.curso?.nombre || 'Sin curso',
+                courseId: group.cursoId, // Guardar el ID del curso
                 startDate: group.fecha_ini,
                 endDate: group.fecha_fin,
                 isApproved: group.esAprobado
@@ -110,16 +113,65 @@ const Group = () => {
                 cursoId: Number(form.courseId) || 1
             };
 
-            await groupService.createGroup(payload);
+            if (isEditing && editingGroupId) {
+                // TODO: Implementar cuando el endpoint esté listo
+                setError('La funcionalidad de edición estará disponible próximamente');
+                setLoading(false);
+                return;
+            } else {
+                // Crear nuevo grupo
+                await groupService.createGroup(payload);
+            }
+
+            // Limpiar formulario y estados
             setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
+            setIsEditing(false);
+            setEditingGroupId(null);
             await fetchGroups();
-            setIsModalOpen(false); // Cerrar modal después de crear
+            setIsModalOpen(false); // Cerrar modal después de crear/actualizar
         } catch (err) {
-            setError(err.message || err?.response?.data?.message || 'Error al crear grupo');
+            setError(err.message || err?.response?.data?.message || `Error al ${isEditing ? 'actualizar' : 'crear'} grupo`);
         } finally {
             setLoading(false);
         }
+    };
 
+    const handleEditGroup = (group) => {
+        // Solo permitir editar grupos aprobados
+        if (!group.isApproved) {
+            setError('Solo se pueden editar grupos aprobados');
+            return;
+        }
+
+        // Encontrar el grupo original de la respuesta del backend para obtener el cursoId
+        const originalGroup = groups.find(g => g.id === group.id);
+        
+        setForm({
+            title: group.title,
+            description: group.description,
+            startDate: group.startDate,
+            endDate: group.endDate,
+            courseId: originalGroup?.courseId || courses[0]?.id || 1
+        });
+        setEditingGroupId(group.id);
+        setIsEditing(true);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsEditing(false);
+        setEditingGroupId(null);
+        setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
+        setError('');
+    };
+
+    const handleOpenCreateModal = () => {
+        setIsEditing(false);
+        setEditingGroupId(null);
+        setForm({ title: '', description: '', startDate: '', endDate: '', courseId: courses[0]?.id || 1 });
+        setError('');
+        setIsModalOpen(true);
     };
 
     return (
@@ -133,7 +185,7 @@ const Group = () => {
                 </div>
                     
                     {/* Botón para abrir modal */}
-                    <CreateButton onClick={() => setIsModalOpen(true)}>
+                    <CreateButton onClick={handleOpenCreateModal}>
                         Nuevo Grupo
                     </CreateButton>
                 </header>
@@ -155,7 +207,14 @@ const Group = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {groups.map((g) => (
-                                    <GroupCard key={g.id} g={g} copied={copied} onCopy={copyToClipboard} onEdit={() => { }} onDelete={() => { }} />
+                                    <GroupCard 
+                                        key={g.id} 
+                                        g={g} 
+                                        copied={copied} 
+                                        onCopy={copyToClipboard} 
+                                        onEdit={handleEditGroup} 
+                                        onDelete={() => { }} 
+                                    />
                                 ))}
                             </div>
                         )}
@@ -167,16 +226,17 @@ const Group = () => {
                     </aside>
                 </div>
 
-                {/* Modal para crear grupo */}
+                {/* Modal para crear/editar grupo */}
                 <GroupForm
                     isModal={true}
-                    onClose={isModalOpen ? () => setIsModalOpen(false) : null}
+                    onClose={isModalOpen ? handleCloseModal : null}
                     form={form}
                     courses={courses}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
                     loading={loading}
                     error={error}
+                    isEditing={isEditing}
                 />
             </div>
         </div>

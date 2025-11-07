@@ -1,11 +1,11 @@
 import CopyButton from './CopyButton';
-import { Clock, CheckCircle2 } from 'lucide-react';
+import { Clock, CheckCircle2, Edit, Trash2 } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const GroupCard = ({ g, copied, onCopy }) => {
+const GroupCard = ({ g, copied, onCopy, onEdit, onDelete }) => {
   return (
     <article
-      key={g.id} 
+      key={g.id}
       className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 hover:border-green-500/30 transition-all duration-200 shadow-xl hover:shadow-2xl group"
     >
       <div className="flex justify-between items-start gap-4 mb-4">
@@ -13,7 +13,7 @@ const GroupCard = ({ g, copied, onCopy }) => {
           <h3 className="text-lg font-semibold text-white mb-2 truncate group-hover:text-green-400 transition-colors">{g.title}</h3>
           <p className="text-slate-400 text-sm line-clamp-2">{g.description}</p>
         </div>
-        
+
         {/* Status Badge */}
         {g.isApproved ? (
           <span className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/30 shrink-0">
@@ -51,6 +51,19 @@ const GroupCard = ({ g, copied, onCopy }) => {
           )}
         </div>
       </div>
+
+      {/* Botones de acción - Solo para grupos aprobados */}
+      {g.isApproved && (
+        <div className="flex gap-2 pt-2">
+          <button
+            onClick={() => onEdit(g)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 transition-all duration-200 text-sm font-medium"
+          >
+            <Edit className="w-4 h-4" />
+            Editar
+          </button>
+        </div>
+      )}
     </article>
   );
 };

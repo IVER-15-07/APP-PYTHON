@@ -1,11 +1,11 @@
-import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen, X } from 'lucide-react';
+import { Plus, Send, Ban, AlertCircle, Calendar, BookOpen, X, Edit } from 'lucide-react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, isModal = false, onClose }) => {
+const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, isModal = false, onClose, isEditing = false }) => {
     
     // Si es modal y está cerrado, no renderizar nada
     if (isModal && !onClose) return null;
@@ -13,8 +13,17 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, 
     const formContent = (
         <>
             <div className="flex items-center gap-2 mb-6">
-                <Plus className="w-5 h-5 text-green-400" />
-                <h2 className="text-xl font-semibold text-white">Crear nuevo grupo</h2>
+                {isEditing ? (
+                    <>
+                        <Edit className="w-5 h-5 text-blue-400" />
+                        <h2 className="text-xl font-semibold text-white">Editar grupo</h2>
+                    </>
+                ) : (
+                    <>
+                        <Plus className="w-5 h-5 text-green-400" />
+                        <h2 className="text-xl font-semibold text-white">Crear nuevo grupo</h2>
+                    </>
+                )}
             </div>
 
             {error && (
@@ -124,10 +133,14 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={`flex items-center gap-2 px-6 py-3 ${
+                            isEditing 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-blue-500/25 border-blue-400/30' 
+                                : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-emerald-500/25 border-emerald-400/30'
+                        } text-white font-semibold rounded-xl transition-all duration-200 shadow-lg border disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                         <Send className="w-4 h-4" />
-                        {loading ? 'Creando...' : 'Enviar solicitud'}
+                        {loading ? (isEditing ? 'Actualizando...' : 'Creando...') : (isEditing ? 'Actualizar grupo' : 'Enviar solicitud')}
                     </button>
 
                     <button
@@ -150,7 +163,9 @@ const GroupForm = ({ form, courses, onChange, onSubmit, loading, error, cancel, 
                 <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                     {/* Header del Modal */}
                     <div className="flex items-center justify-between p-6 border-b border-slate-700/50 sticky top-0 bg-slate-900/95 backdrop-blur-sm z-10">
-                        <h2 className="text-2xl font-bold text-white">Crear Nuevo Grupo</h2>
+                        <h2 className="text-2xl font-bold text-white">
+                            {isEditing ? 'Editar Grupo' : 'Crear Nuevo Grupo'}
+                        </h2>
                         <button
                             onClick={onClose}
                             className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-700/50 rounded-lg"
@@ -200,4 +215,5 @@ GroupForm.propTypes = {
     cancel: PropTypes.func,
     isModal: PropTypes.bool,
     onClose: PropTypes.func,
+    isEditing: PropTypes.bool,
 };

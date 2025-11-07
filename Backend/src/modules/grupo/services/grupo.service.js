@@ -1,4 +1,5 @@
 import { grupoRepository } from "../repositories/grupo.repository.js";
+import { validateGroupPayload } from "../validations/grupo.validation.js";
 
 export const grupoService = {
   async joinGroupByCode(codigo, usuarioId) {
@@ -25,4 +26,15 @@ export const grupoService = {
     const niveles = await grupoRepository.findNiveles();
     return { grupo: registro.grupo, niveles };
   },
+
+  async updateGroup(id, data) {
+    const grupoExistente = await grupoRepository.findById(id);
+    if (!grupoExistente) throw { status: 404, message: "Grupo no encontrado." };
+
+    const payloadSaneado = validateGroupPayload(data);
+
+    const updated = await grupoRepository.update(id, payloadSaneado);
+
+    return updated;
+  }
 };

@@ -24,6 +24,15 @@ export const coursesService = {
         }
     },
 
+    async updateGroup(id, updatedData) {
+    try {
+      const response = await axiosInstance.put(`/api/teacher/groups/${id}`, updatedData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error al actualizar el grupo");
+    }
+  },
+
 }
 
 

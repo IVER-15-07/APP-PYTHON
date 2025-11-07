@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
 import { topicsService } from '../../../../services/topic.api.js';
 import { Library } from 'lucide-react';
-import { TopicForm, TopicSummary, FilePreview, TopicCard } from '../components';
+import { TopicForm, TopicSummary, FilePreview, TopicCarousel } from '../components';
 import { CreateButton } from '../../../components/ui';
 import mammoth from 'mammoth';
 
@@ -261,7 +261,7 @@ return (
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Lista de tópicos - Ocupa 3 columnas */}
-                <section className="lg:col-span-3">
+                <section className="lg:col-span-3 space-y-8">
                     <h2 className="text-2xl font-bold text-white mb-6">Tópicos creados</h2>
 
                     {topics.length === 0 ? (
@@ -273,15 +273,23 @@ return (
                             <p className="text-slate-500 text-sm">Crea tu primer tópico usando el botón de arriba.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {topics.map((topic) => (
-                                <TopicCard 
-                                    key={topic.id}
-                                    topic={topic}
-                                    onEdit={handleEditTopic}
-                                />
-                            ))}
-                        </div>
+                        <>
+                            {/* Agrupar tópicos por nivel y crear un carrusel para cada uno */}
+                            {levels.map((level) => {
+                                const topicsByLevel = topics.filter(topic => topic.nivelId === level.id);
+                                
+                                if (topicsByLevel.length === 0) return null;
+
+                                return (
+                                    <TopicCarousel 
+                                        key={level.id}
+                                        levelName={level.nombre}
+                                        topics={topicsByLevel}
+                                        onEdit={handleEditTopic}
+                                    />
+                                );
+                            })}
+                        </>
                     )}
                 </section>
 

@@ -8,6 +8,7 @@ export { default as DashboardSummary } from './DashboardSummary';
 export { default as TopicForm } from './TopicForm';
 export { default as TopicSummary } from './TopicSummary';
 export { default as TopicCard } from './TopicCard';
+export { default as TopicCarousel } from './TopicCarousel';
 export { default as CustomDropdown } from './CustomDropdown';
 export { default as CourseCard } from './CourseCard';
 export { default as EditCourseModal } from './EditCourseModal';

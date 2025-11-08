@@ -30,5 +30,10 @@ export const recursosRepository = {
       where: { id: { in: ids.map(Number) } },
     }),
 
+    findSingleByTopicId : (id) =>
+    prisma.recursos.findFirst({
+      where: { topicoId: Number(id) },
+    }),
+
 
 };

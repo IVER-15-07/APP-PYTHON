@@ -23,7 +23,8 @@ router.get('/topics', getAllTopics);
 router.get('/topic-types', getTopicTypes);
 router.get('/levels', getLevels);
 router.put('/course/:id',updateCourse);
-router.put('/topic/:id', upload.array('updatedFiles'), updateTopic);
+router.put('/topic/:id', upload.array('files'), updateTopic);
+
 
 
 export default router;

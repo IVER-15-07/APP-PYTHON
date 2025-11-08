@@ -8,49 +8,59 @@ export const topicService = {
         try {
             const newTopic = await topicoRepository.createTopic({
                 nombre: data.nombre,
-
                 tipo_topicoId: Number(data.tipo_topicoId),
                 nivelId: Number(data.nivelId),
             });
-
             if (!files || files.length === 0) {
-                throw new Error("debe subir al menos un archivo.");
+                throw new Error("Se requiere al menos un archivo para crear un recurso");
             }
-            const recursos = [];
+
+            const recurso = {
+
+                nombre: `recursos_topico_${newTopic.id}`,
+                url: null,
+                imagenurl: null,
+                audiourl: null,
+                subtitulo: null,
+                publicId: null,
+                topicoId: newTopic.id,
+            }
+
             for (const file of files) {
+                const isImage = file.mimetype.startsWith("image/");
+                const isAudio = file.mimetype.startsWith("audio/");
+                const isText = file.mimetype.startsWith("text/") || file.mimetype === "application/x-subrip";
 
                 const upload = await cloudinary.uploader.upload(file.path, {
-                    resource_type: "auto",
+                    resource_type: isAudio ? "video" : "auto",
                     folder: "recursos",
-
                 });
 
-                const recursoData = {
-                    nombre: file.originalname,
-                    url: upload.secure_url,
-                    publicId: upload.public_id,
-                    topicoId: newTopic.id,
-                };
-
-                if (file.mimetype.startsWith("image/")) {
-                    recursoData.imagenurl = upload.secure_url;
-                } else if (file.mimetype.startsWith("audio/")) {
-                    recursoData.audiourl = upload.secure_url;
-                } else if (file.mimetype.startsWith("text/")) {
-                    recursoData.subtitulo = upload.secure_url;
+                if (!recurso.publicId) {
+                    recurso.publicId = upload.public_id;
                 }
-
-                recursos.push(recursoData);
+                if (!recurso.url) {
+                    recurso.url = upload.secure_url;
+                }
+                if (isImage) {
+                    recurso.imagenurl = upload.secure_url;
+                }
+                if (isAudio) {
+                    recurso.audiourl = upload.secure_url;
+                }
+                if (isText) {
+                    recurso.subtitulo = upload.secure_url;
+                }
             }
 
-            await recursosRepository.createManyResources(recursos);
-
-            return { message: "Tópico y recursos creados exitosamente", topic: newTopic, recursos };
-
+            const recursoCreado = await recursosRepository.createResource(recurso);
+            return {
+                message: "Tópico y recurso creados exitosamente",
+                topic: newTopic,
+                resource: recursoCreado,
+            };
         } catch (error) {
-            console.error("Error al crear el tópico con recurso:", error);
-            throw new Error(error.message || "Error al crear el tópico con recurso");
-
+            throw new Error(`Error al crear tópico y recurso: ${error.message}`);
         }
     },
 
@@ -60,118 +70,63 @@ export const topicService = {
     },
 
     async updateTopicWithResources(topicId, data, files) {
-        const id = Number(topicId);
-        const topic = await topicoRepository.getTopicById(id);
-        if (!topic) throw new Error("Tópico no encontrado");
+    const id = Number(topicId);
 
-        // 🔹 1. Actualizar info del tópico
-        const updateData = {};
-        if (data.nombre) updateData.nombre = data.nombre;
-        if (data.tipo_topicoId) updateData.tipo_topicoId = Number(data.tipo_topicoId);
-        if (data.nivelId) updateData.nivelId = Number(data.nivelId);
-        if (Object.keys(updateData).length > 0)
-            await topicoRepository.updateTopic(id, updateData);
+    // Obtener tópico
+    const topic = await topicoRepository.getTopicById(id);
+    if (!topic) throw new Error("Tópico no encontrado");
 
-        // 🔹 2. Eliminar recursos marcados
-        let idsAEliminar = [];
-        if (data.deleteResourceIds) {
-            try {
-                idsAEliminar = Array.isArray(data.deleteResourceIds)
-                    ? data.deleteResourceIds.map(Number)
-                    : JSON.parse(data.deleteResourceIds);
-            } catch {
-                throw new Error("Error al procesar deleteResourceIds");
-            }
-        }
+    // Actualizar solo los campos que vienen
+    const updateData = {};
+    if (data.nombre !== undefined) updateData.nombre = data.nombre;
+    if (data.tipo_topicoId !== undefined) updateData.tipo_topicoId = Number(data.tipo_topicoId);
+    if (data.nivelId !== undefined) updateData.nivelId = Number(data.nivelId);
 
-        for (const recursoId of idsAEliminar) {
-            const recurso = await recursosRepository.findById(recursoId);
-            if (recurso?.publicId) {
-                await cloudinary.uploader.destroy(recurso.publicId, {
-                    resource_type: "auto",
-                });
-            }
-            await recursosRepository.deleteResource(recursoId);
-        }
-
-        // 🔹 3. Reemplazar archivos existentes
-        
-        const updatedFiles = files.filter(f => f.fieldname === "updatedFiles");
-        for (const file of updatedFiles) {
-            const recursoId = Number(file.originalname.split("__")[0]); // ej: "4__nombre.png"
-            const recursoExistente = await recursosRepository.findById(recursoId);
-            if (!recursoExistente) continue;
-
-            const recursoType = file.mimetype.startsWith("image/")
-                ? "image"
-                : file.mimetype.startsWith("audio/")
-                    ? "video"
-                    : "raw";
-
-            // Sobrescribir en Cloudinary
-            const upload = await cloudinary.uploader.upload(file.path, {
-                public_id: recursoExistente.publicId,
-                resource_type: recursoType,
-                overwrite: true,
-                invalidate: true,
-            });
-
-            const updatedRecurso = {
-                nombre: file.originalname.split("__")[1], // nombre limpio
-                url: upload.secure_url,
-                imagenurl: null,
-                audiourl: null,
-                subtitulo: null,
-            };
-
-            if (file.mimetype.startsWith("image/"))
-                updatedRecurso.imagenurl = upload.secure_url;
-            else if (file.mimetype.startsWith("audio/"))
-                updatedRecurso.audiourl = upload.secure_url;
-            else if (file.mimetype.startsWith("text/") || file.mimetype === "application/pdf")
-                updatedRecurso.subtitulo = upload.secure_url;
-
-            await recursosRepository.updateResource(recursoId, updatedRecurso);
-        }
-
-        // 🔹 4. Agregar archivos nuevos
-        const newFiles = files.filter(f => f.fieldname === "newFiles");
-        if (newFiles.length > 0) {
-            const nuevosRecursos = [];
-            for (const file of newFiles) {
-                const upload = await cloudinary.uploader.upload(file.path, {
-                    resource_type: "auto",
-                    folder: "recursos",
-                });
-
-                const dataRecurso = {
-                    nombre: file.originalname,
-                    url: upload.secure_url,
-                    publicId: upload.public_id,
-                    topicoId: id,
-                    imagenurl: null,
-                    audiourl: null,
-                    subtitulo: null,
-                };
-
-                if (file.mimetype.startsWith("image/"))
-                    dataRecurso.imagenurl = upload.secure_url;
-                else if (file.mimetype.startsWith("audio/"))
-                    dataRecurso.audiourl = upload.secure_url;
-                else if (file.mimetype.startsWith("text/") || file.mimetype === "application/pdf")
-                    dataRecurso.subtitulo = upload.secure_url;
-
-                nuevosRecursos.push(dataRecurso);
-            }
-
-            await recursosRepository.createManyResources(nuevosRecursos);
-        }
-
-        const updatedTopic = await topicoRepository.getTopicById(id);
-        return { message: "Tópico y recursos actualizados", topic: updatedTopic };
+    if (Object.keys(updateData).length > 0) {
+        await topicoRepository.updateTopic(id, updateData);
     }
 
+    // Obtener recurso existente
+    const recurso = await recursosRepository.findSingleByTopicId(id);
+    if (!recurso) throw new Error("El recurso del tópico no existe");
+
+    const patch = {};
+
+    // Map de tipos MIME a campos en la base
+    const typeMap = [
+        { test: mimetype => mimetype.startsWith("image/"), field: "imagenurl", cloudType: "image" },
+        { test: mimetype => mimetype.startsWith("audio/"), field: "audiourl", cloudType: "video" },
+        { test: mimetype => mimetype.startsWith("text/") || mimetype === "application/x-subrip" || mimetype === "application/octet-stream", field: "subtitulo", cloudType: "raw" },
+    ];
+
+    for (const file of (files || [])) {
+        for (const { test, field, cloudType } of typeMap) {
+            if (test(file.mimetype)) {
+                const upload = await cloudinary.uploader.upload(file.path, {
+                    resource_type: cloudType,
+                    public_id: recurso.publicId,
+                    overwrite: true,
+                    invalidate: true,
+                });
+                patch[field] = upload.secure_url;
+                patch.publicId = upload.public_id;
+            }
+        }
+    }
+
+    // Actualizar URL principal según data.main
+    if (data.main && patch[data.main] || recurso[data.main]) {
+        patch.url = patch[data.main] || recurso[data.main];
+    }
+
+    if (Object.keys(patch).length > 0) {
+        await recursosRepository.updateResource(recurso.id, patch);
+    }
+
+    const updated = await topicoRepository.getTopicById(id);
+    return { message: "Tópico y recurso actualizado", topic: updated };
 }
 
 
+}
 

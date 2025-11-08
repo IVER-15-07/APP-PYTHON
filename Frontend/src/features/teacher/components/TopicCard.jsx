@@ -1,29 +1,35 @@
 import PropTypes from 'prop-types';
-import { FileText, Video, Presentation, Edit2 } from 'lucide-react';
+import { FileText, Video, Presentation, Edit2} from 'lucide-react';
 
 const TopicCard = ({ topic, onEdit }) => {
-  // Determinar icono y color según tipo
+  // Determinar icono, color y nombre según tipo
   const getTypeConfig = (type) => {
     switch (type) {
+      case 1:
       case '1':
         return {
           icon: FileText,
+          name: 'Texto',
           bgColor: 'bg-blue-500/10',
           borderColor: 'border-blue-500/30',
           textColor: 'text-blue-400',
           hoverBorder: 'hover:border-blue-500/50'
         };
+      case 2:
       case '2':
         return {
           icon: Video,
+          name: 'Video',
           bgColor: 'bg-red-500/10',
           borderColor: 'border-red-500/30',
           textColor: 'text-red-400',
           hoverBorder: 'hover:border-red-500/50'
         };
+      case 3:
       case '3':
         return {
           icon: Presentation,
+          name: 'Slide',
           bgColor: 'bg-orange-500/10',
           borderColor: 'border-orange-500/30',
           textColor: 'text-orange-400',
@@ -32,6 +38,7 @@ const TopicCard = ({ topic, onEdit }) => {
       default:
         return {
           icon: FileText,
+          name: 'Desconocido',
           bgColor: 'bg-slate-500/10',
           borderColor: 'border-slate-500/30',
           textColor: 'text-slate-400',
@@ -44,21 +51,27 @@ const TopicCard = ({ topic, onEdit }) => {
   const Icon = config.icon;
 
   return (
-    <div className={`bg-slate-900/80 backdrop-blur-sm border ${config.borderColor} ${config.hoverBorder} rounded-xl p-4 transition-all duration-200 shadow-lg hover:shadow-xl group`}>
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`${config.bgColor} p-2 rounded-lg border ${config.borderColor}`}>
-          <Icon className={`w-4 h-4 ${config.textColor}`} />
+    <div className={`bg-slate-900/80 backdrop-blur-sm border ${config.borderColor} ${config.hoverBorder} rounded-2xl p-5 shadow-2xl transition-all duration-200 hover:shadow-xl group`}>
+      {/* Header con ícono y tipo */}
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-2.5 ${config.bgColor} rounded-lg border ${config.borderColor} group-hover:scale-105 transition-transform`}>
+          <Icon className={`w-5 h-5 ${config.textColor}`} />
         </div>
-        <h3 className="text-sm font-semibold text-white truncate flex-1 group-hover:text-green-400 transition-colors">
-          {topic.nombre}
-        </h3>
+        <span className={`text-xs ${config.textColor} font-medium px-2.5 py-1 ${config.bgColor} rounded-lg border ${config.borderColor}`}>
+          {config.name}
+        </span>
       </div>
 
+      {/* Título del tópico */}
+      <h3 className="text-base font-bold text-white mb-4 line-clamp-2 min-h-[3rem] group-hover:text-slate-200 transition-colors">
+        {topic.nombre}
+      </h3>
+      {/* Botón de editar */}
       <button
         onClick={() => onEdit(topic)}
-        className={`w-full flex items-center justify-center gap-2 px-3 py-2 ${config.bgColor} ${config.textColor} rounded-lg border ${config.borderColor} hover:bg-opacity-20 transition-all duration-200 text-sm font-medium`}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all duration-200 text-sm font-medium"
       >
-        <Edit2 className="w-3.5 h-3.5" />
+        <Edit2 className="w-4 h-4" />
         Editar
       </button>
     </div>
@@ -69,7 +82,8 @@ TopicCard.propTypes = {
   topic: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     nombre: PropTypes.string.isRequired,
-    tipo_topicoId: PropTypes.oneOf([1, 2, 3]).isRequired,
+    tipo_topicoId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    aprobado: PropTypes.bool,
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
 };

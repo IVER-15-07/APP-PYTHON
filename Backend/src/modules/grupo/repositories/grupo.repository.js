@@ -33,4 +33,23 @@ export const grupoRepository = {
       include: { grupo: true },
     });
   },
+
+  findById: (id) => {
+    return prisma.grupo.findUnique({
+      where: { id: parseInt(id) }
+    });
+  },
+
+  update: (id, payload) => {
+    const { titulo, descripcion, fecha_ini, fecha_fin } = payload;
+    return prisma.grupo.update({
+      where: { id: parseInt(id) },
+      data: {
+        titulo,
+        descripcion,
+        fecha_ini: new Date(fecha_ini),
+        fecha_fin: new Date(fecha_fin)
+      }
+    });
+  }
 };

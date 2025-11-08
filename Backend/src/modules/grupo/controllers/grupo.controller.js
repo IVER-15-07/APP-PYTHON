@@ -27,3 +27,16 @@ export const getUserGroup = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
+
+export const updateGroup = async (req, res) => {
+  const { id } = req.params;
+  const payload = req.body;
+
+  try {
+    const updated = await grupoService.updateGroup(parseInt(id), payload);
+    return res.status(200).json({ message: "Grupo actualizado correctamente", data: updated });
+  } catch (error) {
+    console.error("Error en updateGroup:", error);
+    return res.status(error.status || 400).json({ message: error.message || "Error al actualizar el grupo." });
+  }
+};

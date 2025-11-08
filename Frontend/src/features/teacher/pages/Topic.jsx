@@ -301,7 +301,6 @@ return (
         </div>
 
         {/* Modal para crear tópico */}
-        {/* Modal para crear tópico */}
         {isModalOpen && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">

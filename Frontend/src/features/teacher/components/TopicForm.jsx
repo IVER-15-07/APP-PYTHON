@@ -4,34 +4,37 @@ import CustomDropdown from './CustomDropdown';
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker-custom.css';
 
-const TopicForm = ({ 
-    form, 
-    onChange, 
-    onSubmit, 
+const TopicForm = ({
+    form,
+    onChange,
+    onSubmit,
     onFileChange,
     onImageChange,
     onShowPreview,
-    loading, 
-    error, 
-    cancel, 
+    loading,
+    error,
+    cancel,
     selectedFile,
-    selectedImage, 
-    textPreview,           
-    imagePreview,          
-    videoPreview,          
-    pdfPreview,            
+    selectedImage,
+    textPreview,
+    imagePreview,
+    videoPreview,
+    pdfPreview,
     docxPreview,
-    selectedImagePreview,  // eslint-disable-line no-unused-vars
-    topicTypes = [], 
-    levels = [], 
-    isModal = false, 
-    onClose 
+    topicTypes = [],
+    levels = [],
+    isModal = false,
+    onClose,
+    isEditMode = false,
+    topicId = null  // eslint-disable-line no-unused-vars
 }) => {
     const formContent = (
         <>
             <div className="flex items-center gap-2 mb-6">
                 <Plus className="w-5 h-5 text-green-400" />
-                <h2 className="text-xl font-semibold text-white">Crear nuevo tópico</h2>
+                <h2 className="text-xl font-semibold text-white">
+                    {isEditMode ? 'Editar Tópico' : 'Crear nuevo tópico'}
+                </h2>
             </div>
 
 
@@ -67,7 +70,7 @@ const TopicForm = ({
                         options={topicTypes.map(type => ({
                             value: type.id.toString(),
                             label: type.nombre.charAt(0).toUpperCase() + type.nombre.slice(1),
-                            }))}
+                        }))}
                     />
 
                     <CustomDropdown
@@ -246,7 +249,10 @@ const TopicForm = ({
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Upload className="w-4 h-4" />
-                        {loading ? 'Subiendo...' : 'Crear tópico'}
+                        {loading 
+                            ? (isEditMode ? 'Actualizando...' : 'Subiendo...') 
+                            : (isEditMode ? 'Actualizar tópico' : 'Crear tópico')
+                        }
                     </button>
 
                     <button
@@ -268,7 +274,9 @@ const TopicForm = ({
                 <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                     {/* Header del modal */}
                     <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 px-6 py-4 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-white">Crear nuevo tópico</h2>
+                        <h2 className="text-xl font-semibold text-white">
+                            {isEditMode ? 'Editar tópico' : 'Crear nuevo tópico'}
+                        </h2>
                         <button
                             onClick={onClose}
                             className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg"
@@ -276,7 +284,7 @@ const TopicForm = ({
                             <X className="w-5 h-5" />
                         </button>
                     </div>
-                    
+
                     {/* Contenido del modal */}
                     <div className="p-6">
                         {formContent}
@@ -329,4 +337,6 @@ TopicForm.propTypes = {
     })),
     isModal: PropTypes.bool,
     onClose: PropTypes.func,
+    isEditMode: PropTypes.bool,
+    topicId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };

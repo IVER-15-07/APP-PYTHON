@@ -1,249 +1,84 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services/auth.api.js';
-import { topicsService } from '../../../../services/topic.api.js';
 import { Library } from 'lucide-react';
 import { TopicForm, TopicSummary, FilePreview, TopicCarousel } from '../components';
 import { CreateButton } from '../../../components/ui';
-import mammoth from 'mammoth';
+import { useTopicData, useTopicForm, useFilePreview } from '../hooks';
 
 const Topic = () => {
     const navigate = useNavigate();
     const [user] = useState(authService.obtenerUsuarioActual());
-    const [form, setForm] = useState({ title: '', description: '', contentType: '', level: '' });
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedImage, setSelectedImage] = useState(null); // Imagen adicional para tipo texto
-    const [textPreview, setTextPreview] = useState('');
-    const [imagePreview, setImagePreview] = useState('');
-    const [videoPreview, setVideoPreview] = useState('');
-    const [pdfPreview, setPdfPreview] = useState('');
-    const [docxPreview, setDocxPreview] = useState('');
-    const [selectedImagePreview, setSelectedImagePreview] = useState(''); // Para imagen ADICIONAL
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [topics, setTopics] = useState([]);
-    const [topicTypes, setTopicTypes] = useState([]);
-    const [levels, setLevels] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
 
-    // useEffect para cargar datos iniciales
-    useEffect(() => {
-        if (!user) return navigate('/login');
-        fetchTopics();
-        fetchTopicTypes();
-        fetchLevels();
-        // eslint-disable-next-line
-    }, [user]);
+    // Custom hooks
+    const { topics, topicTypes, levels, fetchTopics } = useTopicData(user);
+    
+    const {
+        form,
+        loading,
+        error,
+        isEditMode,
+        editingTopicId,
+        handleChange,
+        resetForm,
+        loadTopicForEdit,
+        submitTopic,
+    } = useTopicForm(fetchTopics);
 
-    // useEffect para limpiar Object URLs cuando se desmonta el componente
-    useEffect(() => {
-        return () => {
-            if (imagePreview && imagePreview.startsWith('blob:')) {
-                URL.revokeObjectURL(imagePreview);
-            }
-            if (videoPreview && videoPreview.startsWith('blob:')) {
-                URL.revokeObjectURL(videoPreview);
-            }
-            if (pdfPreview && pdfPreview.startsWith('blob:')) {
-                URL.revokeObjectURL(pdfPreview);
-            }
-            if (selectedImagePreview && selectedImagePreview.startsWith('blob:')) {
-                URL.revokeObjectURL(selectedImagePreview);
-            }
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Array vacío = solo se ejecuta al desmontar
+    const {
+        selectedFile,
+        selectedImage,
+        textPreview,
+        imagePreview,
+        videoPreview,
+        pdfPreview,
+        docxPreview,
+        selectedImagePreview,
+        handleFileChange,
+        handleImageChange,
+        clearAll,
+    } = useFilePreview();
 
-    const fetchTopics = async () => {
-    try {
-        const response = await topicsService.getAllTopics();
-        // El backend retorna { success: true, data: [...] }
-        const topicsData = response?.data || [];
-        setTopics(Array.isArray(topicsData) ? topicsData : []);
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error al obtener tópicos:', err);
-    }
-};
-
-const fetchTopicTypes = async () => {
-    try {
-        const response = await topicsService.getTopicTypes();
-        const typesData = response?.data || [];
-        setTopicTypes(Array.isArray(typesData) ? typesData : []);
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error al obtener tipos de tópico:', err);
-    }
-};
-
-const fetchLevels = async () => {
-    try {
-        const response = await topicsService.getLevels();
-        const levelsData = response?.data || [];
-        setLevels(Array.isArray(levelsData) ? levelsData : []);
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error al obtener niveles:', err);
-    }
-};
-
-const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    if (error) setError(''); // Limpia el error cuando el usuario edita
-};
-
-const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        setSelectedFile(file);
-        if (error) setError('');
-
-        // Limpiar previsualizaciones anteriores
-        setTextPreview('');
-        setImagePreview('');
-        setVideoPreview('');
-        setPdfPreview('');
-        setDocxPreview('');
-
-        const fileType = file.type;
-        const fileName = file.name.toLowerCase();
-
-        // Preview para TEXTO (.txt, .md)
-        if (form.contentType === '1' &&
-            (fileType === 'text/plain' || fileName.endsWith('.txt') || fileName.endsWith('.md'))) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setTextPreview(event.target.result);
-            };
-            reader.onerror = () => {
-                setTextPreview('❌ Error al leer el archivo de texto');
-            };
-            reader.readAsText(file);
-        }
-        // Preview para IMÁGENES
-        else if (fileType.startsWith('image/')) {
-            const objectUrl = URL.createObjectURL(file);
-            setImagePreview(objectUrl);
-        }
-        // Preview para WORD (.docx)
-        else if (form.contentType === '1' && 
-            (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
-             fileName.endsWith('.docx'))) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                try {
-                    const arrayBuffer = event.target.result;
-                    const result = await mammoth.convertToHtml({ arrayBuffer });
-                    setDocxPreview(result.value); // HTML convertido
-                } catch {
-                    setDocxPreview('❌ Error al leer el archivo Word');
-                }
-            };
-            reader.onerror = () => {
-                setDocxPreview('❌ Error al leer el archivo Word');
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Preview para VIDEOS
-        else if (form.contentType === '2' && fileType.startsWith('video/')) {
-            const objectUrl = URL.createObjectURL(file);
-            setVideoPreview(objectUrl);
-        }
-        // Preview para PDFs
-        else if (fileName.endsWith('.pdf')) {
-            const objectUrl = URL.createObjectURL(file);
-            setPdfPreview(objectUrl);
-        }
-    }
-};
-
-const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        setSelectedImage(file);
-        if (error) setError('');
-
-        if (file.type.startsWith('image/')) {
-            const objectUrl = URL.createObjectURL(file);
-            setSelectedImagePreview(objectUrl);
-        }
-    }
-};
-
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    if (!selectedFile) {
-        setError('Por favor selecciona un archivo');
-        setLoading(false);
-        return;
+    // Redirect si no hay usuario
+    if (!user) {
+        navigate('/login');
+        return null;
     }
 
-    try {
-        // Preparar datos para el backend
-        const topicData = {
-            nombre: form.title,
-            tipo_topicoId: Number(form.contentType),  // Convertir a número
-            nivelId: Number(form.level),              // Convertir a número
-            aprobado: false
-        };
+    const handleOpenModal = () => {
+        resetForm();
+        clearAll();
+        setIsModalOpen(true);
+        setCurrentStep(1);
+    };
 
-        // Archivos en array (backend espera 'files' en plural)
-        const files = [selectedFile];
+    const handleCloseModal = () => {
+        resetForm();
+        clearAll();
+        setIsModalOpen(false);
+        setCurrentStep(1);
+    };
 
-        // Si es tipo texto (1) y hay imagen, enviar ambos archivos
-        if (form.contentType === '1' && selectedImage) {
-            files.push(selectedImage);
+    const handleEditTopic = (topic) => {
+        // eslint-disable-next-line no-console
+        console.log('Editar tópico:', topic);
+        loadTopicForEdit(topic);
+        clearAll();
+        setIsModalOpen(true);
+        setCurrentStep(1);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const success = await submitTopic(selectedFile, selectedImage);
+        if (success) {
+            handleCloseModal();
         }
+    };
 
-        // eslint-disable-next-line no-console
-        console.log('Datos a enviar:', topicData);
-        // eslint-disable-next-line no-console
-        console.log('Archivos a enviar:', files);
-
-        // Llamar al servicio para crear el tópico
-        const response = await topicsService.createTopic(topicData, files);
-
-        // eslint-disable-next-line no-console
-        console.log('Tópico creado exitosamente:', response);
-
-        // Limpiar formulario
-        setForm({ title: '', description: '', contentType: '', level: '' });
-        setSelectedFile(null);
-        setSelectedImage(null);
-        setTextPreview('');
-        setImagePreview('');
-        setVideoPreview('');
-        setPdfPreview('');
-        setDocxPreview('');
-        setSelectedImagePreview('');
-        setCurrentStep(1); // Resetear al paso 1
-        setIsModalOpen(false); // Cerrar modal después de crear
-
-        // Recargar la lista de tópicos
-        await fetchTopics();
-
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error al crear tópico:', err);
-        setError(err.message || 'Error al crear el tópico');
-    } finally {
-        setLoading(false);
-    }
-};
-
-const handleEditTopic = (topic) => {
-    // eslint-disable-next-line no-console
-    console.log('Editar tópico:', topic);
-    // TODO: Implementar lógica de edición
-};
-
-return (
+    return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
         <div className="max-w-6xl mx-auto">
             {/* Header */}
@@ -253,7 +88,7 @@ return (
                         <h1 className="text-4xl font-bold text-white mb-2">Mis Tópicos</h1>
                         <p className="text-slate-400">Administra el contenido educativo de tus cursos</p>
                     </div>
-                    <CreateButton onClick={() => setIsModalOpen(true)}>
+                    <CreateButton onClick={handleOpenModal}>
                         Nuevo tópico
                     </CreateButton>
                 </div>
@@ -308,14 +143,11 @@ return (
                         {currentStep === 1 ? (
                             <TopicForm
                                 isModal={false}
-                                onClose={() => {
-                                    setIsModalOpen(false);
-                                    setCurrentStep(1);
-                                }}
+                                onClose={handleCloseModal}
                                 form={form}
                                 onChange={handleChange}
-                                onFileChange={handleFileChange}
-                                onImageChange={handleImageChange}
+                                onFileChange={(e) => handleFileChange(e.target.files[0], form.contentType)}
+                                onImageChange={(e) => handleImageChange(e.target.files[0])}
                                 onSubmit={handleSubmit}
                                 onShowPreview={() => setCurrentStep(2)}
                                 loading={loading}
@@ -330,20 +162,9 @@ return (
                                 selectedImagePreview={selectedImagePreview}
                                 topicTypes={topicTypes}
                                 levels={levels}
-                                cancel={() => {
-                                    setForm({ title: '', description: '', contentType: '', level: '' });
-                                    setSelectedFile(null);
-                                    setSelectedImage(null);
-                                    setTextPreview('');
-                                    setImagePreview('');
-                                    setVideoPreview('');
-                                    setPdfPreview('');
-                                    setDocxPreview('');
-                                    setSelectedImagePreview('');
-                                    setError('');
-                                    setIsModalOpen(false);
-                                    setCurrentStep(1);
-                                }}
+                                cancel={handleCloseModal}
+                                isEditMode={isEditMode}
+                                topicId={editingTopicId}
                             />
                         ) : (
                             <FilePreview

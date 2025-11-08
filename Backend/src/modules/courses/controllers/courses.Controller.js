@@ -99,3 +99,18 @@ export const updateCourse = async (req, res) => {
         });
     }
 };
+
+export const updateTopic = async (req, res) => {
+    try {
+        const result = await topicService.updateTopicWithResources(req.params.id, req.body, req.files || []);
+         return res.status(200).json({success: true, data: result,
+        });
+    } catch (err) {
+        console.error("Error en actualizar el tópico:", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null,
+        });
+    }
+};

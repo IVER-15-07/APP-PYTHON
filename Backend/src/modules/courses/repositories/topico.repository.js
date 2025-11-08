@@ -13,4 +13,22 @@ export const topicoRepository = {
                 recursos: true,
             },
         }),
-};
+
+
+    getTopicById: (id) =>
+        prisma.topico.findUnique({
+            where: { id: Number(id) },
+            include: {
+                nivel: true,
+                tipo_topico: true,
+                recursos: true,
+            },
+        }),
+
+
+    updateTopic: (id, data) =>
+        prisma.topico.update({
+            where: { id: Number(id) },
+            data,
+        })
+}

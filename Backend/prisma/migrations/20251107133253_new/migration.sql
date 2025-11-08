@@ -126,7 +126,6 @@ CREATE TABLE "Calificacion" (
 CREATE TABLE "Topico" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
-    "aprobado" BOOLEAN NOT NULL DEFAULT false,
     "tipo_topicoId" INTEGER NOT NULL,
     "nivelId" INTEGER NOT NULL,
 
@@ -149,6 +148,7 @@ CREATE TABLE "Recursos" (
     "audiourl" TEXT,
     "subtitulo" TEXT,
     "imagenurl" TEXT,
+    "publicId" TEXT,
     "topicoId" INTEGER NOT NULL,
 
     CONSTRAINT "Recursos_pkey" PRIMARY KEY ("id")

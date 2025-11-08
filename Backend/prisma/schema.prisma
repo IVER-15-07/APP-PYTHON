@@ -153,7 +153,6 @@ model Calificacion {
 model Topico {
   id       Int     @id @default(autoincrement())
   nombre   String
-  aprobado Boolean @default(false)
 
   tipo_topico   Tipo_topico @relation(fields: [tipo_topicoId], references: [id], onDelete: Cascade)
   tipo_topicoId Int
@@ -180,6 +179,7 @@ model Recursos {
   audiourl  String?
   subtitulo String?
   imagenurl String?
+  publicId  String?
 
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int

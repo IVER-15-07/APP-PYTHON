@@ -8,6 +8,7 @@ export const topicService = {
         try {
             const newTopic = await topicoRepository.createTopic({
                 nombre: data.nombre,
+                descripcion: data.descripcion,
                 tipo_topicoId: Number(data.tipo_topicoId),
                 nivelId: Number(data.nivelId),
             });
@@ -79,6 +80,7 @@ export const topicService = {
     // Actualizar solo los campos que vienen
     const updateData = {};
     if (data.nombre !== undefined) updateData.nombre = data.nombre;
+    if (data.descripcion !== undefined) updateData.descripcion = data.descripcion;
     if (data.tipo_topicoId !== undefined) updateData.tipo_topicoId = Number(data.tipo_topicoId);
     if (data.nivelId !== undefined) updateData.nivelId = Number(data.nivelId);
 

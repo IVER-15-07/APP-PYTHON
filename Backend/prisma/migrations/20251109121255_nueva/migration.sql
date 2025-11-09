@@ -55,7 +55,7 @@ CREATE TABLE "Rol_usuario" (
 CREATE TABLE "Grupo" (
     "id" SERIAL NOT NULL,
     "titulo" TEXT NOT NULL,
-    "descripcion" TEXT NOT NULL,
+    "descripcion" TEXT,
     "fecha_ini" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "fecha_fin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "codigo" INTEGER,
@@ -126,6 +126,7 @@ CREATE TABLE "Calificacion" (
 CREATE TABLE "Topico" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
+    "descripcion" TEXT,
     "tipo_topicoId" INTEGER NOT NULL,
     "nivelId" INTEGER NOT NULL,
 

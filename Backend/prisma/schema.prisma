@@ -70,7 +70,7 @@ model Rol_usuario {
 model Grupo {
   id          Int      @id @default(autoincrement())
   titulo      String
-  descripcion String
+  descripcion String?
   fecha_ini   DateTime @default(now())
   fecha_fin   DateTime @default(now())
   codigo      Int?     @unique
@@ -153,7 +153,7 @@ model Calificacion {
 model Topico {
   id       Int     @id @default(autoincrement())
   nombre   String
-
+  descripcion String?
   tipo_topico   Tipo_topico @relation(fields: [tipo_topicoId], references: [id], onDelete: Cascade)
   tipo_topicoId Int
   nivel         Nivel       @relation(fields: [nivelId], references: [id], onDelete: Cascade)

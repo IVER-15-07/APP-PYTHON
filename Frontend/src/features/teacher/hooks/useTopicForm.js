@@ -50,6 +50,7 @@ export const useTopicForm = (onSuccess) => {
         try {
             const topicData = {
                 nombre: form.title,
+                descripcion: form.description,
                 tipo_topicoId: parseInt(form.contentType),
                 nivelId: parseInt(form.level)
             };

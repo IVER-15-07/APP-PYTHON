@@ -15,7 +15,5 @@ router.use('/', admin);
 router.use('/', authRoutes);
 router.use('/', coursesRoutes);
 router.use('/', teacherRoutes);
-router.use('/grupo', grupoRoutes);
-
-
+router.use('/', grupoRoutes);
 export default router;

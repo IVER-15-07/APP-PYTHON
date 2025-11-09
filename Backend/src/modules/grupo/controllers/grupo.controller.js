@@ -17,14 +17,33 @@ export const joinGroupByCode = async (req, res) => {
 };
 
 export const getUserGroup = async (req, res) => {
-  const { usuarioId } = req.params;
-
   try {
-    const data = await grupoService.getUserGroup(usuarioId);
-    res.json(data);
+    const userId = Number(req.params.id);
+    const  grupo = await grupoService.getUserGroup(userId);
+
+    return res.status(200).json({ success: true, data: grupo });
   } catch (error) {
     console.error("Error en getUserGroup:", error);
-    res.status(500).json({ message: "Error interno del servidor." });
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Error al obtener grupo",
+      data: null
+    });
+  }
+};
+
+export const getTopicsByLevel = async (req, res) => {
+  try {
+    const nivelId = req.params.nivelId;
+    const topics = await grupoService.getTopicsByLevel(nivelId);
+    return res.status(200).json({ success: true, data: topics });
+  } catch (error) {
+    console.error("Error en getTopicsByLevel:", error);
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Error al obtener tópicos",
+      data: null
+    });
   }
 };
 

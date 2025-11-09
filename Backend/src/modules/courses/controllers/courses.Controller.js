@@ -114,3 +114,18 @@ export const updateTopic = async (req, res) => {
         });
     }
 };
+
+export const getTopicForStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const topic = await topicService.getTopicForStudent(id);
+        return res.status(200).json({ success: true, data: topic });
+    } catch (err) {
+        console.error("Error en getTopicForStudent:", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null
+        });
+    }
+};

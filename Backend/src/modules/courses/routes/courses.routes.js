@@ -6,7 +6,8 @@ import {
     getTopicTypes, 
     getLevels,
     updateCourse,
-    updateTopic
+    updateTopic,
+    getTopicForStudent
 
 } from '../controllers/courses.Controller.js';
 import multer from 'multer';
@@ -24,7 +25,7 @@ router.get('/topic-types', getTopicTypes);
 router.get('/levels', getLevels);
 router.put('/course/:id', verifyToken, updateCourse);
 router.put('/topic/:id', verifyToken, upload.array('files'), updateTopic);
-
+router.get('/topic/:id/student', getTopicForStudent);
 
 
 export default router;

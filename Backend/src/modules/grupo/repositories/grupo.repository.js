@@ -51,5 +51,11 @@ export const grupoRepository = {
         fecha_fin: new Date(fecha_fin)
       }
     });
+  },
+
+  getTopicsByLevel: (nivelId) => {
+    return prisma.topico.findMany({
+      where: { nivelId: parseInt(nivelId) }
+    });
   }
 };

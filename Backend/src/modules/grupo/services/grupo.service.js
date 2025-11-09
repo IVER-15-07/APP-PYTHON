@@ -20,11 +20,15 @@ export const grupoService = {
     const registro = await grupoRepository.findGroupByUser(usuarioId);
 
     if (!registro) {
-      return { grupo: null, niveles: [] };
+      return { grupo: null };
     }
+    
+    return { grupo: registro.grupo};
+  },
 
-    const niveles = await grupoRepository.findNiveles();
-    return { grupo: registro.grupo, niveles };
+  async getTopicsByLevel(nivelId) {
+    const topics = await grupoRepository.getTopicsByLevel(nivelId);
+    return { topics };
   },
 
   async updateGroup(id, data) {

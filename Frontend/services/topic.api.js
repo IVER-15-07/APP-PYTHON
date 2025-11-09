@@ -29,7 +29,7 @@ export const topicsService = {
             throw new Error(error.response?.data?.message || "Error al crear el tópico");
         }
     },
-        //obtener tipos de tópico
+    //obtener tipos de tópico
     async getTopicTypes() {
         try {
             const response = await axiosInstance.get("/api/topic-types");
@@ -51,7 +51,7 @@ export const topicsService = {
 
     async updateTopic(topicId, topicData, files) {
         try {
-            const formData = new FormData();    
+            const formData = new FormData();
             Object.entries(topicData).forEach(([key, value]) => {
                 formData.append(key, value);
             });
@@ -65,5 +65,14 @@ export const topicsService = {
         } catch (error) {
             throw new Error(error.response?.data?.message || "Error al actualizar el tópico");
         }
+    },
+
+    async getTopicStudents(topicId) {
+        try {
+            const response = await axiosInstance.get(`/api/topic/${topicId}/student`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los estudiantes del tópico');
+        }
     }
-};
+}

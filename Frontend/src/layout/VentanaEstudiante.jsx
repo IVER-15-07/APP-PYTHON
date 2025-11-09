@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth.api';
 import Dashboard from '../features/student/pages/Dashboard';
 import Course from '../features/student/pages/Course';
+import Topic from '../features/student/pages/Topic';
 import { Sidebar } from "../components/ui";
 import { Home, BookOpen, Code2 } from 'lucide-react';
 
@@ -64,9 +65,8 @@ const VentanaEstudiante = () => {
                 <Routes>
                     <Route index element={<Dashboard />} />
                     <Route path="cursos" element={<Course />} /> 
-                    {/* <Route path="progreso" element={<Progress />} /> */}
-                    {/* <Route path="ejercicios" element={<Exercises />} /> */}
-                    {/* <Route path="perfil" element={<Profile />} /> */}
+                    <Route path="cursos/topic/:id" element={<Topic />} />
+
                 </Routes>
             </main>
         </div>

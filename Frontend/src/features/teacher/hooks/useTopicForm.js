@@ -40,7 +40,8 @@ export const useTopicForm = (onSuccess) => {
         setLoading(true);
         setError('');
 
-        if (!selectedFile) {
+        // Validar archivo solo en modo creación
+        if (!isEditMode && !selectedFile) {
             setError('Por favor selecciona un archivo');
             setLoading(false);
             return false;
@@ -53,16 +54,20 @@ export const useTopicForm = (onSuccess) => {
                 nivelId: parseInt(form.level)
             };
 
-            const files = [selectedFile];
+            // Construir array de archivos solo si hay archivos nuevos
+            const files = [];
+            if (selectedFile) {
+                files.push(selectedFile);
+            }
             if (form.contentType === '1' && selectedImage) {
                 files.push(selectedImage);
             }
 
             if (isEditMode && editingTopicId) {
-                //Implementar actualización cuando editar topico este listo
-                setError('La funcionalidad de edición estará disponible próximamente');
-                setLoading(false);
-                return false;
+                await topicsService.updateTopic(editingTopicId, topicData, files);
+                resetForm();
+                if(onSuccess) await onSuccess();
+                return true;
             }
 
             // Crear nuevo tópico
@@ -90,6 +95,5 @@ export const useTopicForm = (onSuccess) => {
         resetForm,
         loadTopicForEdit,
         submitTopic,
-        setError,
     };
 };

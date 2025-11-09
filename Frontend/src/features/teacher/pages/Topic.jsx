@@ -39,6 +39,7 @@ const Topic = () => {
         handleFileChange,
         handleImageChange,
         clearAll,
+        loadExistingFile,
     } = useFilePreview();
 
     // Redirect si no hay usuario
@@ -62,10 +63,8 @@ const Topic = () => {
     };
 
     const handleEditTopic = (topic) => {
-        // eslint-disable-next-line no-console
-        console.log('Editar tópico:', topic);
         loadTopicForEdit(topic);
-        clearAll();
+        loadExistingFile(topic);
         setIsModalOpen(true);
         setCurrentStep(1);
     };

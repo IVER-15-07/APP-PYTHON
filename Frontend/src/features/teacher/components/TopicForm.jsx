@@ -21,6 +21,7 @@ const TopicForm = ({
     videoPreview,
     pdfPreview,
     docxPreview,
+    selectedImagePreview,
     topicTypes = [],
     levels = [],
     isModal = false,
@@ -130,25 +131,37 @@ const TopicForm = ({
                                                     ? '.mp4,.avi,.mov,.mkv,.webm'
                                                     : '.ppt,.pptx,.pdf,.key'
                                         }
-                                        required
+                                        required={!isEditMode && !pdfPreview && !videoPreview && !imagePreview}
                                         disabled={loading}
                                         className="hidden"
                                         id="file-upload"
                                     />
                                     <label
                                         htmlFor="file-upload"
-                                        className={`flex items-center justify-center gap-3 w-full px-4 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${selectedFile
+                                        className={`flex items-center justify-center gap-3 w-full px-4 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
+                                            selectedFile || pdfPreview || videoPreview || imagePreview
                                             ? 'border-green-500/50 bg-green-500/5'
                                             : 'border-slate-700/50 bg-slate-800/50 hover:border-green-500/30 hover:bg-slate-800'
                                             } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        <Upload className={`w-6 h-6 ${selectedFile ? 'text-green-400' : 'text-slate-400'}`} />
+                                        <Upload className={`w-6 h-6 ${selectedFile || pdfPreview || videoPreview || imagePreview ? 'text-green-400' : 'text-slate-400'}`} />
                                         <div className="text-center">
                                             {selectedFile ? (
                                                 <>
                                                     <p className="text-green-400 font-medium">{selectedFile.name}</p>
                                                     <p className="text-xs text-slate-500 mt-1">
                                                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                                                    </p>
+                                                </>
+                                            ) : (pdfPreview || videoPreview || imagePreview) ? (
+                                                <>
+                                                    <p className="text-green-400 font-medium">
+                                                        {pdfPreview && 'Archivo PDF cargado'}
+                                                        {videoPreview && 'Video cargado'}
+                                                        {imagePreview && 'Imagen cargada'}
+                                                    </p>
+                                                    <p className="text-xs text-slate-500 mt-1">
+                                                        {isEditMode ? 'Haz clic para cambiar el archivo' : 'Archivo existente'}
                                                     </p>
                                                 </>
                                             ) : (
@@ -186,18 +199,25 @@ const TopicForm = ({
                                         />
                                         <label
                                             htmlFor="image-upload"
-                                            className={`flex items-center justify-center gap-3 w-full px-4 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer ${selectedImage
+                                            className={`flex items-center justify-center gap-3 w-full px-4 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer ${selectedImage || selectedImagePreview
                                                 ? 'border-blue-500/50 bg-blue-500/5'
                                                 : 'border-slate-700/50 bg-slate-800/50 hover:border-blue-500/30 hover:bg-slate-800'
                                                 } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         >
-                                            <ImageIcon className={`w-5 h-5 ${selectedImage ? 'text-blue-400' : 'text-slate-400'}`} />
+                                            <ImageIcon className={`w-5 h-5 ${selectedImage || selectedImagePreview ? 'text-blue-400' : 'text-slate-400'}`} />
                                             <div className="text-center">
                                                 {selectedImage ? (
                                                     <>
                                                         <p className="text-blue-400 font-medium text-sm">{selectedImage.name}</p>
                                                         <p className="text-xs text-slate-500 mt-1">
                                                             {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
+                                                        </p>
+                                                    </>
+                                                ) : selectedImagePreview ? (
+                                                    <>
+                                                        <p className="text-blue-400 font-medium text-sm">Imagen cargada</p>
+                                                        <p className="text-xs text-slate-500 mt-1">
+                                                            {isEditMode ? 'Haz clic para cambiar la imagen' : 'Imagen existente'}
                                                         </p>
                                                     </>
                                                 ) : (
@@ -245,7 +265,12 @@ const TopicForm = ({
                 <div className="flex flex-wrap gap-3 pt-2">
                     <button
                         type="submit"
-                        disabled={loading || !form.contentType || (form.contentType && !selectedFile)}
+                        disabled={
+                            loading || 
+                            !form.contentType || 
+                            (!isEditMode && form.contentType && !selectedFile) ||
+                            (isEditMode && form.contentType && !selectedFile && !pdfPreview && !videoPreview && !imagePreview)
+                        }
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Upload className="w-4 h-4" />

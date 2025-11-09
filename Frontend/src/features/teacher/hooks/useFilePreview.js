@@ -11,15 +11,38 @@ export const useFilePreview = () => {
     const [docxPreview, setDocxPreview] = useState('');
     const [selectedImagePreview, setSelectedImagePreview] = useState('');
 
-    // Limpiar Object URLs cuando se desmonta
+    // Limpiar Object URLs - cada preview tiene su propio efecto
     useEffect(() => {
         return () => {
-            if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
-            if (videoPreview?.startsWith('blob:')) URL.revokeObjectURL(videoPreview);
-            if (pdfPreview?.startsWith('blob:')) URL.revokeObjectURL(pdfPreview);
-            if (selectedImagePreview?.startsWith('blob:')) URL.revokeObjectURL(selectedImagePreview);
+            if (imagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
         };
-    }, [imagePreview, videoPreview, pdfPreview, selectedImagePreview]);
+    }, [imagePreview]);
+
+    useEffect(() => {
+        return () => {
+            if (videoPreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(videoPreview);
+            }
+        };
+    }, [videoPreview]);
+
+    useEffect(() => {
+        return () => {
+            if (pdfPreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(pdfPreview);
+            }
+        };
+    }, [pdfPreview]);
+
+    useEffect(() => {
+        return () => {
+            if (selectedImagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(selectedImagePreview);
+            }
+        };
+    }, [selectedImagePreview]);
 
     const clearPreviews = () => {
         setTextPreview('');
@@ -36,11 +59,40 @@ export const useFilePreview = () => {
         setSelectedImagePreview('');
     };
 
+    const loadExistingFile = (topic) => {
+        if (!topic?.recursos || topic.recursos.length === 0) return;
+
+        const recurso = topic.recursos[0];
+        clearPreviews();
+
+        // Cargar el archivo principal (url)
+        if (recurso.url) {
+            const url = recurso.url.toLowerCase();
+            
+            if (url.includes('.pdf')) {
+                setPdfPreview(recurso.url);
+            } else if (url.includes('.mp4') || url.includes('.webm')) {
+                setVideoPreview(recurso.url);
+            } else if (url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg')) {
+                setImagePreview(recurso.url);
+            }
+        }
+        
+        // Cargar recursos específicos (audiourl)
+        if (recurso.audiourl) {
+            setVideoPreview(recurso.audiourl);
+        }
+
+        // Cargar imagen secundaria (imagenurl) para tipo contenido 1
+        if (recurso.imagenurl) {
+            setSelectedImagePreview(recurso.imagenurl);
+        }
+    };
+
     const handleFileChange = async (file, contentType) => {
         if (!file) return;
 
         setSelectedFile(file);
-        clearPreviews();
 
         const fileType = file.type;
         const fileName = file.name.toLowerCase();
@@ -49,11 +101,21 @@ export const useFilePreview = () => {
             // Texto (.txt, .md)
             if (contentType === '1' && 
                 (fileType === 'text/plain' || fileName.endsWith('.txt') || fileName.endsWith('.md'))) {
+                // Limpiar solo los otros formatos de tipo contenido 1
+                setPdfPreview('');
+                setDocxPreview('');
+                setImagePreview('');
+                setVideoPreview('');
                 const text = await readFileAsText(file);
                 setTextPreview(text);
             }
-            // Imágenes
-            else if (fileType.startsWith('image/')) {
+            // Imágenes (solo si NO es tipo contenido 1, porque en tipo 1 las imágenes son secundarias)
+            else if (contentType !== '1' && fileType.startsWith('image/')) {
+                // Limpiar solo los otros formatos
+                setTextPreview('');
+                setPdfPreview('');
+                setDocxPreview('');
+                setVideoPreview('');
                 const url = URL.createObjectURL(file);
                 setImagePreview(url);
             }
@@ -61,16 +123,31 @@ export const useFilePreview = () => {
             else if (contentType === '1' && 
                 (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
                  fileName.endsWith('.docx'))) {
+                // Limpiar solo los otros formatos de tipo contenido 1
+                setTextPreview('');
+                setPdfPreview('');
+                setImagePreview('');
+                setVideoPreview('');
                 const html = await readDocxFile(file);
                 setDocxPreview(html);
             }
             // Videos
             else if (contentType === '2' && fileType.startsWith('video/')) {
+                // Limpiar solo los otros formatos
+                setTextPreview('');
+                setImagePreview('');
+                setPdfPreview('');
+                setDocxPreview('');
                 const url = URL.createObjectURL(file);
                 setVideoPreview(url);
             }
             // PDFs
             else if (fileName.endsWith('.pdf')) {
+                // Limpiar solo los otros formatos
+                setTextPreview('');
+                setImagePreview('');
+                setVideoPreview('');
+                setDocxPreview('');
                 const url = URL.createObjectURL(file);
                 setPdfPreview(url);
             }
@@ -132,6 +209,6 @@ export const useFilePreview = () => {
         handleFileChange,
         handleImageChange,
         clearAll,
-        clearPreviews,
+        loadExistingFile,
     };
 };

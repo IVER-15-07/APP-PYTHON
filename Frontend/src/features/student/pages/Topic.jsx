@@ -100,7 +100,7 @@ const Topic = () => {
           className="flex items-center gap-2 text-slate-400 hover:text-emerald-400 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Volver a cursos</span>
+          <span className="text-sm font-medium">Volver al curso</span>
         </button>
 
         <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">

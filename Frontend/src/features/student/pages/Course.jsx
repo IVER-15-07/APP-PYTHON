@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCourseData, useGroupData, useLevelsData } from "../hooks/useCourseData";
 import {
   CourseHeader,
@@ -13,6 +13,13 @@ const Course = () => {
   const { grupo, joinGroup } = useGroupData();
   const { niveles, fetchTopicsForLevel } = useLevelsData();
   const [showForm, setShowForm] = useState(false);
+
+  // Abrir el formulario automáticamente si no tiene grupo
+  useEffect(() => {
+    if (!grupo) {
+      setShowForm(true);
+    }
+  }, [grupo]);
 
   const handleJoinGroup = async (codigo) => {
     try {

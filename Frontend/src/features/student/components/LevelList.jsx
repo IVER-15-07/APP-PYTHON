@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { Lock } from 'lucide-react';
 
 export const LevelList = ({ niveles, grupo, onFetchTopics }) => {
   const [expanded, setExpanded] = useState({});
@@ -38,71 +39,84 @@ export const LevelList = ({ niveles, grupo, onFetchTopics }) => {
 
   if (niveles.length === 0) return null;
 
-  // Si no tiene grupo, mostrar mensaje motivador en lugar de niveles bloqueados
-  if (!grupo) {
-    return (
-      <div className="mt-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 p-6 rounded-xl shadow-lg">
-        <div className="flex items-start gap-4">
-          <div className="text-amber-400 text-4xl">🔒</div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-white mb-2">
-              Únete a un grupo para acceder al contenido
-            </h3>
-            <p className="text-slate-300 text-sm mb-3">
-              Para poder visualizar los tópicos y niveles del curso, necesitas unirte a un grupo usando el código proporcionado por tu profesor.
-            </p>
-            <div className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-3">
-              <p className="text-slate-400 text-xs mb-2">
-                💡 <span className="font-semibold">¿Qué obtendrás al unirte?</span>
+  return (
+    <div className="mt-6">
+      {/* Banner informativo cuando no tiene grupo */}
+      {!grupo && (
+        <div className="mb-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 p-4 rounded-xl shadow-lg">
+          <div className="flex items-start gap-3">
+            <div className="bg-amber-500/20 p-2 rounded-lg flex-shrink-0">
+              <Lock className="w-5 h-5 text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-base font-bold text-white mb-1">
+                Únete a un grupo para desbloquear el contenido
+              </h3>
+              <p className="text-slate-300 text-sm">
+                Usa el código proporcionado por tu profesor para acceder a {niveles.length} {niveles.length === 1 ? 'nivel' : 'niveles'} de aprendizaje.
               </p>
-              <ul className="text-slate-400 text-xs space-y-1 ml-4">
-                <li>✓ Acceso a {niveles.length} {niveles.length === 1 ? 'nivel' : 'niveles'} de aprendizaje</li>
-                <li>✓ Contenido educativo completo</li>
-                <li>✓ Seguimiento de tu progreso</li>
-                <li>✓ Ejercicios y evaluaciones</li>
-              </ul>
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div className="mt-6 bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 p-5 rounded-xl shadow-lg">
-      <h2 className="text-xl font-bold text-white mb-4">
-        Niveles del curso
-      </h2>
-      <ul className="space-y-3">
-        {niveles.map((nivel) => (
-          <LevelItem
-            key={nivel.id}
-            nivel={nivel}
-            isExpanded={expanded[nivel.id]}
-            topics={topicsByLevel[nivel.id]}
-            isLoadingTopics={loadingTopics[nivel.id]}
-            hasGroup={!!grupo}
-            onToggle={() => toggleLevel(nivel.id)}
-            onTopicClick={handleTopicClick}
-          />
-        ))}
-      </ul>
+      {/* Lista de niveles */}
+      <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 p-5 rounded-xl shadow-lg">
+        <h2 className="text-xl font-bold text-white mb-4">
+          Niveles del curso
+        </h2>
+        <ul className="space-y-3">
+          {niveles.map((nivel) => (
+            <LevelItem
+              key={nivel.id}
+              nivel={nivel}
+              isExpanded={expanded[nivel.id]}
+              topics={topicsByLevel[nivel.id]}
+              isLoadingTopics={loadingTopics[nivel.id]}
+              hasGroup={!!grupo}
+              onToggle={() => toggleLevel(nivel.id)}
+              onTopicClick={handleTopicClick}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
 
 const LevelItem = ({ nivel, isExpanded, topics, isLoadingTopics, hasGroup, onToggle, onTopicClick }) => (
-  <li className="rounded-xl border border-slate-700/50 overflow-hidden bg-slate-800/50 backdrop-blur-sm shadow-md hover:shadow-lg hover:border-emerald-500/30 transition-all">
+  <li className={`rounded-xl border overflow-hidden shadow-md transition-all relative ${
+    hasGroup 
+      ? 'border-slate-700/50 bg-slate-800/50 backdrop-blur-sm hover:shadow-lg hover:border-emerald-500/30' 
+      : 'border-amber-500/20 bg-slate-800/30'
+  }`}>
+    {/* Overlay de candado para niveles bloqueados */}
+    {!hasGroup && (
+      <div className="absolute top-3 right-3 z-10">
+        <div className="bg-amber-500/20 border border-amber-500/40 rounded-lg px-2 py-1 flex items-center gap-1.5">
+          <Lock className="w-3 h-3 text-amber-400" />
+          <span className="text-amber-400 text-xs font-semibold">Bloqueado</span>
+        </div>
+      </div>
+    )}
+
     <button
-      onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 text-slate-200 hover:bg-slate-700/30 transition-colors"
+      onClick={hasGroup ? onToggle : undefined}
+      disabled={!hasGroup}
+      className={`w-full flex items-center justify-between px-4 py-3 text-slate-200 transition-colors ${
+        hasGroup 
+          ? 'hover:bg-slate-700/30 cursor-pointer' 
+          : 'cursor-not-allowed opacity-70'
+      }`}
     >
       <span className="font-semibold">{nivel.nombre}</span>
-      <span className="text-emerald-400 text-sm font-bold">
-        {isExpanded ? "▲" : "▼"}
-      </span>
+      {hasGroup && (
+        <span className="text-emerald-400 text-sm font-bold">
+          {isExpanded ? "▲" : "▼"}
+        </span>
+      )}
     </button>
-    {isExpanded && (
+    {isExpanded && hasGroup && (
       <div className="bg-slate-900/60 border-t border-slate-700/50">
         {isLoadingTopics ? (
           <div className="p-4 text-slate-400 text-sm flex items-center gap-2">

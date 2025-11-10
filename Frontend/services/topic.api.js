@@ -70,7 +70,7 @@ export const topicsService = {
     async getTopicStudents(topicId) {
         try {
             const response = await axiosInstance.get(`/api/topic/${topicId}/student`);
-            return response.data;
+            return response.data?.data || response.data?.topic || null;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al obtener los estudiantes del tópico');
         }

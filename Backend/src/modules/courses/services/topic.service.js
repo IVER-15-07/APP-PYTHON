@@ -31,9 +31,10 @@ export const topicService = {
                 const isImage = file.mimetype.startsWith("image/");
                 const isAudio = file.mimetype.startsWith("audio/");
                 const isText = file.mimetype.startsWith("text/") || file.mimetype === "application/x-subrip";
+                const isPdf = file.mimetype === "application/pdf";
 
                 const upload = await cloudinary.uploader.upload(file.path, {
-                    resource_type: isAudio ? "video" : "auto",
+                    resource_type: isAudio ? "video" : (isPdf || isText ? "raw" : "image"),
                     folder: "recursos",
                 });
 

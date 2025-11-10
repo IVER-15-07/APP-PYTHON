@@ -34,7 +34,7 @@ export const getUserGroup = async (req, res) => {
 
 export const getTopicsByLevel = async (req, res) => {
   try {
-    const nivelId = req.params.nivelId;
+    const nivelId = Number(req.params.nivelId);
     const topics = await grupoService.getTopicsByLevel(nivelId);
     return res.status(200).json({ success: true, data: topics });
   } catch (error) {

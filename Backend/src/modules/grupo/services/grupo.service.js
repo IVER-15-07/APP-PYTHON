@@ -28,7 +28,7 @@ export const grupoService = {
 
   async getTopicsByLevel(nivelId) {
     const topics = await grupoRepository.getTopicsByLevel(nivelId);
-    return { topics };
+    return  topics ;
   },
 
   async updateGroup(id, data) {

@@ -222,7 +222,7 @@ const Course = () => {
                                 </div>
                                 <button
                                   disabled={!grupo}
-                                  onClick={() => navigate(`/cursos/topic/${t.id}`)}
+                                  onClick={() => navigate(`/estudiante/cursos/topic/${t.id}`)}
                                   className={`px-3 py-1 text-white text-xs rounded ${
                                     grupo
                                       ? "bg-emerald-500 hover:bg-emerald-600"

@@ -7,7 +7,7 @@ router.post("/join-by-code", joinGroupByCode);
 
 
 router.get("/user/:id", verifyToken, getUserGroup);
-router.get("/topics/nivel/:id", getTopicsByLevel);
+router.get("/topics/nivel/:nivelId", getTopicsByLevel);
 
 router.put("/groups/:id", verifyToken, updateGroup);
 

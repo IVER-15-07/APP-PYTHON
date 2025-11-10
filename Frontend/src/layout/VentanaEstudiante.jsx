@@ -65,7 +65,7 @@ const VentanaEstudiante = () => {
                 <Routes>
                     <Route index element={<Dashboard />} />
                     <Route path="cursos" element={<Course />} /> 
-                    <Route path="cursos/topic/:id" element={<Topic />} />
+                    <Route path="/cursos/topic/:id" element={<Topic />} />
 
                 </Routes>
             </main>

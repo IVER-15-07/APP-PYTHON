@@ -55,7 +55,7 @@ CREATE TABLE "Rol_usuario" (
 CREATE TABLE "Grupo" (
     "id" SERIAL NOT NULL,
     "titulo" TEXT NOT NULL,
-    "descripcion" TEXT,
+    "descripcion" TEXT NOT NULL,
     "fecha_ini" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "fecha_fin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "codigo" INTEGER,
@@ -126,11 +126,32 @@ CREATE TABLE "Calificacion" (
 CREATE TABLE "Topico" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
-    "descripcion" TEXT,
     "tipo_topicoId" INTEGER NOT NULL,
     "nivelId" INTEGER NOT NULL,
 
     CONSTRAINT "Topico_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Comentarios" (
+    "id" SERIAL NOT NULL,
+    "contenido" TEXT NOT NULL,
+    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "estado" BOOLEAN NOT NULL DEFAULT false,
+    "usuarioId" INTEGER NOT NULL,
+    "topicoId" INTEGER NOT NULL,
+
+    CONSTRAINT "Comentarios_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ComentarioVisto" (
+    "id" SERIAL NOT NULL,
+    "vistoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "comentarioId" INTEGER NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+
+    CONSTRAINT "ComentarioVisto_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -296,6 +317,18 @@ ALTER TABLE "Topico" ADD CONSTRAINT "Topico_tipo_topicoId_fkey" FOREIGN KEY ("ti
 
 -- AddForeignKey
 ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId") REFERENCES "Nivel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentarios"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -22,7 +22,9 @@ export const teamRepository = {
         codigo: true,
         curso: { select: { id: true, nombre: true } },
       },
+      
       orderBy: { id: "desc" },
+    
     }),
 }
 

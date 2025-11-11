@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { MessageSquare, Send, Trash2 } from 'lucide-react';
+import { MessageSquare, Send } from 'lucide-react';
 import { authService } from '../../../../services/auth.api';
 
 const TopicComments = ({ topicId }) => {
@@ -49,9 +49,6 @@ const TopicComments = ({ topicId }) => {
     setNewComment('');
   };
 
-  const handleDeleteComment = (commentId) => {
-    setComments(comments.filter(c => c.id !== commentId));
-  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -191,18 +188,6 @@ const TopicComments = ({ topicId }) => {
                     {comment.text}
                   </p>
 
-                  {/* Acciones (solo para el autor) */}
-                  {comment.author.id === user?.id && (
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 transition-colors"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        Eliminar
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
             ))

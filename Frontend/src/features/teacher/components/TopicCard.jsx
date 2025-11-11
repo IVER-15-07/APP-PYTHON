@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
-import { FileText, Video, Presentation, Edit2} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, Video, Presentation, Edit2, Eye } from 'lucide-react';
 
 const TopicCard = ({ topic, onEdit }) => {
+  const navigate = useNavigate();
   // Determinar icono, color y nombre según tipo
   const getTypeConfig = (type) => {
     switch (type) {
@@ -66,14 +68,24 @@ const TopicCard = ({ topic, onEdit }) => {
       <h3 className="text-base font-bold text-white mb-4 line-clamp-2 min-h-[3rem] group-hover:text-slate-200 transition-colors">
         {topic.nombre}
       </h3>
-      {/* Botón de editar */}
-      <button
-        onClick={() => onEdit(topic)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all duration-200 text-sm font-medium"
-      >
-        <Edit2 className="w-4 h-4" />
-        Editar
-      </button>
+      
+      {/* Botones de acción */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => navigate(`/profesor/topicos/ver/${topic.id}`)}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 rounded-xl border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-200 text-sm font-medium"
+        >
+          <Eye className="w-4 h-4" />
+          Ver
+        </button>
+        <button
+          onClick={() => onEdit(topic)}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all duration-200 text-sm font-medium"
+        >
+          <Edit2 className="w-4 h-4" />
+          Editar
+        </button>
+      </div>
     </div>
   );
 };

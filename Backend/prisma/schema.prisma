@@ -44,10 +44,11 @@ model Usuario {
   rol_usuarioId Int?
   rol_usuario   Rol_usuario? @relation(fields: [rol_usuarioId], references: [id])
 
-  registro     Registro[]
-  calificacion Calificacion[]
-  solicitudRol solicitudRol[]
-  comentarios Comentarios []
+  registro        Registro[]
+  calificacion    Calificacion[]
+  solicitudRol    solicitudRol[]
+  comentarios     Comentarios[]
+  comentariovisto ComentarioVisto[]
 }
 
 model solicitudRol {
@@ -152,8 +153,8 @@ model Calificacion {
 }
 
 model Topico {
-  id       Int     @id @default(autoincrement())
-  nombre   String
+  id     Int    @id @default(autoincrement())
+  nombre String
 
   tipo_topico   Tipo_topico @relation(fields: [tipo_topicoId], references: [id], onDelete: Cascade)
   tipo_topicoId Int
@@ -164,14 +165,14 @@ model Topico {
   recursos     Recursos[]
   evaluacion   Evaluacion[]
   grupo_topico Grupo_Topico[]
-  comentarios Comentarios[]
+  comentarios  Comentarios[]
 }
 
 model Comentarios {
-  id       Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   contenido String
   fecha     DateTime @default(now())
-  estado  Boolean @default(false)
+  estado    Boolean  @default(false)
 
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
@@ -179,8 +180,19 @@ model Comentarios {
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
+  comentario ComentarioVisto[]
 }
 
+model ComentarioVisto {
+  id      Int      @id @default(autoincrement())
+  vistoEn DateTime @default(now())
+
+  comentario   Comentarios @relation(fields: [comentarioId], references: [id], onDelete: Cascade)
+  comentarioId Int
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+}
 
 model Tipo_topico {
   id     Int    @id @default(autoincrement())
@@ -200,9 +212,7 @@ model Recursos {
 
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
-
 }
-
 
 model Evaluacion {
   id                 Int     @id @default(autoincrement())
@@ -237,15 +247,13 @@ model Evaluacion_pregunta {
 
   pregunta   Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
   preguntaId Int
-
- 
 }
 
 model Pregunta {
   id       Int    @id @default(autoincrement())
   pregunta String
 
-  parametro  Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
+  parametro   Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
   parametroId Int
 
   evaluacion_pregunta Evaluacion_pregunta[]
@@ -262,8 +270,8 @@ model Respuesta {
 }
 
 model Parametro {
-  id        Int    @id @default(autoincrement())
-  nombre    String @unique
+  id     Int    @id @default(autoincrement())
+  nombre String @unique
 
   pregunta Pregunta[]
 }

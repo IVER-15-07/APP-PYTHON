@@ -1,5 +1,7 @@
 import { solicitudService } from "../services/request.service.js";
 
+
+
 export const createRoleRequest = async (req, res) => {
   try {
     const requesterId = req.user?.id; // necesita middleware auth que ponga req.user
@@ -65,3 +67,4 @@ export const getMyGroupRequests = async (req, res) => {
         message: error.message || "Error interno" });
     }
 }
+

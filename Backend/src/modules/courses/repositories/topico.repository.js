@@ -19,9 +19,10 @@ export const topicoRepository = {
         prisma.topico.findUnique({
             where: { id: Number(id) },
             include: {
+                recursos: true,
                 nivel: true,
                 tipo_topico: true,
-                recursos: true,
+
             },
         }),
 

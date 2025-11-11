@@ -145,6 +145,16 @@ CREATE TABLE "Comentarios" (
 );
 
 -- CreateTable
+CREATE TABLE "ComentarioVisto" (
+    "id" SERIAL NOT NULL,
+    "vistoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "comentarioId" INTEGER NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+
+    CONSTRAINT "ComentarioVisto_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Tipo_topico" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
@@ -313,6 +323,12 @@ ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_usuarioId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentarios"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;

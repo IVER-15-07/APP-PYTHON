@@ -10,13 +10,29 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
-app.use(cors({
-  origin: "http://localhost:5173",
+
+// Configuración de CORS para Docker y desarrollo local
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",      // Vite dev local
+    "http://localhost:3000",      // Frontend local
+    "http://frontend:3000",       // Frontend desde Docker
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000"
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-}));
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
 
 // Rutas
 app.use("/api", endPoints);
+
+// Health check endpoint (para Docker healthcheck)
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
 export default app;

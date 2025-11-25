@@ -2,7 +2,7 @@ import express from "express";
 
 import { createRoleRequest, getMyRequest, GroupRequest, getMyGroupRequests } from "../controllers/request.Controller.js";
 import {verifyToken} from "../../auth/middleware/auth.middleware.js";
-import { commentController } from "../controllers/comment.controller.js";
+import { commentController } from "../controllers/commet.Controller.js";
 
 const router = express.Router();
 

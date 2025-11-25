@@ -36,13 +36,20 @@ export const useTopicForm = (onSuccess) => {
         setEditingTopicId(topic.id);
     };
 
-    const submitTopic = async (selectedFile, selectedImage) => {
+    const submitTopic = async (selectedFile, selectedImage, hasExistingFile = false) => {
         setLoading(true);
         setError('');
 
-        // Validar archivo solo en modo creación
+        // Validar archivo solo en modo creación (no en edición)
         if (!isEditMode && !selectedFile) {
             setError('Por favor selecciona un archivo');
+            setLoading(false);
+            return false;
+        }
+
+        // En modo edición: si no hay archivo nuevo Y no hay archivo existente, error
+        if (isEditMode && !selectedFile && !hasExistingFile) {
+            setError('El tópico necesita al menos un archivo');
             setLoading(false);
             return false;
         }
@@ -50,7 +57,6 @@ export const useTopicForm = (onSuccess) => {
         try {
             const topicData = {
                 nombre: form.title,
-                descripcion: form.description,
                 tipo_topicoId: parseInt(form.contentType),
                 nivelId: parseInt(form.level)
             };
@@ -65,7 +71,9 @@ export const useTopicForm = (onSuccess) => {
             }
 
             if (isEditMode && editingTopicId) {
-                await topicsService.updateTopic(editingTopicId, topicData, files);
+                // Solo enviar archivos si hay archivos nuevos seleccionados
+                // Si files está vacío, el backend no modificará los recursos existentes
+                await topicsService.updateTopic(editingTopicId, topicData, files.length > 0 ? files : []);
                 resetForm();
                 if(onSuccess) await onSuccess();
                 return true;

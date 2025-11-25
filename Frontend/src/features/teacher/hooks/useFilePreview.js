@@ -4,6 +4,7 @@ import mammoth from 'mammoth';
 export const useFilePreview = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [hasExistingFile, setHasExistingFile] = useState(false);
     const [textPreview, setTextPreview] = useState('');
     const [imagePreview, setImagePreview] = useState('');
     const [videoPreview, setVideoPreview] = useState('');
@@ -55,15 +56,20 @@ export const useFilePreview = () => {
     const clearAll = () => {
         setSelectedFile(null);
         setSelectedImage(null);
+        setHasExistingFile(false);
         clearPreviews();
         setSelectedImagePreview('');
     };
 
     const loadExistingFile = (topic) => {
-        if (!topic?.recursos || topic.recursos.length === 0) return;
+        if (!topic?.recursos || topic.recursos.length === 0) {
+            setHasExistingFile(false);
+            return;
+        }
 
         const recurso = topic.recursos[0];
         clearPreviews();
+        setHasExistingFile(true);
 
         // Cargar el archivo principal (url)
         if (recurso.url) {
@@ -199,6 +205,7 @@ export const useFilePreview = () => {
         // Estados
         selectedFile,
         selectedImage,
+        hasExistingFile,
         textPreview,
         imagePreview,
         videoPreview,

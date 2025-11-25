@@ -6,11 +6,13 @@ import Group from '../features/teacher/pages/Group';
 import Topic from '../features/teacher/pages/Topic';
 import Course from '../features/teacher/pages/Course';
 import CourseDetail from '../features/teacher/pages/CourseDetail';
+import ExploreTopics from '../features/teacher/pages/ExploreTopics';
 import { TopicViewer } from '../features/shared/components';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
-import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School } from 'lucide-react';
+import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School, Compass } from 'lucide-react';
+
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -104,6 +106,11 @@ const VentanaProfesor = () => {
             icon: <Library className="w-5 h-5" />, 
             label: 'Mis tópicos' 
         },
+        { 
+            path: '/profesor/explorar', 
+            icon: <Compass className="w-5 h-5" />, 
+            label: 'Explorar Tópicos' 
+        },
         // { 
         //     path: '/profesor/ejercicios', 
         //     icon: <FileEdit className="w-5 h-5" />, 
@@ -152,6 +159,7 @@ const VentanaProfesor = () => {
                     <Route path="grupos" element={<Group/>} />
                     <Route path="topicos" element={<Topic/>} /> 
                     <Route path="topicos/ver/:id" element={<TopicViewer role="teacher" backPath="/profesor/topicos" />} />
+                    <Route path="explorar" element={<ExploreTopics />} />
                     {/* <Route path="perfil" element={<Perfil />} /> */}
                 </Routes>
             </main>

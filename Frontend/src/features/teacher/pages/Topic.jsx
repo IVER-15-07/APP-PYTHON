@@ -30,6 +30,7 @@ const Topic = () => {
     const {
         selectedFile,
         selectedImage,
+        hasExistingFile,
         textPreview,
         imagePreview,
         videoPreview,
@@ -71,7 +72,7 @@ const Topic = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const success = await submitTopic(selectedFile, selectedImage);
+        const success = await submitTopic(selectedFile, selectedImage, hasExistingFile);
         if (success) {
             handleCloseModal();
         }
@@ -153,6 +154,7 @@ const Topic = () => {
                                 error={error}
                                 selectedFile={selectedFile}
                                 selectedImage={selectedImage}
+                                hasExistingFile={hasExistingFile}
                                 textPreview={textPreview}
                                 imagePreview={imagePreview}
                                 videoPreview={videoPreview}

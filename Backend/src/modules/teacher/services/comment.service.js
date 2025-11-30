@@ -1,4 +1,4 @@
-import { commentRepository } from "../repositories/comment.repository";
+import { commentRepository } from "../repositories/comment.repository.js";
 
 
 export const commentService = {

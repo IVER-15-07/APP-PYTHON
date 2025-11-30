@@ -1,0 +1,81 @@
+# Versión de Docker Compose (la clave `version` es obsoleta y ha sido eliminada)
+
+# Definición de servicios (contenedores)
+services:
+  
+  # ========== BACKEND - API Express ==========
+  backend:
+    # Construir imagen desde Dockerfile en carpeta Backend
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    
+    # Nombre del contenedor
+    container_name: app-backend
+    
+    # Puerto: localhost:5000 → contenedor:5000
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - ./Backend/.env
+    
+    # Variables de entorno
+   # environment:
+    #  - NODE_ENV=production
+     # - PORT=5000
+      # Cargar variables del archivo .env
+     # - DATABASE_URL=${DATABASE_URL}
+    
+    # Montar carpeta para desarrollo (opcional)
+    volumes:
+      - ./Backend/src:/app/src
+      - ./Backend/prisma:/app/prisma
+    
+    # Reintentar si falla
+    restart: unless-stopped
+    
+    # Tiempo de espera para que esté listo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  # ========== FRONTEND - React + Vite ==========
+  frontend:
+    # Construir imagen desde Dockerfile en carpeta Frontend
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    
+    # Nombre del contenedor
+    container_name: app-frontend
+    
+    # Puerto: localhost:3000 → contenedor:3000
+    ports:
+      - "3000:3000"
+    
+    # Variables de entorno
+    environment:
+      - VITE_API_URL=http://backend:5000
+    
+    # Depender de que backend esté corriendo primero
+    depends_on:
+      backend:
+        condition: service_started
+    
+    # Montar carpeta para desarrollo (opcional)
+    volumes:
+      - ./Frontend/src:/app/src
+      - ./Frontend/public:/app/public
+    
+    # Reintentar si falla
+    restart: unless-stopped
+
+# Red personalizada para que servicios se comuniquen
+networks:
+  default:
+    name: app-network
+    driver: bridge

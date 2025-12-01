@@ -62,7 +62,7 @@ cmd_up_detached() {
     print_success "Contenedores iniciados"
     echo ""
     echo "Frontend: http://localhost:3000"
-    echo "Backend:  http://localhost:5000"
+    echo "Backend:  http://localhost:10000"
     echo ""
     echo "Ver logs:"
     echo "  docker-compose logs -f frontend"

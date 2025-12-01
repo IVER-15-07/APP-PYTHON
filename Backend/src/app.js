@@ -23,8 +23,8 @@ const corsOptions = {
     "http://frontend:3000",       // Frontend desde Docker
     "http://127.0.0.1:5173",
     "http://127.0.0.1:3000",
-    "https://app-frontend-service-41ih.onrender.com",
-    "http://app-frontend-service-41ih.onrender.com"
+  
+    "https://app-frontend-services.onrender.com"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],

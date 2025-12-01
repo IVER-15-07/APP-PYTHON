@@ -92,9 +92,9 @@ const TopicExplorerCard = ({ topic }) => {
         </span>
       </div>
 
-      {/* Botón de ver */}
+      {/* Botón de ver - pasa backPath para mantener el sidebar en Explorar */}
       <button
-        onClick={() => navigate(`/profesor/topicos/ver/${topic.id}`)}
+        onClick={() => navigate(`/profesor/topicos/ver/${topic.id}`, { state: { backPath: '/profesor/explorar' } })}
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 rounded-xl border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-200 text-sm font-medium"
       >
         <Eye className="w-4 h-4" />

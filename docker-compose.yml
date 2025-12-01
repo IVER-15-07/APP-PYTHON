@@ -15,7 +15,7 @@ services:
     
     # Puerto: localhost:5000 → contenedor:5000
     ports:
-      - "5000:5000"
+      - "10000:10000"
 
     env_file:
       - ./Backend/.env

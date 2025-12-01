@@ -1,5 +1,3 @@
-# Versión de Docker Compose (la clave `version` es obsoleta y ha sido eliminada)
-
 # Definición de servicios (contenedores)
 services:
   
@@ -13,19 +11,12 @@ services:
     # Nombre del contenedor
     container_name: app-backend
     
-    # Puerto: localhost:5000 → contenedor:5000
+    # Puerto: localhost:10000 → contenedor:10000 (Correcto)
     ports:
       - "10000:10000"
 
     env_file:
       - ./Backend/.env
-    
-    # Variables de entorno
-   # environment:
-    #  - NODE_ENV=production
-     # - PORT=5000
-      # Cargar variables del archivo .env
-     # - DATABASE_URL=${DATABASE_URL}
     
     # Montar carpeta para desarrollo (opcional)
     volumes:
@@ -37,7 +28,8 @@ services:
     
     # Tiempo de espera para que esté listo
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health || exit 1"]
+      # ⚠ CORRECCIÓN 1: Usar el puerto 10000 para el healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:10000/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -59,7 +51,8 @@ services:
     
     # Variables de entorno
     environment:
-      - VITE_API_URL=http://backend:5000
+      # ⚠ CORRECCIÓN 2: Usar el puerto 10000 para la API
+      - VITE_API_URL=http://backend:10000
     
     # Depender de que backend esté corriendo primero
     depends_on:

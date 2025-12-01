@@ -1,16 +1,34 @@
 import admin from "firebase-admin";
 import fs from "fs";
 
-const servicePath = new URL("./login-ac512-firebase-adminsdk-fbsvc-65df3862e4.json", import.meta.url);
-const serviceAccount = JSON.parse(fs.readFileSync(servicePath, "utf8"));
+// 1. Intentar leer la variable de entorno inyectada por Render (PRODUCCIÓN)
+const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-  console.log("Firebase Admin inicializado para project_id:", serviceAccount.project_id);
+if (rawServiceAccount) {
+  // ESTAMOS EN PRODUCCIÓN (RENDER): Usar la variable de entorno JSON
+  try {
+    const serviceAccount = JSON.parse(rawServiceAccount);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log(" Firebase Admin inicializado desde variable de entorno.");
+  } catch (e) {
+    console.error(" ERROR: No se pudo parsear el JSON de Firebase desde ENV.");
+  }
 } else {
-  console.log("Firebase Admin ya inicializado. apps.length =", admin.apps.length);
+  // ESTAMOS EN DESARROLLO (LOCAL): Usar el archivo JSON local
+  try {
+    const localPath = new URL("./login-ac512-firebase-adminsdk-fbsvc-14457b84d6.json", import.meta.url);
+    const serviceAccount = JSON.parse(fs.readFileSync(localPath, "utf8"));
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log(" Firebase Admin inicializado desde archivo local.");
+  } catch (e) {
+    console.error(" ERROR: No se encontró el archivo local de Firebase.", e);
+    // Sugerencia: Asegúrate de que el archivo JSON esté en la ruta correcta en tu carpeta Backend.
+  }
 }
 
 export default admin;

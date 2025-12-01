@@ -49,7 +49,7 @@ export const authService = {
     // Login Firebase
 
     async firebaseLogin({ idToken, roleId }) {
-        const { data } = await axiosInstance.post("/api/firebase-login", { idToken, roleId });
+        const { data } = await axiosInstance.post("/firebase-login", { idToken, roleId });
         if (data?.success) {
             const { token, usuario } = data.data;
             localStorage.setItem("userToken", token);

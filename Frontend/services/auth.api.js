@@ -5,7 +5,7 @@ export const authService = {
 
     async registerSendCode(datospending) {
         try {
-            const response = await axiosInstance.post('/api/register/send-code', datospending);
+            const response = await axiosInstance.post('/register/send-code', datospending);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al enviar código de verificación');
@@ -14,7 +14,7 @@ export const authService = {
 
     async registerVerifyCode(verifydata) {
         try {
-            const response = await axiosInstance.post('/api/register/verify-code', verifydata);
+            const response = await axiosInstance.post('/register/verify-code', verifydata);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al verificar código de verificación');
@@ -23,7 +23,7 @@ export const authService = {
 
     async register(datosUsuario) {
         try {
-            const response = await axiosInstance.post('/api/register', datosUsuario);
+            const response = await axiosInstance.post('/register', datosUsuario);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al registrar usuario');
@@ -33,7 +33,7 @@ export const authService = {
 
     async login(credenciales) {
         try {
-            const response = await axiosInstance.post('/api/login', credenciales);
+            const response = await axiosInstance.post('/login', credenciales);
 
             if (response.data.success) {
                 localStorage.setItem('userToken', response.data.data.token);
@@ -63,7 +63,7 @@ export const authService = {
     // Obtener perfil (requiere token)
     async obtenerPerfil() {
         try {
-            const response = await axiosInstance.get('/api/me');
+            const response = await axiosInstance.get('/me');
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al obtener perfil');

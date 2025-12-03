@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 
 // 1. Intentar leer la variable de entorno inyectada por Render (PRODUCCIÓN)
-const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+const rawServiceAccount = process.env.FIREBASE_CREDENTIALS;
 
 if (rawServiceAccount) {
   // ESTAMOS EN PRODUCCIÓN (RENDER): Usar la variable de entorno JSON

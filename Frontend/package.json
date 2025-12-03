@@ -9,7 +9,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
-    "start": "server dist"
+    "start": "server dist -s -n -L -p $PORT"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",

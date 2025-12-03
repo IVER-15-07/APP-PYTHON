@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-
+const BASE_URL = import.meta.env.VITE_BASE_RL || "https://backend-production-45c2.up.railway.app";
 
 const axiosInstance = axios.create({
-  baseURL: "https://backend-production-45c2.up.railway.app",
+  baseURL: BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

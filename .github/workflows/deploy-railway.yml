@@ -17,48 +17,40 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Build Backend
-        working-directory: Backend
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      # ----------------------------------------------------------------
+      # ZONA DEL BACKEND
+      # ----------------------------------------------------------------
+      - name: Build Backend (Verificación)
+        working-directory: Backend  # <--- Asegúrate que tu carpeta en GitHub se llama así
         run: |
           npm ci
-          npm run build --if-present
+          # El flag --if-present evita el error si no tienes script de build
+          npm run build --if-present 
 
-      - name: Build Frontend
-        working-directory: Frontend
+      - name: Deploy Backend to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
+        working-directory: Backend
+        run: |
+          # AQUÍ ESTÁ LA CLAVE: --service "backend"
+          railway up --service "backend" --detach
+
+      # ----------------------------------------------------------------
+      # ZONA DEL FRONTEND
+      # ----------------------------------------------------------------
+      - name: Build Frontend (Construcción)
+        working-directory: Frontend # <--- Asegúrate que tu carpeta en GitHub se llama así
         run: |
           npm ci
           npm run build
 
-      - name: Install Railway CLI
-        run: |
-          npm install -g @railway/cli
-
-      - name: Login to Railway
+      - name: Deploy Frontend to Railway
         env:
-          RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
-        run: |
-          # Login using API key stored in GitHub Secrets
-          railway login --apiKey "$RAILWAY_API_KEY"
-
-      - name: Deploy to Railway (Backend)
-        env:
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-          RAILWAY_ENV: ${{ secrets.RAILWAY_ENV }}
-        working-directory: Backend
-        run: |
-          # Si tu proyecto Railway ya está conectado por carpeta, 'railway up' lo detecta
-          # Usamos --detach para no abrir TTY
-          railway up --project "$RAILWAY_PROJECT_ID" --detach || true
-
-      - name: Deploy to Railway (Frontend)
-        env:
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-          RAILWAY_ENV: ${{ secrets.RAILWAY_ENV }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
         working-directory: Frontend
         run: |
-          # Si en Railway tienes servicios separados por directorio/servicio, usa 'railway up' desde la carpeta correcta
-          railway up --project "$RAILWAY_PROJECT_ID" --detach || true
-
-      - name: Logout Railway
-        run: |
-          railway logout || true
+          # AQUÍ ESTÁ LA CLAVE: --service "frontend"
+          railway up --service "frontend" --detach

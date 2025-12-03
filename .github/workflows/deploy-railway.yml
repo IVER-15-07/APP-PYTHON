@@ -1,0 +1,64 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build Backend
+        working-directory: Backend
+        run: |
+          npm ci
+          npm run build --if-present
+
+      - name: Build Frontend
+        working-directory: Frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install Railway CLI
+        run: |
+          npm install -g @railway/cli
+
+      - name: Login to Railway
+        env:
+          RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
+        run: |
+          # Login using API key stored in GitHub Secrets
+          railway login --apiKey "$RAILWAY_API_KEY"
+
+      - name: Deploy to Railway (Backend)
+        env:
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENV: ${{ secrets.RAILWAY_ENV }}
+        working-directory: Backend
+        run: |
+          # Si tu proyecto Railway ya está conectado por carpeta, 'railway up' lo detecta
+          # Usamos --detach para no abrir TTY
+          railway up --project "$RAILWAY_PROJECT_ID" --detach || true
+
+      - name: Deploy to Railway (Frontend)
+        env:
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENV: ${{ secrets.RAILWAY_ENV }}
+        working-directory: Frontend
+        run: |
+          # Si en Railway tienes servicios separados por directorio/servicio, usa 'railway up' desde la carpeta correcta
+          railway up --project "$RAILWAY_PROJECT_ID" --detach || true
+
+      - name: Logout Railway
+        run: |
+          railway logout || true

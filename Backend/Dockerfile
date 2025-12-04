@@ -28,7 +28,7 @@ COPY prisma ./prisma/
 RUN npm install --only=production && npm cache clean --force
 
 # Copiar código fuente directamente desde builder
-COPY --from=builder /app ./app
+COPY --from=builder /app .
 
 # Crear usuario no root
 RUN addgroup -g 1001 -S nodejs && \

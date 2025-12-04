@@ -44,9 +44,6 @@ uploads/
 .yarnrc
 
 # Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
 
 # Otros
 README.md

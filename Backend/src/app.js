@@ -9,11 +9,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 app.use(cors({
-  origin: [
-    "http://localhost:5173",  // desarrollo
-    "https://frontend-production-b291.up.railway.app" // producción
-  ],
+  origin: FRONTEND_URL  , 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));

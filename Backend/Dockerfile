@@ -1,40 +1,36 @@
-# Stage 1: Build
+# Stage 1: Build (instalación de dependencias)
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiar manifest
+# Copiar manifest y prisma
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar dependencias (NO ejecutar prisma generate aquí)
+# Instalar todas las dependencias
 RUN npm install && npm cache clean --force
 
-# Copiar código fuente
+# Copiar todo el código fuente
 COPY . .
 
-# Build (si usas JS no hace nada, pero es seguro)
-RUN npm run build || echo "No build step"
+# No hay build step, así que omitimos npm run build
 
-
-# Stage 2: Production
+# Stage 2: Producción
 FROM node:20-alpine
 
 WORKDIR /app
 
+# Copiar manifest y prisma
 COPY package*.json ./
 COPY prisma ./prisma/
 
 # Instalar solo dependencias de producción
 RUN npm install --only=production && npm cache clean --force
 
-# Copiar build
-COPY --from=builder /app/dist ./dist
+# Copiar código fuente directamente desde builder
+COPY --from=builder /app ./app
 
-# Copiar código si usas JS sin dist
-COPY --from=builder /app/src ./src
-
-# Usuario seguro
+# Crear usuario no root
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 && \
     chown -R nodejs:nodejs /app
@@ -45,6 +41,5 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-# Prisma generate se ejecuta aquí (runtime, con ENV ya cargadas)
+# Prisma generate y arranque del servidor
 CMD npx prisma generate && node index.js
-

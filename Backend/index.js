@@ -5,7 +5,22 @@ import app from "./src/app.js";
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
-// 1. INICIAR EL SERVIDOR PRIMERO (Prioridad máxima para Railway)
+
+
+console.log("--- DEBUG DATABASE_URL ---");
+const url = process.env.DATABASE_URL;
+if (!url) {
+    console.log("La variable está VACÍA o UNDEFINED");
+} else {
+    // Solo mostramos los primeros 10 caracteres por seguridad
+    console.log("Valor recibido:", url.substring(0, 15) + "...");
+    console.log("¿Empieza con comillas?:", url.startsWith('"') ? "SÍ (ERROR)" : "NO");
+    console.log("¿Empieza con espacio?:", url.startsWith(' ') ? "SÍ (ERROR)" : "NO");
+}
+console.log("--------------------------");
+
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
 

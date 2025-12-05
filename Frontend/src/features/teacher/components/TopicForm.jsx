@@ -16,6 +16,7 @@ const TopicForm = ({
     cancel,
     selectedFile,
     selectedImage,
+    hasExistingFile = false,
     textPreview,
     imagePreview,
     videoPreview,
@@ -86,19 +87,7 @@ const TopicForm = ({
                             value: level.id.toString(),
                             label: level.nombre,
                         }))}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Descripción</label>
-                    <textarea
-                        name="description"
-                        value={form.description}
-                        onChange={onChange}
-                        placeholder="Describe de qué trata el tópico..."
-                        rows={4}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-800 text-white placeholder-slate-500 border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all resize-none"
-                        disabled={loading}
-                    />
+                    />)
                 </div>
 
                 {/* Sección de carga de archivos - Aparece solo si hay un tipo de contenido seleccionado */}
@@ -153,15 +142,16 @@ const TopicForm = ({
                                                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                                                     </p>
                                                 </>
-                                            ) : (pdfPreview || videoPreview || imagePreview) ? (
+                                            ) : (pdfPreview || videoPreview || imagePreview || hasExistingFile) ? (
                                                 <>
                                                     <p className="text-green-400 font-medium">
-                                                        {pdfPreview && 'Archivo PDF cargado'}
-                                                        {videoPreview && 'Video cargado'}
-                                                        {imagePreview && 'Imagen cargada'}
+                                                        {pdfPreview && '📄 Archivo PDF cargado'}
+                                                        {videoPreview && '🎥 Video cargado'}
+                                                        {imagePreview && '🖼️ Imagen cargada'}
+                                                        {!pdfPreview && !videoPreview && !imagePreview && hasExistingFile && '✓ Archivo existente cargado'}
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        {isEditMode ? 'Haz clic para cambiar el archivo' : 'Archivo existente'}
+                                                        {isEditMode ? 'Haz clic para cambiar el archivo (opcional)' : 'Archivo existente'}
                                                     </p>
                                                 </>
                                             ) : (
@@ -269,7 +259,7 @@ const TopicForm = ({
                             loading || 
                             !form.contentType || 
                             (!isEditMode && form.contentType && !selectedFile) ||
-                            (isEditMode && form.contentType && !selectedFile && !pdfPreview && !videoPreview && !imagePreview)
+                            (isEditMode && form.contentType && !selectedFile && !hasExistingFile && !pdfPreview && !videoPreview && !imagePreview)
                         }
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -331,7 +321,6 @@ export default TopicForm;
 TopicForm.propTypes = {
     form: PropTypes.shape({
         title: PropTypes.string,
-        description: PropTypes.string,
         contentType: PropTypes.string,
         level: PropTypes.string,
     }).isRequired,
@@ -345,6 +334,7 @@ TopicForm.propTypes = {
     cancel: PropTypes.func.isRequired,
     selectedFile: PropTypes.object,
     selectedImage: PropTypes.object,
+    hasExistingFile: PropTypes.bool,
     textPreview: PropTypes.string,
     imagePreview: PropTypes.string,
     videoPreview: PropTypes.string,

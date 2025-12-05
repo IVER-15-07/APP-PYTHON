@@ -39,8 +39,6 @@ const Login = () => {
       const response = await authService.login(formData);
       if (response.success) {
         const user = response.data.usuario;
-        // eslint-disable-next-line no-console
-        console.log('Usuario logueado:', user);
         if (user.rol_usuarioId === 1 || user.rol_usuarioId === 2 || user.rol_usuarioId === 3 || user.rol_usuarioId === 5) {
           navigate('/profesor');
         } else if (user.rol_usuarioId === 4) {
@@ -92,8 +90,6 @@ const Login = () => {
     setError('');
     try {
       const firebaseResult = await firebaseAuthService.loginWithMicrosoft();
-      // eslint-disable-next-line no-console
-      console.log("firebaseResult:", firebaseResult);
       if (firebaseResult.success) {
         const roleId = rolParam === 'usuario' ? 5 : 4;
         const response = await authService.firebaseLogin(firebaseResult.data, roleId);

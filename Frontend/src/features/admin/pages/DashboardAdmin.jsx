@@ -109,12 +109,12 @@ const DashboardAdmin = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-8">
+        <div className={`${PAGE_LAYOUTS.gradient} ${PAGE_LAYOUTS.withPadding}`}>
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">Panel de Administrador</h1>
-                    <p className="text-slate-400">Gestión de solicitudes de rol</p>
+                    <h1 className="text-display-lg text-text-primary mb-2">Panel de Administrador</h1>
+                    <p className="text-text-base text-text-secondary">Gestión de solicitudes de rol</p>
                 </header>
 
                 {/* Stats Cards */}
@@ -138,25 +138,16 @@ const DashboardAdmin = () => {
 
                 {/* Messages */}
                 {message && (
-                    <div className={`flex items-center gap-3 p-4 rounded-xl border mb-6 ${
-                        message.type === 'success' 
-                            ? 'bg-green-500/10 border-green-500/30 text-green-400' 
-                            : 'bg-red-500/10 border-red-500/30 text-red-400'
-                    }`}>
-                        {message.type === 'success' ? (
-                            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-                        ) : (
-                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                        )}
-                        <span className="text-sm font-medium">{message.text}</span>
-                    </div>
+                    <Alert 
+                        variant={message.type === 'success' ? 'success' : 'error'}
+                        className="mb-6"
+                    >
+                        {message.text}
+                    </Alert>
                 )}
 
                 {loading && (
-                    <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl mb-6">
-                        <div className="w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-slate-300">Cargando solicitudes...</span>
-                    </div>
+                    <LoadingState message="Cargando solicitudes..." className="mb-6" />
                 )}
 
                 {/* Requests Table */}

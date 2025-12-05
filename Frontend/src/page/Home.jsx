@@ -2,7 +2,7 @@ import { useState } from "react"
 import ejemploPython from "../components/data/ejemploPython"
 import aprendizajes from "../components/data/aprendizajes"
 import ruta from "../components/data/ruta"
-import { BotonLink, SimpleCard, RutaItem } from "../components/ui"
+import { BotonLink, FeatureCard, RutaItem } from "../components/ui"
 import { Code2, Play, Sparkles } from "lucide-react"
 
 
@@ -95,7 +95,7 @@ const Home = () => {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {(Array.isArray(aprendizajes) ? aprendizajes : []).map(({ titulo, descripcion }) => (
-            <SimpleCard key={titulo} titulo={titulo} descripcion={descripcion} />
+            <FeatureCard key={titulo} titulo={titulo} descripcion={descripcion} />
           ))}
         </div>
       </section>

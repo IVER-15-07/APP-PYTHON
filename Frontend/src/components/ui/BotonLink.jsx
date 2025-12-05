@@ -3,22 +3,22 @@ import PropTypes from "prop-types"
 
 const BotonLink = ({ to, children, variant = "primary", size = "md", className = "" }) => {
   // Estilos base
-  const baseClasses = "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200"
+  const baseClasses = "inline-flex items-center justify-center gap-2 rounded-button transition-all duration-normal"
   
   // Variantes de estilo
   const variantClasses = {
-    primary: "bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white border border-emerald-400/30 shadow-lg shadow-emerald-500/25",
+    primary: "bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-text-primary border border-border-accent shadow-theme-button",
     
-    secondary: "bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 border border-slate-600/50 hover:border-slate-500/50",
+    secondary: "bg-bg-tertiary hover:bg-bg-card-hover text-text-secondary border border-border-primary hover:border-border-accent",
     
-    outline: "bg-transparent hover:bg-slate-700/30 text-slate-300 hover:text-white border border-slate-700/50 hover:border-green-500/50",
+    outline: "bg-transparent hover:bg-bg-tertiary text-text-secondary hover:text-text-primary border border-border-secondary hover:border-primary",
   }
   
   // Tamaños
   const sizeClasses = {
-    sm: "px-3 py-1.5 text-xs",
-    md: "px-5 py-2.5 text-sm",
-    lg: "px-6 py-3 text-base",
+    sm: "px-3 py-1.5 text-btn-sm",
+    md: "px-5 py-2.5 text-btn-base",
+    lg: "px-6 py-3 text-btn-lg",
   }
   
   const classes = `${baseClasses} ${variantClasses[variant] || variantClasses.primary} ${sizeClasses[size] || sizeClasses.md} ${className}`

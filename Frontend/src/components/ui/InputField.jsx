@@ -11,7 +11,7 @@ const InputField = ({ id, name, type = "text", value, onChange, placeholder, req
       placeholder={placeholder}
       required={required}
       disabled={disabled}
-      className="w-full px-4 py-4 bg-slate-700/80 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 disabled:opacity-60"
+      className="w-full px-4 py-4 bg-bg-tertiary border border-border-primary rounded-input text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary focus:ring-2 focus:ring-border-accent transition-all duration-slow disabled:opacity-60"
     />
   </div>
 )

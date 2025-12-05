@@ -1,9 +1,9 @@
 import PropTypes from "prop-types"
 const RutaItem = ({ paso, titulo, descripcion }) => (
-  <li className="rounded-xl bg-slate-900/60 border border-slate-800 p-4">
-    <div className="text-emerald-400 font-extrabold">{paso}</div>
-    <div className="font-semibold">{titulo}</div>
-    <div className="text-slate-400 text-sm">{descripcion}</div>
+  <li className="rounded-card bg-bg-glass border border-border-secondary p-4">
+    <div className="text-text-accent text-display-sm font-extrabold">{paso}</div>
+    <div className="text-btn-base text-text-primary">{titulo}</div>
+    <div className="text-text-sm text-text-secondary">{descripcion}</div>
   </li>
 )
 

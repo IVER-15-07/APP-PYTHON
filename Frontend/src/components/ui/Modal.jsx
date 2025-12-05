@@ -2,13 +2,25 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from 'prop-types';
 
+/**
+ * Modal component for displaying dialog overlays
+ * 
+ * @param {boolean} open - Controls modal visibility
+ * @param {function} onClose - Callback when modal is closed
+ * @param {string} title - Modal title
+ * @param {node} children - Modal content
+ * @param {node} footer - Optional footer content
+ * @param {string} size - Modal size (sm, md, lg)
+ * @param {boolean} closeOnBackdrop - Whether clicking backdrop closes modal
+ * @param {string} ariaLabel - Accessibility label
+ */
 const Modal = ({
   open = false,
   onClose = () => { },
   title = "",
   children,
   footer = null,
-  size = "md", // sm | md | lg
+  size = "md",
   closeOnBackdrop = true,
   ariaLabel = "Modal",
 }) => {
@@ -40,7 +52,7 @@ const Modal = ({
       aria-modal="true"
       aria-label={ariaLabel}
     >
-      {/* Backdrop: semi-transparente + blur */}
+      {/* Backdrop */}
       <div
         onClick={() => closeOnBackdrop && onClose()}
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -55,7 +67,7 @@ const Modal = ({
             <button
               onClick={onClose}
               aria-label="Cerrar"
-              className="text-slate-300 hover:text-white p-1 rounded"
+              className="text-slate-300 hover:text-white p-1 rounded transition-colors"
             >
               ✕
             </button>
@@ -66,7 +78,7 @@ const Modal = ({
             {children}
           </div>
 
-          {/* Footer (opcional) */}
+          {/* Footer */}
           {footer && (
             <div className="px-5 py-3 border-t border-slate-700 bg-slate-900/30">
               {footer}
@@ -78,7 +90,7 @@ const Modal = ({
     document.body
   );
 };
-// Validación de PropTypes
+
 Modal.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,

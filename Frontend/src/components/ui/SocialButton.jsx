@@ -8,7 +8,7 @@ const SocialButton = ({ onClick, icon, children, loading, ariaLabel }) => (
     type="button"
     onClick={onClick}
     aria-label={ariaLabel}
-    className="w-full py-4 bg-white text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300/50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 mb-6"
+    className="w-full py-4 bg-white text-gray-700 text-btn-base rounded-button hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300/50 transition-all duration-slow transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 mb-6"
     disabled={loading}
   >
     {loading ? (

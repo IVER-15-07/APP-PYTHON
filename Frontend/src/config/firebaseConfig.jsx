@@ -11,14 +11,9 @@ const firebaseConfig = {
   measurementId: "G-Q2PXR6WFKC"
 };
 
-// inicializar solo si no hay apps (evita errores con HMR)
+// Inicializar solo si no hay apps (evita errores con HMR)
 if (!getApps().length) {
   initializeApp(firebaseConfig);
-  // eslint-disable-next-line no-console
-  console.log("Firebase cliente inicializado");
-} else {
-  // eslint-disable-next-line no-console
-  console.log("Firebase cliente ya inicializado");
 }
 
 export const auth = getAuth();

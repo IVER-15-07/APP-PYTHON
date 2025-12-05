@@ -1,22 +1,25 @@
-// components/ui/index.js
-// Layout
+// Layout components
 export { default as Navbar } from './layout/Navbar/Navbar';
 export { default as Sidebar } from './layout/Sidebar/Sidebar';
 
-// Data Display
-// Data Display
-export { default as Card } from './data-display/Card/Card';
-// Simple small card used on marketing pages
-export { default as SimpleCard } from './Card';
-// Inputs
-export { default as Button } from './inputs/Button/Button';
+// Data Display components
+export { default as Card } from './Card';
+export { default as FeatureCard } from './FeatureCard';
 
-// Feedback
-export { default as Modal } from './feedback/Modal/Modal';
+// Input components
+export { default as Button } from './Button';
+export { default as InputField } from './InputField';
 
+// Navigation components
 export { default as BotonLink } from './BotonLink';
 export { default as RutaItem } from './RutaItem';
-export { default as InputField } from './InputField';
+
+// Feedback components
+export { default as Modal } from './Modal';
+export { default as Alert } from './Alert';
+export { default as Badge } from './Badge';
 export { default as SocialButton } from './SocialButton';
 export { default as CreateButton } from './CreateButton';
 export { default as Spinner } from './Spinner';
+export { default as LoadingState } from './LoadingState';
+export { default as EmptyState } from './EmptyState';

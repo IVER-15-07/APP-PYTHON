@@ -13,4 +13,6 @@ export { default as CustomDropdown } from './CustomDropdown';
 export { default as CourseCard } from './CourseCard';
 export { default as EditCourseModal } from './EditCourseModal';
 export { default as FilePreview } from './FilePreview';
+export { default as TopicViewer } from './TopicViewer';
+export { default as TopicComments } from './TopicComments';
 

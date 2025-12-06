@@ -6,7 +6,7 @@ import { topicsService } from '../../../../services/topic.api';
 import { BookOpen, Image, Music, FileText, ArrowLeft } from 'lucide-react';
 import TopicComments from './TopicComments';
 
-const TopicViewer = ({ role = 'student', backPath = null, fetchService = null }) => {
+const TopicViewer = ({ role = 'student', fetchService = null }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [topic, setTopic] = useState(null);
@@ -75,24 +75,133 @@ const TopicViewer = ({ role = 'student', backPath = null, fetchService = null })
   const renderPrincipal = () => {
     if (!r.urlPrincipal) return null;
     
+    const tipo = topic.tipo?.toLowerCase() || '';
+    const url = r.urlPrincipal;
+    
+    // Detectar si es Cloudinary
+    const isCloudinary = url.includes('cloudinary.com');
+    
     // Imágenes
-    if (/\.(png|jpg|jpeg|webp|gif)$/i.test(r.urlPrincipal))
-      return <img src={r.urlPrincipal} alt="principal" className="rounded-xl border border-slate-700/50 max-h-96 object-contain shadow-lg w-full" />;
+    if (/\.(png|jpg|jpeg|webp|gif)$/i.test(url) || tipo === 'imagen')
+      return <img src={url} alt="principal" className="rounded-xl border border-slate-700/50 max-h-96 object-contain shadow-lg w-full" />;
     
     // Audio
-    if (/\.(mp3|wav|ogg)$/i.test(r.urlPrincipal))
-      return <audio controls src={r.urlPrincipal} className="w-full" />;
+    if (/\.(mp3|wav|ogg)$/i.test(url) || tipo === 'audio')
+      return <audio controls src={url} className="w-full" />;
     
     // Video
-    if (/\.(mp4|webm|ogg|mov)$/i.test(r.urlPrincipal))
-      return <video controls src={r.urlPrincipal} className="w-full rounded-xl border border-slate-700/50 shadow-lg" />;
+    if (/\.(mp4|webm|ogg|mov)$/i.test(url) || tipo === 'video')
+      return <video controls src={url} className="w-full rounded-xl border border-slate-700/50 shadow-lg" />;
     
-    // PDF
-    if (/\.pdf$/i.test(r.urlPrincipal))
-      return <iframe title="pdf" src={r.urlPrincipal} className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg" />;
+    // PDF - Mostrar directamente
+    if (/\.pdf$/i.test(url) || (isCloudinary && url.includes('/image/upload/') && url.includes('.pdf'))) {
+      return (
+        <div className="space-y-3">
+          <iframe 
+            title="pdf" 
+            src={url} 
+            className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
+          />
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
+          >
+            <FileText className="w-4 h-4" />
+            Abrir PDF en nueva pestaña
+          </a>
+        </div>
+      );
+    }
     
-    // Otros archivos (incluyendo presentaciones, etc.)
-    return <a href={r.urlPrincipal} target="_blank" rel="noreferrer" className="text-emerald-400 hover:text-emerald-300 underline font-medium">Abrir recurso</a>;
+    // Para tipo "texto" o archivos de Office
+    if (tipo === 'texto' || /\.(ppt|pptx|doc|docx|xls|xlsx)$/i.test(url)) {
+      // Para archivos de Cloudinary raw, usar Google Docs Viewer
+      if (isCloudinary && url.includes('/raw/upload/')) {
+        const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+        
+        return (
+          <div className="space-y-3">
+            <iframe 
+              title="document" 
+              src={googleViewerUrl} 
+              className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
+            />
+            <a 
+              href={url} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
+            >
+              <FileText className="w-4 h-4" />
+              Abrir documento en nueva pestaña
+            </a>
+          </div>
+        );
+      }
+      
+      // Para otros archivos de Office con extensión clara
+      const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+      
+      return (
+        <div className="space-y-3">
+          <iframe 
+            title="document" 
+            src={officeViewerUrl} 
+            className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
+          />
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
+          >
+            <FileText className="w-4 h-4" />
+            Abrir documento en nueva pestaña
+          </a>
+        </div>
+      );
+    }
+    
+    // Archivos de texto plano
+    if (/\.(txt|json|xml|csv)$/i.test(url)) {
+      return (
+        <div className="space-y-3">
+          <iframe 
+            title="text-file" 
+            src={url} 
+            className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
+          />
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
+          >
+            <FileText className="w-4 h-4" />
+            Abrir archivo en nueva pestaña
+          </a>
+        </div>
+      );
+    }
+    
+    // Para otros archivos, mostrar link directo
+    return (
+      <div className="bg-slate-800/30 rounded-xl p-8 text-center space-y-4">
+        <FileText className="w-16 h-16 text-slate-600 mx-auto" />
+        <p className="text-slate-400 text-sm">Este tipo de archivo no se puede visualizar directamente en el navegador</p>
+        <a 
+          href={url} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors"
+        >
+          <FileText className="w-5 h-5" />
+          Abrir recurso en nueva pestaña
+        </a>
+      </div>
+    );
   };
 
   return (
@@ -100,13 +209,11 @@ const TopicViewer = ({ role = 'student', backPath = null, fetchService = null })
       <div className={`mx-auto ${useTwoColumnLayout ? 'max-w-7xl' : 'max-w-5xl'}`}>
         {/* Back button */}
         <button
-          onClick={() => backPath ? navigate(backPath) : navigate(-1)}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-slate-400 hover:text-emerald-400 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            {role === 'teacher' ? 'Volver a mis tópicos' : 'Volver al curso'}
-          </span>
+          <span className="text-sm font-medium">Volver</span>
         </button>
 
         <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
@@ -260,7 +367,6 @@ const TopicViewer = ({ role = 'student', backPath = null, fetchService = null })
 
 TopicViewer.propTypes = {
   role: PropTypes.oneOf(['student', 'teacher']),
-  backPath: PropTypes.string,
   fetchService: PropTypes.func,
 };
 

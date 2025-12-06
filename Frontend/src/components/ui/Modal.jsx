@@ -2,18 +2,6 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from 'prop-types';
 
-/**
- * Modal component for displaying dialog overlays
- * 
- * @param {boolean} open - Controls modal visibility
- * @param {function} onClose - Callback when modal is closed
- * @param {string} title - Modal title
- * @param {node} children - Modal content
- * @param {node} footer - Optional footer content
- * @param {string} size - Modal size (sm, md, lg)
- * @param {boolean} closeOnBackdrop - Whether clicking backdrop closes modal
- * @param {string} ariaLabel - Accessibility label
- */
 const Modal = ({
   open = false,
   onClose = () => { },

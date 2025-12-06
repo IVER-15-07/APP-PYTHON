@@ -1,16 +1,5 @@
 import PropTypes from 'prop-types';
 
-/**
- * Button component with multiple variants and sizes
- * 
- * @param {node} children - Button content
- * @param {string} className - Additional CSS classes
- * @param {function} onClick - Click handler
- * @param {string} type - Button type (button, submit, reset)
- * @param {string} variant - Button variant (default, approve, reject, secondary)
- * @param {string} size - Button size (sm, md, lg)
- * @param {boolean} disabled - Whether button is disabled
- */
 const Button = ({
     children,
     className = "",

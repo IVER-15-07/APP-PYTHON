@@ -1,18 +1,5 @@
 import PropTypes from 'prop-types';
 
-/**
- * StatsCard component for displaying data with stats, metrics, or information
- * Refactored from inline styles to Tailwind classes
- * 
- * @param {string} title - Optional card title
- * @param {string|number|node} value - Main value to display (required)
- * @param {string} subtitle - Optional subtitle text
- * @param {node} icon - Optional icon element
- * @param {string} variant - Card variant style (default, success, warning, info)
- * @param {node} footer - Optional footer content
- * @param {function} onClick - Optional click handler
- * @param {string} className - Additional CSS classes
- */
 const Card = ({
   title,
   value,

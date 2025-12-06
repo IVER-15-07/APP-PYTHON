@@ -17,7 +17,6 @@ export { default as RutaItem } from './RutaItem';
 // Feedback components
 export { default as Modal } from './Modal';
 export { default as Alert } from './Alert';
-export { default as Badge } from './Badge';
 export { default as SocialButton } from './SocialButton';
 export { default as CreateButton } from './CreateButton';
 export { default as Spinner } from './Spinner';

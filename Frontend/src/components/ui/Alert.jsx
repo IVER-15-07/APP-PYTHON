@@ -1,14 +1,6 @@
 import PropTypes from 'prop-types';
 import { AlertCircle, CheckCircle, Info, AlertTriangle, X } from 'lucide-react';
 
-/**
- * Componente Alert reutilizable
- * @param {string} variant - success | error | warning | info
- * @param {string} title - Título opcional
- * @param {node} children - Contenido del alert
- * @param {function} onClose - Función para cerrar el alert
- * @param {boolean} dismissible - Si se puede cerrar
- */
 const Alert = ({ 
   variant = 'info', 
   title, 

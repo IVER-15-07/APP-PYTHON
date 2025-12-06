@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import PropTypes from "prop-types"
 import { ChevronLeft, ChevronRight, LogOut, Code2 } from "lucide-react"
 
@@ -15,6 +15,19 @@ const Sidebar = ({
   brand = { icon: <Code2 className="w-6 h-6" />, name: "PyLearn" },
 }) => {
   const [open, setOpen] = useState(controlledOpen ?? true)
+  const location = useLocation()
+  
+  // Detectar si estamos en una vista de detalle de tópico
+  const isTopicView = location.pathname.includes('/ver-topico/')
+  
+  // Función para determinar si un item está activo
+  const isItemActive = (item, isActive) => {
+    // Si es la ruta de "Explorar Tópicos" y estamos viendo un tópico, mantenerlo activo
+    if (item.path.includes('/explorar') && isTopicView) {
+      return true
+    }
+    return isActive
+  }
 
   useEffect(() => {
     if (typeof controlledOpen === "boolean") setOpen(controlledOpen)
@@ -85,13 +98,14 @@ const Sidebar = ({
             key={item.path}
             to={item.path}
             end={item.exact}
-            className={({ isActive }) =>
-              `group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActive
+            className={({ isActive }) => {
+              const shouldBeActive = isItemActive(item, isActive)
+              return `group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                shouldBeActive
                   ? "bg-gradient-to-r from-green-500/20 to-cyan-500/20 text-green-400 border border-green-400/40 shadow-lg shadow-green-500/10"
                   : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:border hover:border-slate-600/50"
               } ${!open && "justify-center"}`
-            }
+            }}
             title={!open ? item.label : undefined}
           >
             <span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">{item.icon}</span>

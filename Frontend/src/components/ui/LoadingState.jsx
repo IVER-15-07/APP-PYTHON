@@ -1,10 +1,5 @@
 import PropTypes from 'prop-types';
 
-/**
- * Componente LoadingState reutilizable
- * @param {string} message - Mensaje opcional
- * @param {string} size - sm | md | lg
- */
 const LoadingState = ({ message = 'Cargando...', size = 'md', className = '' }) => {
   const sizeClasses = {
     sm: 'w-4 h-4 border-2',

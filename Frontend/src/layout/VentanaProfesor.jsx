@@ -7,7 +7,7 @@ import Topic from '../features/teacher/pages/Topic';
 import Course from '../features/teacher/pages/Course';
 import CourseDetail from '../features/teacher/pages/CourseDetail';
 import ExploreTopics from '../features/teacher/pages/ExploreTopics';
-import { TopicViewer } from '../features/shared/components';
+import { TopicViewer } from '../features/teacher/components';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
@@ -158,7 +158,7 @@ const VentanaProfesor = () => {
                     <Route path="cursos/:id" element={<CourseDetail />} />
                     <Route path="grupos" element={<Group/>} />
                     <Route path="topicos" element={<Topic/>} /> 
-                    <Route path="topicos/ver/:id" element={<TopicViewer role="teacher" backPath="/profesor/topicos" />} />
+                    <Route path="ver-topico/:id" element={<TopicViewer role="teacher" />} />
                     <Route path="explorar" element={<ExploreTopics />} />
                     {/* <Route path="perfil" element={<Perfil />} /> */}
                 </Routes>

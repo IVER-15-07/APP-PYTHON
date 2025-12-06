@@ -2,8 +2,8 @@ import { commentService } from "../services/comment.service.js";
 
 export async function crearComentario(req, res) {
     try {
-        const input = req.body;
-        const comentario = await commentService.crearComentario(input);
+        const data = req.body;
+        const comentario = await commentService.crearComentario(data);
         return res.json({ success: true, message: "Comentario creado", data: comentario });
     } catch (error) {
         console.error("error en commentController:", error);

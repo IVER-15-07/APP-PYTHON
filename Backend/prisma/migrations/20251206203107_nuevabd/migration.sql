@@ -133,15 +133,25 @@ CREATE TABLE "Topico" (
 );
 
 -- CreateTable
-CREATE TABLE "Comentarios" (
+CREATE TABLE "Comentario" (
     "id" SERIAL NOT NULL,
     "contenido" TEXT NOT NULL,
-    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "estado" BOOLEAN NOT NULL DEFAULT false,
+    "fecha_pub" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "usuarioId" INTEGER NOT NULL,
     "topicoId" INTEGER NOT NULL,
 
-    CONSTRAINT "Comentarios_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Comentario_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ComentarioRespuesta" (
+    "id" SERIAL NOT NULL,
+    "contenido" TEXT NOT NULL,
+    "fecha_pub" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "usuarioId" INTEGER NOT NULL,
+    "comentarioId" INTEGER NOT NULL,
+
+    CONSTRAINT "ComentarioRespuesta_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -319,13 +329,19 @@ ALTER TABLE "Topico" ADD CONSTRAINT "Topico_tipo_topicoId_fkey" FOREIGN KEY ("ti
 ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId") REFERENCES "Nivel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comentarios" ADD CONSTRAINT "Comentarios_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentarios"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -12,7 +12,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model RegistroPendiente {
   id             Int      @id @default(autoincrement())
   email          String
@@ -44,11 +43,12 @@ model Usuario {
   rol_usuarioId Int?
   rol_usuario   Rol_usuario? @relation(fields: [rol_usuarioId], references: [id])
 
-  registro        Registro[]
-  calificacion    Calificacion[]
-  solicitudRol    solicitudRol[]
-  comentarios     Comentarios[]
-  comentariovisto ComentarioVisto[]
+  registro             Registro[]
+  calificacion         Calificacion[]
+  solicitudRol         solicitudRol[]
+  comentarios          Comentario[]
+  comentariovisto      ComentarioVisto[]
+  comentarioRespuestas ComentarioRespuesta[]
 }
 
 model solicitudRol {
@@ -165,29 +165,39 @@ model Topico {
   recursos     Recursos[]
   evaluacion   Evaluacion[]
   grupo_topico Grupo_Topico[]
-  comentarios  Comentarios[]
+  comentarios  Comentario[]
 }
 
-model Comentarios {
+model Comentario {
   id        Int      @id @default(autoincrement())
   contenido String
-  fecha     DateTime @default(now())
-  estado    Boolean  @default(false)
+  fecha_pub DateTime @default(now())
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
   usuarioId Int
+  topico    Topico  @relation(fields: [topicoId], references: [id])
+  topicoId  Int
 
-  topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
-  topicoId Int
+  respuestas       ComentarioRespuesta[]
+  comentarioVistos ComentarioVisto[]
+}
 
-  comentario ComentarioVisto[]
+model ComentarioRespuesta {
+  id        Int    @id @default(autoincrement())
+  contenido String
+  fecha_pub DateTime @default(now())
+  
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  comentario   Comentario @relation(fields: [comentarioId], references: [id])
+  comentarioId Int
 }
 
 model ComentarioVisto {
   id      Int      @id @default(autoincrement())
   vistoEn DateTime @default(now())
 
-  comentario   Comentarios @relation(fields: [comentarioId], references: [id], onDelete: Cascade)
+  comentario   Comentario @relation(fields: [comentarioId], references: [id], onDelete: Cascade)
   comentarioId Int
 
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)

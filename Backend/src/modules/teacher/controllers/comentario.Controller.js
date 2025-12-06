@@ -15,14 +15,13 @@ export async function crearComentario(req, res) {
     }
 };
 
-export async function responder(req, res) {
+export async function responderComentario(req, res) {
     try {
-        const commentId = req.params.id;
-        const input = req.body;
-        const reply = await commentService.responderComentario(commentId, input);
+        const data = req.body;
+        const reply = await commentService.responderComentario(data);
         return res.json({ success: true, message: "Respuesta creada", data: reply });
     } catch (error) {
-        console.error("error en commentController:", error);
+        console.error("error al responder  comentario:", error);
         const status = error.status || 500;
         res.status(status).json({
             success: false,
@@ -31,13 +30,13 @@ export async function responder(req, res) {
     }
 };
 
-export async function obtener(req, res) {
+export async function getComentarios(req, res) {
     try {
-        const commentId = req.params.id;
-        const comentario = await commentService.obtenerComentario(commentId);
+        const teacherId = req.params.id;
+        const comentario = await commentService.getCommentsByTeacherId(teacherId);
         return res.json({ success: true, data: comentario });
     } catch (error) {
-        console.error("error en commentController:", error);
+        console.error("error al obtener los comentarios:", error);
         const status = error.status || 500;
         res.status(status).json({
             success: false,
@@ -45,17 +44,3 @@ export async function obtener(req, res) {
         });
     }
 };  
-export async function listarPorTopico(req, res) {
-    try {
-        const topicoId = req.params.topicoId;
-        const comentarios = await commentService.listarComentariosPorTopico(topicoId);
-        return res.json({ success: true, data: comentarios });
-    } catch (error) {
-        console.error("error en commentController:", error);
-        const status = error.status || 500;
-        res.status(status).json({
-            success: false,
-            message: error.message || "Error interno"
-        });
-    }
-};

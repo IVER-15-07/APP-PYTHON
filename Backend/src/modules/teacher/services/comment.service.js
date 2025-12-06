@@ -7,6 +7,14 @@ export const commentService = {
     return await commentRepository.createComment(data);
   },
 
+  async responderComentario(data) {
+    return await commentRepository.createanswerComments(data);
+  },
+
+  async getCommentsByTeacherId(teacherId) {
+    return await commentRepository.getCommentsByTeacherId(teacherId);
+  },
+
 
 
 }

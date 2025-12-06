@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { adminService } from "../../../../services/admin.api.js";
 import { Card, Button, Alert, LoadingState } from "../../../components/ui";
-import { Users, Clock, BookOpen, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Users, Clock, BookOpen, CheckCircle2, XCircle} from "lucide-react";
 import { PendingGroupCard } from "../components";
-
+import { PAGE_LAYOUTS } from "../../../theme/classNames.js";
 const DashboardAdmin = () => {
     const [requests, setRequests] = useState([]);
     const [pendingGroups, setPendingGroups] = useState([]);

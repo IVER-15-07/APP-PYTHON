@@ -102,15 +102,6 @@ const TopicViewer = ({ role = 'student', fetchService = null }) => {
             src={url} 
             className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
           />
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
-          >
-            <FileText className="w-4 h-4" />
-            Abrir PDF en nueva pestaña
-          </a>
         </div>
       );
     }
@@ -128,15 +119,6 @@ const TopicViewer = ({ role = 'student', fetchService = null }) => {
               src={googleViewerUrl} 
               className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
             />
-            <a 
-              href={url} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
-            >
-              <FileText className="w-4 h-4" />
-              Abrir documento en nueva pestaña
-            </a>
           </div>
         );
       }
@@ -151,15 +133,6 @@ const TopicViewer = ({ role = 'student', fetchService = null }) => {
             src={officeViewerUrl} 
             className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
           />
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
-          >
-            <FileText className="w-4 h-4" />
-            Abrir documento en nueva pestaña
-          </a>
         </div>
       );
     }
@@ -173,15 +146,6 @@ const TopicViewer = ({ role = 'student', fetchService = null }) => {
             src={url} 
             className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
           />
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 underline text-sm font-medium"
-          >
-            <FileText className="w-4 h-4" />
-            Abrir archivo en nueva pestaña
-          </a>
         </div>
       );
     }
@@ -191,15 +155,6 @@ const TopicViewer = ({ role = 'student', fetchService = null }) => {
       <div className="bg-slate-800/30 rounded-xl p-8 text-center space-y-4">
         <FileText className="w-16 h-16 text-slate-600 mx-auto" />
         <p className="text-slate-400 text-sm">Este tipo de archivo no se puede visualizar directamente en el navegador</p>
-        <a 
-          href={url} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors"
-        >
-          <FileText className="w-5 h-5" />
-          Abrir recurso en nueva pestaña
-        </a>
       </div>
     );
   };

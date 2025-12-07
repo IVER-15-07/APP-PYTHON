@@ -52,6 +52,7 @@ model Usuario {
   comentarioRespuestas ComentarioRespuesta[]
   respuestaEstudiante  RespuestaEstudiante[]
   evaluacionResultado  EvaluacionResultado[]
+  topico               Topico[]
 }
 
 model solicitudRol {
@@ -163,6 +164,8 @@ model Topico {
   tipo_topicoId Int
   nivel         Nivel       @relation(fields: [nivelId], references: [id], onDelete: Cascade)
   nivelId       Int
+  creador       Usuario     @relation(fields: [creadorId], references: [id], onDelete: Cascade)
+  creadorId     Int
 
   calificacion Calificacion[]
   recursos     Recursos[]

@@ -20,10 +20,10 @@ export const topicService = {
 
             const recurso = {
                 nombre: `recursos_topico_${newTopic.id}`,
-                url: null,          // ← URL PRINCIPAL (según tipo_topicoId)
-                imagenurl: null,    // ← Adjunto: Imagen/miniatura
-                audiourl: null,     // ← Adjunto: Audio
-                subtitulo: null,    // ← Adjunto: Subtítulos
+                url: null,          
+                imagenurl: null,    
+                audiourl: null,     
+                subtitulo: null,    
                 publicId: null,
                 topicoId: newTopic.id,
             };
@@ -73,7 +73,7 @@ export const topicService = {
                 throw new Error("No se encontró un archivo principal válido para el tipo de tópico");
             }
 
-            // 6️⃣ Subir archivo PRINCIPAL (para url)
+            // 6️ Subir archivo PRINCIPAL (para url)
             const isPdf = archivoParaUrl.mimetype === "application/pdf";
             const isVideoOrAudio = archivoParaUrl.mimetype.startsWith("video/") || archivoParaUrl.mimetype.startsWith("audio/");
             const isDoc = archivoParaUrl.mimetype.includes("presentation");
@@ -89,11 +89,9 @@ export const topicService = {
             recurso.url = uploadPrincipal.secure_url;
             recurso.publicId = uploadPrincipal.public_id;
 
-            console.log(`✅ Archivo principal subido: ${archivoParaUrl.originalname} → ${recurso.url}`);
+            console.log(` Archivo principal subido: ${archivoParaUrl.originalname} → ${recurso.url}`);
 
-            // 7️⃣ Subir archivos ADJUNTOS (imagen, audio, subtítulo)
-
-            // Subir IMAGEN (si existe y no es la principal)
+          
             if (archivoImagen) {
                 const uploadImagen = await cloudinary.uploader.upload(archivoImagen.path, {
                     resource_type: "image",
@@ -101,7 +99,7 @@ export const topicService = {
                     type: "upload",
                 });
                 recurso.imagenurl = uploadImagen.secure_url;
-                console.log(`✅ Imagen adjunta subida: ${archivoImagen.originalname}`);
+                console.log(` Imagen adjunta subida: ${archivoImagen.originalname}`);
             }
 
             // Subir AUDIO (si existe y no es la principal)
@@ -112,7 +110,7 @@ export const topicService = {
                     type: "upload",
                 });
                 recurso.audiourl = uploadAudio.secure_url;
-                console.log(`✅ Audio adjunto subido: ${archivoAudio.originalname}`);
+                console.log(` Audio adjunto subido: ${archivoAudio.originalname}`);
             }
 
             // Subir SUBTÍTULO (si existe)
@@ -123,13 +121,13 @@ export const topicService = {
                     type: "upload",
                 });
                 recurso.subtitulo = uploadSubtitulo.secure_url;
-                console.log(`✅ Subtítulo adjunto subido: ${archivoSubtitulo.originalname}`);
+                console.log(` Subtítulo adjunto subido: ${archivoSubtitulo.originalname}`);
             }
 
-            // 8️⃣ Crear recurso en la base de datos
+        
             const recursoCreado = await recursosRepository.createResource(recurso);
 
-            console.log("📦 Recurso creado:", {
+            console.log(" Recurso creado:", {
                 url: recurso.url,
                 imagenurl: recurso.imagenurl,
                 audiourl: recurso.audiourl,
@@ -149,6 +147,13 @@ export const topicService = {
 
     async getAllTopics() {
         const topics = await topicoRepository.getAllTopics();
+        return topics;
+    },
+
+
+
+    async getTopicsByCreatorId(creadorId) {
+        const topics = await topicoRepository.getTopicsByCreatorId(Number(creadorId));
         return topics;
     },
 

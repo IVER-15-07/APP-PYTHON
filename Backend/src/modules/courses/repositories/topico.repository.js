@@ -14,6 +14,25 @@ export const topicoRepository = {
             },
         }),
 
+    getTopicsByCreatorId: (creadorId) =>
+        prisma.topico.findMany({
+            where: { creadorId: Number(creadorId) },
+            include: {
+                nivel: true,
+                tipo_topico: true,
+                recursos: true,
+                creador: {
+                    select: {
+                        id: true,
+                        nombre: true,
+                    }
+                }
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        }),
+
 
     getTopicById: (id) =>
         prisma.topico.findUnique({

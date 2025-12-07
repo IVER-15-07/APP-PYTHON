@@ -10,6 +10,15 @@ export const topicsService = {
             throw new Error(error.response?.data?.message || 'Error al obtener los tópicos');
         }
     },
+    //recuperar tópicos por creador ID
+    async getTopicsByCreator(creatorId) {
+        try {
+            const response = await axiosInstance.get(`/api/topics/creator/${creatorId}`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los tópicos del creador');
+        }
+    },
 
     //crea todos los tópicos con recursos
     async createTopic(topicData, files) {

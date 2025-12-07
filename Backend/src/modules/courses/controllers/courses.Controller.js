@@ -129,3 +129,18 @@ export const getTopicForStudent = async (req, res) => {
         });
     }
 };
+
+export const getTopicsByCreator = async (req, res) => {
+    try {
+        const { creatorId } = req.params;   
+        const topics = await topicService.getTopicsByCreatorId(creatorId);
+        return res.status(200).json({ success: true, data: topics });
+    } catch (err) {
+        console.error("Error  al otener los topicos del usuario", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null
+        });
+    }
+};

@@ -128,6 +128,7 @@ CREATE TABLE "Topico" (
     "nombre" TEXT NOT NULL,
     "tipo_topicoId" INTEGER NOT NULL,
     "nivelId" INTEGER NOT NULL,
+    "creadorId" INTEGER NOT NULL,
 
     CONSTRAINT "Topico_pkey" PRIMARY KEY ("id")
 );
@@ -355,6 +356,9 @@ ALTER TABLE "Topico" ADD CONSTRAINT "Topico_tipo_topicoId_fkey" FOREIGN KEY ("ti
 
 -- AddForeignKey
 ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId") REFERENCES "Nivel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Topico" ADD CONSTRAINT "Topico_creadorId_fkey" FOREIGN KEY ("creadorId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;

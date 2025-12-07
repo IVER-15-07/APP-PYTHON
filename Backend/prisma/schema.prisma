@@ -256,6 +256,8 @@ model Pregunta {
   parametro   Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
   parametroId Int
 
+  valor Int @default(1)
+
   evaluacion_pregunta Evaluacion_pregunta[]
   respuesta           Respuesta[]
 }
@@ -274,4 +276,34 @@ model Parametro {
   nombre String @unique
 
   pregunta Pregunta[]
+}
+
+model RespuestaEstudiante {
+  id            Int       @id @default(autoincrement())
+  usuarioId     Int
+  evaluacionId  Int
+  preguntaId    Int
+  respuestaId   Int?
+  respuestaTxt  String?
+  puntaje       Int?
+  estado        String    @default("pendiente") // pendiente, calificado
+  createdAt     DateTime  @default(now())
+
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  pregunta  Pregunta  @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
+  respuesta Respuesta? @relation(fields: [respuestaId], references: [id], onDelete: Cascade)
+}
+
+model EvaluacionResultado {
+  id           Int      @id @default(autoincrement())
+  usuarioId    Int
+  evaluacionId Int
+  totalPuntos  Int
+  escala       Int      @default(100)
+  estado       String   @default("completo")
+  createdAt    DateTime @default(now())
+
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
 }

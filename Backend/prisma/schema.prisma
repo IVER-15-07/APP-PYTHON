@@ -271,6 +271,8 @@ model Pregunta {
   parametro   Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
   parametroId Int
 
+  valor Int @default(1)
+
   evaluacion_pregunta  Evaluacion_pregunta[]
   respuesta            Respuesta[]
   respuestasEstudiante RespuestaEstudiante[]

@@ -10,7 +10,10 @@ export const useTopicData = (user) => {
 
     const fetchTopics = async () => {
         try {
-            const response = await topicsService.getAllTopics();
+            // Obtener solo los tópicos creados por el usuario actual
+            const response = user?.id 
+                ? await topicsService.getTopicsByCreator(user.id)
+                : await topicsService.getAllTopics();
             const topicsData = response?.data || [];
             setTopics(Array.isArray(topicsData) ? topicsData : []);
         } catch (err) {

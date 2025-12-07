@@ -12,6 +12,7 @@ export const topicService = {
                 descripcion: data.descripcion,
                 tipo_topicoId: Number(data.tipo_topicoId),
                 nivelId: Number(data.nivelId),
+                creadorId: Number(data.creadorId),
             });
 
             if (!files || files.length === 0) {

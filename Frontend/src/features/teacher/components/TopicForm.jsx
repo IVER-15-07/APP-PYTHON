@@ -87,7 +87,7 @@ const TopicForm = ({
                             value: level.id.toString(),
                             label: level.nombre,
                         }))}
-                    />)
+                    />
                 </div>
 
                 {/* Sección de carga de archivos - Aparece solo si hay un tipo de contenido seleccionado */}

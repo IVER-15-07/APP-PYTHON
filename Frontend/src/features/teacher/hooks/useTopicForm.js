@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { topicsService } from '../../../../services/topic.api.js';
+import { authService } from '../../../../services/auth.api.js';
 
 export const useTopicForm = (onSuccess) => {
     const [form, setForm] = useState({ 
@@ -55,10 +56,14 @@ export const useTopicForm = (onSuccess) => {
         }
 
         try {
+            // Obtener el usuario actual para agregar el creadorId
+            const currentUser = authService.obtenerUsuarioActual();
+            
             const topicData = {
                 nombre: form.title,
                 tipo_topicoId: parseInt(form.contentType),
-                nivelId: parseInt(form.level)
+                nivelId: parseInt(form.level),
+                creadorId: currentUser?.id 
             };
 
             // Construir array de archivos solo si hay archivos nuevos

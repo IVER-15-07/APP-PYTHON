@@ -105,26 +105,16 @@ const Topic = () => {
     // Slides (PowerPoint, presentaciones) - Detectar por tipo o extensión
     if (tipo === 'slides' || tipo === 'slide' || /\.(ppt|pptx)$/i.test(url) || 
         (isCloudinary && url.includes('/raw/upload/') && (url.includes('.ppt') || url.includes('presentation')))) {
-      // Usar Office Viewer para presentaciones
-      const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+      // Usar Google Docs Viewer para presentaciones (mejor compatibilidad con Cloudinary)
+      const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
       
       return (
         <div className="space-y-3">
           <iframe 
             title="presentation" 
-            src={officeViewerUrl} 
+            src={googleViewerUrl} 
             className="w-full h-[700px] rounded-xl border border-slate-700/50 shadow-lg bg-white"
           />
-          <div className="flex items-center justify-center gap-2">
-            <a 
-              href={url} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="text-emerald-400 hover:text-emerald-300 text-sm underline font-medium"
-            >
-              Descargar presentación
-            </a>
-          </div>
         </div>
       );
     }

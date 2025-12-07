@@ -49,6 +49,8 @@ model Usuario {
   solicitudRol    solicitudRol[]
   comentarios     Comentarios[]
   comentariovisto ComentarioVisto[]
+  respuestaEstudiante RespuestaEstudiante[]
+  evaluacionResultado EvaluacionResultado[]
 }
 
 model solicitudRol {
@@ -230,6 +232,8 @@ model Evaluacion {
   tipo_evaluacionId Int
 
   evaluacion_pregunta Evaluacion_pregunta[]
+  respuestasEstudiante RespuestaEstudiante[]
+  resultados EvaluacionResultado[]
 }
 
 model Tipo_evaluacion {
@@ -260,6 +264,7 @@ model Pregunta {
 
   evaluacion_pregunta Evaluacion_pregunta[]
   respuesta           Respuesta[]
+  respuestasEstudiante RespuestaEstudiante[]
 }
 
 model Respuesta {
@@ -269,6 +274,7 @@ model Respuesta {
 
   pregunta   Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
   preguntaId Int
+  respuestasEstudiante RespuestaEstudiante[]
 }
 
 model Parametro {

@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import fs from "fs";
 
-const servicePath = new URL("./login-ac512-firebase-adminsdk-fbsvc-14457b84d6.json", import.meta.url);
+const servicePath = new URL("/home/jjhesquivel/GeneracionSoftware/APP-PYTHON/Backend/src/config/login-ac512-firebase-adminsdk-fbsvc-14457b84d6.json", import.meta.url);
 const serviceAccount = JSON.parse(fs.readFileSync(servicePath, "utf8"));
 
 if (!admin.apps.length) {

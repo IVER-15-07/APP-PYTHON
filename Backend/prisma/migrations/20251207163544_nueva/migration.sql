@@ -244,6 +244,34 @@ CREATE TABLE "Parametro" (
     CONSTRAINT "Parametro_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "RespuestaEstudiante" (
+    "id" SERIAL NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+    "evaluacionId" INTEGER NOT NULL,
+    "preguntaId" INTEGER NOT NULL,
+    "respuestaId" INTEGER,
+    "respuestaTxt" TEXT,
+    "puntaje" INTEGER,
+    "estado" TEXT NOT NULL DEFAULT 'pendiente',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "RespuestaEstudiante_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EvaluacionResultado" (
+    "id" SERIAL NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
+    "evaluacionId" INTEGER NOT NULL,
+    "totalPuntos" INTEGER NOT NULL,
+    "escala" INTEGER NOT NULL DEFAULT 100,
+    "estado" TEXT NOT NULL DEFAULT 'completo',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "EvaluacionResultado_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "RegistroPendiente_email_idx" ON "RegistroPendiente"("email");
 
@@ -329,16 +357,16 @@ ALTER TABLE "Topico" ADD CONSTRAINT "Topico_tipo_topicoId_fkey" FOREIGN KEY ("ti
 ALTER TABLE "Topico" ADD CONSTRAINT "Topico_nivelId_fkey" FOREIGN KEY ("nivelId") REFERENCES "Nivel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comentario" ADD CONSTRAINT "Comentario_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ComentarioRespuesta" ADD CONSTRAINT "ComentarioRespuesta_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_comentarioId_fkey" FOREIGN KEY ("comentarioId") REFERENCES "Comentario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -366,3 +394,21 @@ ALTER TABLE "Pregunta" ADD CONSTRAINT "Pregunta_parametroId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Respuesta" ADD CONSTRAINT "Respuesta_preguntaId_fkey" FOREIGN KEY ("preguntaId") REFERENCES "Pregunta"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RespuestaEstudiante" ADD CONSTRAINT "RespuestaEstudiante_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RespuestaEstudiante" ADD CONSTRAINT "RespuestaEstudiante_evaluacionId_fkey" FOREIGN KEY ("evaluacionId") REFERENCES "Evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RespuestaEstudiante" ADD CONSTRAINT "RespuestaEstudiante_preguntaId_fkey" FOREIGN KEY ("preguntaId") REFERENCES "Pregunta"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RespuestaEstudiante" ADD CONSTRAINT "RespuestaEstudiante_respuestaId_fkey" FOREIGN KEY ("respuestaId") REFERENCES "Respuesta"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EvaluacionResultado" ADD CONSTRAINT "EvaluacionResultado_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EvaluacionResultado" ADD CONSTRAINT "EvaluacionResultado_evaluacionId_fkey" FOREIGN KEY ("evaluacionId") REFERENCES "Evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;

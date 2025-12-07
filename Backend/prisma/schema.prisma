@@ -12,6 +12,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model RegistroPendiente {
   id             Int      @id @default(autoincrement())
   email          String
@@ -49,6 +50,8 @@ model Usuario {
   comentarios          Comentario[]
   comentariovisto      ComentarioVisto[]
   comentarioRespuestas ComentarioRespuesta[]
+  respuestaEstudiante  RespuestaEstudiante[]
+  evaluacionResultado  EvaluacionResultado[]
 }
 
 model solicitudRol {
@@ -173,9 +176,9 @@ model Comentario {
   contenido String
   fecha_pub DateTime @default(now())
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
-  topico    Topico  @relation(fields: [topicoId], references: [id])
+  topico    Topico  @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId  Int
 
   respuestas       ComentarioRespuesta[]
@@ -183,13 +186,13 @@ model Comentario {
 }
 
 model ComentarioRespuesta {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   contenido String
   fecha_pub DateTime @default(now())
-  
-  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
-  usuarioId Int
-  comentario   Comentario @relation(fields: [comentarioId], references: [id])
+
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId    Int
+  comentario   Comentario @relation(fields: [comentarioId], references: [id], onDelete: Cascade)
   comentarioId Int
 }
 
@@ -239,7 +242,9 @@ model Evaluacion {
   tipo_evaluacion   Tipo_evaluacion @relation(fields: [tipo_evaluacionId], references: [id], onDelete: Cascade)
   tipo_evaluacionId Int
 
-  evaluacion_pregunta Evaluacion_pregunta[]
+  respuestasEstudiante RespuestaEstudiante[]
+  resultados           EvaluacionResultado[]
+  evaluacion_pregunta  Evaluacion_pregunta[]
 }
 
 model Tipo_evaluacion {
@@ -266,8 +271,11 @@ model Pregunta {
   parametro   Parametro @relation(fields: [parametroId], references: [id], onDelete: Cascade)
   parametroId Int
 
-  evaluacion_pregunta Evaluacion_pregunta[]
-  respuesta           Respuesta[]
+  valor Int @default(1)
+
+  evaluacion_pregunta  Evaluacion_pregunta[]
+  respuesta            Respuesta[]
+  respuestasEstudiante RespuestaEstudiante[]
 }
 
 model Respuesta {
@@ -275,8 +283,9 @@ model Respuesta {
   puntaje   Int
   respuesta String
 
-  pregunta   Pregunta @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
-  preguntaId Int
+  pregunta             Pregunta              @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
+  preguntaId           Int
+  respuestasEstudiante RespuestaEstudiante[]
 }
 
 model Parametro {
@@ -284,4 +293,34 @@ model Parametro {
   nombre String @unique
 
   pregunta Pregunta[]
+}
+
+model RespuestaEstudiante {
+  id           Int      @id @default(autoincrement())
+  usuarioId    Int
+  evaluacionId Int
+  preguntaId   Int
+  respuestaId  Int?
+  respuestaTxt String?
+  puntaje      Int?
+  estado       String   @default("pendiente") // pendiente, calificado
+  createdAt    DateTime @default(now())
+
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  pregunta   Pregunta   @relation(fields: [preguntaId], references: [id], onDelete: Cascade)
+  respuesta  Respuesta? @relation(fields: [respuestaId], references: [id], onDelete: Cascade)
+}
+
+model EvaluacionResultado {
+  id           Int      @id @default(autoincrement())
+  usuarioId    Int
+  evaluacionId Int
+  totalPuntos  Int
+  escala       Int      @default(100)
+  estado       String   @default("completo")
+  createdAt    DateTime @default(now())
+
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
 }

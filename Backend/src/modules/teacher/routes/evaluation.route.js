@@ -5,7 +5,7 @@ import { verifyToken } from '../../auth/middleware/auth.middleware.js';
 const router = express.Router();
 
 // Crear plantilla (profesor)
-router.post('/evaluations', verifyToken, evaluationController.crearPlantilla);
+router.post('/evaluations', evaluationController.crearPlantilla);
 
 // Obtener plantilla
 router.get('/evaluations/:id', verifyToken, evaluationController.obtenerPlantilla);

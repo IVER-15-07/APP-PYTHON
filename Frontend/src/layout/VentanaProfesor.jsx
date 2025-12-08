@@ -291,7 +291,7 @@ const VentanaProfesor = () => {
                 size="xl"
             >
                 <div className="p-4">
-                    <EvaluationEditor onClose={() => setEvalModalOpen(false)} />
+                    <EvaluationEditor onSuccess={() => setEvalModalOpen(false)} />
                 </div>
             </Modal>
         </div>

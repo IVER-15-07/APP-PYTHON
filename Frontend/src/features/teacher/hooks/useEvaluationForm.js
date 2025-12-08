@@ -98,9 +98,28 @@ export const useEvaluationForm = (onSuccess) => {
   const updateQuestion = (index, updates) => {
     setForm(prev => ({
       ...prev,
-      preguntas: prev.preguntas.map((q, i) =>
-        i === index ? { ...q, ...updates } : q
-      )
+      preguntas: prev.preguntas.map((q, i) => {
+        if (i !== index) return q;
+        const merged = { ...q, ...updates };
+
+        // Si el tipo cambió a Verdadero/Falso y no hay opciones, crear por defecto
+        if (updates.parametroId === 2 && (!merged.respuestas || merged.respuestas.length === 0)) {
+          merged.respuestas = [
+            { respuesta: 'Verdadero', puntaje: merged.valor || 1, esCorrecta: false },
+            { respuesta: 'Falso', puntaje: 0, esCorrecta: false }
+          ];
+        }
+
+        // Si el tipo cambió a single/multiple y no hay opciones, iniciar con dos opciones vacías
+        if ((updates.parametroId === 1 || updates.parametroId === 4) && (!merged.respuestas || merged.respuestas.length === 0)) {
+          merged.respuestas = [
+            { respuesta: '', puntaje: 1, esCorrecta: false },
+            { respuesta: '', puntaje: 1, esCorrecta: false }
+          ];
+        }
+
+        return merged;
+      })
     }));
   };
 
@@ -127,7 +146,7 @@ export const useEvaluationForm = (onSuccess) => {
               ...q,
               respuestas: [
                 ...q.respuestas,
-                { respuesta: '', puntaje: 0, esCorrecta: false }
+                { respuesta: '', puntaje: 1, esCorrecta: false }
               ]
             }
           : q

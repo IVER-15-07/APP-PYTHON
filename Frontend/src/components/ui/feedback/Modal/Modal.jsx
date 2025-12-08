@@ -61,8 +61,8 @@ const Modal = ({
             </button>
           </div>
 
-          {/* Body */}
-          <div className="p-5 text-slate-200">
+          {/* Body: limitar altura y permitir scroll interno cuando el contenido excede la ventana */}
+          <div className="p-5 text-slate-200 max-h-[75vh] overflow-auto">
             {children}
           </div>
 

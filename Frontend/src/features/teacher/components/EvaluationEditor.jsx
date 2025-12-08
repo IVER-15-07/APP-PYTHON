@@ -3,8 +3,11 @@ import { AlertCircle, Save, Send, Plus, Edit2, Eye } from 'lucide-react';
 import PropTypes from 'prop-types';
 import useEvaluationForm from '../hooks/useEvaluationForm';
 import QuestionBuilder from './QuestionBuilder';
+import evaluationsService from '../../../../services/evaluations.api.js';
+import { coursesService } from '../../../../services/courses.api';
+import { topicsService } from '../../../../services/topic.api';
 
-const EvaluationEditor = ({ courses = [], topics = [], parameterTypes = [], onSuccess, evaluationId = null }) => {
+const EvaluationEditor = ({ courses: initialCourses = [], topics: initialTopics = [], parameterTypes: initialParameterTypes = [], onSuccess, evaluationId = null }) => {
   const {
     form,
     loading,
@@ -25,10 +28,43 @@ const EvaluationEditor = ({ courses = [], topics = [], parameterTypes = [], onSu
 
   const [saveMode, setSaveMode] = useState('draft'); // 'draft' o 'publish'
   const [showPreview, setShowPreview] = useState(false);
+  const [parameterTypes, setParameterTypes] = useState(initialParameterTypes || []);
+  const [courses, setCourses] = useState(initialCourses || []);
+  const [topics, setTopics] = useState(initialTopics || []);
 
   useEffect(() => {
-    if (evaluationId && parameterTypes.length > 0) {
-      // Cargar evaluación existente
+    const fetchMeta = async () => {
+      try {
+        if (!parameterTypes || parameterTypes.length === 0) {
+          const pts = await evaluationsService.getParameterTypes();
+          setParameterTypes(pts || []);
+        }
+      } catch (err) {
+        // ignore
+      }
+
+      try {
+        if (!courses || courses.length === 0) {
+          const cs = await coursesService.getCourses();
+          setCourses(cs || []);
+        }
+      } catch (err) {
+        // ignore
+      }
+
+      try {
+        if (!topics || topics.length === 0) {
+          const ts = await topicsService.getAllTopics();
+          setTopics(ts || []);
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    fetchMeta();
+
+    if (evaluationId) {
       // TODO: fetch y loadForEdit
     }
   }, [evaluationId]);
@@ -42,11 +78,11 @@ const EvaluationEditor = ({ courses = [], topics = [], parameterTypes = [], onSu
     }
   };
 
-  const selectedCourse = courses.find(c => c.id === parseInt(form.cursoId));
-  const selectedTopics = topics.filter(t => t.id === parseInt(form.topicoId));
+  const selectedCourse = Array.isArray(courses) ? courses.find(c => c.id === parseInt(form.cursoId)) : null;
+  const selectedTopics = Array.isArray(topics) ? topics.filter(t => t.id === parseInt(form.topicoId)) : [];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="bg-gray-900 text-white">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">

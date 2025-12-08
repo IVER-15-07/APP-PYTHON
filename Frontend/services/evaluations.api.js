@@ -4,7 +4,7 @@ export const evaluationsService = {
   // Crear nueva plantilla de evaluación
   async createTemplate(payload) {
     try {
-      const response = await axiosInstance.post('/evaluations', payload);
+      const response = await axiosInstance.post('/api/evaluations', payload);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al crear plantilla de evaluación');
@@ -14,7 +14,7 @@ export const evaluationsService = {
   // Obtener plantilla por ID
   async getTemplate(id) {
     try {
-      const response = await axiosInstance.get(`/evaluations/${id}`);
+      const response = await axiosInstance.get(`/api/evaluations/${id}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener evaluación');
@@ -24,7 +24,7 @@ export const evaluationsService = {
   // Actualizar plantilla existente
   async updateTemplate(id, payload) {
     try {
-      const response = await axiosInstance.put(`/evaluations/${id}`, payload);
+      const response = await axiosInstance.put(`/api/evaluations/${id}`, payload);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al actualizar plantilla');
@@ -54,7 +54,7 @@ export const evaluationsService = {
   // Responder/enviar evaluación (estudiante)
   async submitEvaluation(id, answers) {
     try {
-      const response = await axiosInstance.post(`/evaluations/${id}/submit`, { answers });
+      const response = await axiosInstance.post(`/api/evaluations/${id}/submit`, { answers });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al enviar evaluación');
@@ -64,7 +64,7 @@ export const evaluationsService = {
   // Guardar respuestas como borrador (auto-guardado)
   async saveDraft(evaluacionId, usuarioId, answers) {
     try {
-      const response = await axiosInstance.patch(`/evaluations/${evaluacionId}/drafts/${usuarioId}`, { answers });
+      const response = await axiosInstance.patch(`/api/evaluations/${evaluacionId}/drafts/${usuarioId}`, { answers });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al guardar borrador');
@@ -74,7 +74,7 @@ export const evaluationsService = {
   // Obtener resultado de evaluación del estudiante
   async getSubmissionResult(evaluacionId, usuarioId) {
     try {
-      const response = await axiosInstance.get(`/evaluations/${evaluacionId}/results/${usuarioId}`);
+      const response = await axiosInstance.get(`/api/evaluations/${evaluacionId}/results/${usuarioId}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener resultado');
@@ -84,7 +84,7 @@ export const evaluationsService = {
   // Obtener todas las respuestas de un estudiante para una evaluación
   async getStudentSubmission(evaluacionId, usuarioId) {
     try {
-      const response = await axiosInstance.get(`/evaluations/${evaluacionId}/submissions/${usuarioId}`);
+      const response = await axiosInstance.get(`/api/evaluations/${evaluacionId}/submissions/${usuarioId}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener respuestas del estudiante');
@@ -94,7 +94,7 @@ export const evaluationsService = {
   // Listar todas las respuestas (para profesor)
   async getSubmissions(evaluacionId) {
     try {
-      const response = await axiosInstance.get(`/evaluations/${evaluacionId}/submissions`);
+      const response = await axiosInstance.get(`/api/evaluations/${evaluacionId}/submissions`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener respuestas');
@@ -105,7 +105,7 @@ export const evaluationsService = {
   async gradeSubmission(evaluacionId, preguntaId, usuarioId, payload) {
     try {
       const response = await axiosInstance.post(
-        `/evaluations/${evaluacionId}/questions/${preguntaId}/grade`,
+        `/api/evaluations/${evaluacionId}/questions/${preguntaId}/grade`,
         { usuarioId, ...payload }
       );
       return response.data;
@@ -117,7 +117,7 @@ export const evaluationsService = {
   // Publicar/cambiar visibilidad de plantilla
   async publishTemplate(id, published) {
     try {
-      const response = await axiosInstance.patch(`/evaluations/${id}`, { published });
+      const response = await axiosInstance.patch(`/api/evaluations/${id}`, { published });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al cambiar estado');
@@ -127,7 +127,7 @@ export const evaluationsService = {
   // Eliminar plantilla
   async deleteTemplate(id) {
     try {
-      const response = await axiosInstance.delete(`/evaluations/${id}`);
+      const response = await axiosInstance.delete(`/api/evaluations/${id}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al eliminar plantilla');
@@ -137,8 +137,8 @@ export const evaluationsService = {
   // Obtener tipos de parámetros (question types)
   async getParameterTypes() {
     try {
-      const response = await axiosInstance.get('/parameters');
-      return response.data;
+        const response = await axiosInstance.get('/api/parameters');
+        return response.data?.data || [];
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener tipos de preguntas');
     }

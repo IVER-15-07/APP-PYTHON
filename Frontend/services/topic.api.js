@@ -5,7 +5,7 @@ export const topicsService = {
     async getAllTopics() {
         try {
             const response = await axiosInstance.get("/api/topics");
-            return response.data;
+            return response.data?.data || [];
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al obtener los tópicos');
         }

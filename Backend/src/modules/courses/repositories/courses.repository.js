@@ -33,9 +33,19 @@ export const coursesRepository = {
                 select: {
                     id: true,
                     titulo: true,
-                    _count: {
+                    registro: {
                         select: {
-                            registro: true
+                            usuarioId: true,
+                            usuario: {
+                                select: {
+                                    rol_usuarioId: true,
+                                    rol_usuario: {
+                                        select: {
+                                            nombre: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -53,9 +63,19 @@ export const coursesRepository = {
                 select: {
                     id: true,
                     titulo: true,
-                    _count: {
+                    registro: {
                         select: {
-                            registro: true
+                            usuarioId: true,
+                            usuario: {
+                                select: {
+                                    rol_usuarioId: true,
+                                    rol_usuario: {
+                                        select: {
+                                            nombre: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

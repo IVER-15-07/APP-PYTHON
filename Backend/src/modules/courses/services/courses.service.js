@@ -10,16 +10,22 @@ export const coursesService = {
     async getCoursesWithStudentCount() {
         const cursos = await coursesRepository.getCoursesWithStudentCount();
         
-        // Calcular el total de estudiantes por curso
+        // Calcular el total de estudiantes por curso (excluyendo a TODOS los profesores)
         return cursos.map(curso => ({
             ...curso,
             totalEstudiantes: curso.grupo.reduce((total, grupo) => {
-                return total + grupo._count.registro;
+                // Contar solo los estudiantes (rol nombre === 'Estudiante')
+                const estudiantesCount = grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length;
+                return total + estudiantesCount;
             }, 0),
             grupos: curso.grupo.map(grupo => ({
                 id: grupo.id,
                 titulo: grupo.titulo,
-                estudiantesInscritos: grupo._count.registro
+                estudiantesInscritos: grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length
             }))
         }));
     },
@@ -34,12 +40,18 @@ export const coursesService = {
         return {
             ...curso,
             totalEstudiantes: curso.grupo.reduce((total, grupo) => {
-                return total + grupo._count.registro;
+                // Contar solo los estudiantes (rol nombre === 'Estudiante')
+                const estudiantesCount = grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length;
+                return total + estudiantesCount;
             }, 0),
             grupos: curso.grupo.map(grupo => ({
                 id: grupo.id,
                 titulo: grupo.titulo,
-                estudiantesInscritos: grupo._count.registro
+                estudiantesInscritos: grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length
             }))
         };
     },

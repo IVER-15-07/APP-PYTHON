@@ -22,8 +22,8 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 router.get('/my-courses', getMyCourses);
-router.get('/courses-with-students', getCoursesWithStudentCount);
-router.get('/course/:cursoId/students', getCourseWithStudentCount);
+router.get('/courses-with-students', verifyToken, getCoursesWithStudentCount);
+router.get('/course/:cursoId/students', verifyToken, getCourseWithStudentCount);
 router.post('/topic', verifyToken, upload.array('files'), createTopicWithResource);
 router.get('/topics', getAllTopics);
 router.get('/topics/creator/:creatorId', getTopicsByCreator);

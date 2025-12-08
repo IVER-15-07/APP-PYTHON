@@ -19,8 +19,8 @@ export default function Course() {
         try {
             setLoading(true);
             
-            // Obtener cursos
-            const courseResponse = await coursesService.getCourses(); 
+            // Obtener cursos con contador de estudiantes
+            const courseResponse = await coursesService.getCoursesWithStudentCount(); 
             const courseData = courseResponse?.data || [];
             setCourses(Array.isArray(courseData) ? courseData : []);
             
@@ -41,6 +41,7 @@ export default function Course() {
     // Calcular estadísticas
     const totalCursos = courses.length;
     const totalGrupos = groups.length;
+    const totalEstudiantes = courses.reduce((sum, course) => sum + (course.totalEstudiantes || 0), 0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8">
@@ -84,7 +85,7 @@ export default function Course() {
                             {/* Total de Estudiantes */}
                             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-emerald-500/50 transition-all">
                                 <p className="text-slate-400 text-sm mb-2">Total de Estudiantes</p>
-                                <p className="text-4xl font-bold text-white">---</p>
+                                <p className="text-4xl font-bold text-white">{totalEstudiantes}</p>
                             </div>
                         </div>
 
@@ -100,9 +101,14 @@ export default function Course() {
                                             <div className="p-3 bg-emerald-500/10 rounded-lg">
                                                 <BookOpen className="w-6 h-6 text-emerald-400" />
                                             </div>
-                                            <span className="text-sm font-medium text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
-                                                {courseGroups.length} {courseGroups.length === 1 ? 'grupo' : 'grupos'}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm font-medium text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+                                                    {courseGroups.length} {courseGroups.length === 1 ? 'grupo' : 'grupos'}
+                                                </span>
+                                                <span className="text-sm font-medium text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full">
+                                                    {course.totalEstudiantes || 0} {course.totalEstudiantes === 1 ? 'estudiante' : 'estudiantes'}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {/* Nombre del curso */}

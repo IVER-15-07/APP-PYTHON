@@ -1,7 +1,7 @@
 import { BookOpen, Users, TrendingUp } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const DashboardSummary = ({ coursesCount, studentsCount = 0 }) => {
+const DashboardSummary = ({ coursesCount, studentsCount = 0, nextGroup = 'Sin grupos' }) => {
   return (
     <aside className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
       <div className="flex items-center gap-2 mb-6">
@@ -35,9 +35,9 @@ const DashboardSummary = ({ coursesCount, studentsCount = 0 }) => {
             <div className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/30">
               <TrendingUp className="w-4 h-4 text-cyan-400" />
             </div>
-            <span className="text-sm text-slate-400">Última actividad</span>
+            <span className="text-sm text-slate-400">Próximo grupo</span>
           </div>
-          <span className="text-sm font-medium text-white">-----</span>
+          <span className="text-sm font-medium text-cyan-400">{nextGroup}</span>
         </div>
       </div>
     </aside>
@@ -47,7 +47,7 @@ const DashboardSummary = ({ coursesCount, studentsCount = 0 }) => {
 DashboardSummary.propTypes = {
   coursesCount: PropTypes.number.isRequired,
   studentsCount: PropTypes.number.isRequired,
-  lastActivity: PropTypes.string.isRequired,
+  nextGroup: PropTypes.string.isRequired,
 };
 
 export default DashboardSummary;

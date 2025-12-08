@@ -24,6 +24,16 @@ export const evaluationController = {
     }
   },
 
+  obtenerPlantillas: async (req, res) => {
+    try {
+      const all = await evaluationService.getAllTemplates();
+      return res.json(all);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+
   responderEvaluacion: async (req, res) => {
     try {
       const { id } = req.params;

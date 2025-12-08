@@ -62,6 +62,10 @@ export const evaluationService = {
     return evaluationRepository.findEvaluationById(id);
   },
 
+  getAllTemplates: async () => {
+    return evaluationRepository.findAllEvaluations();
+  },
+
   submitAnswers: async (evaluacionId, usuarioId, answers) => {
     // answers: [{ preguntaId, respuestaId | respuestaTxt | respuestaIds[] }]
     const evaluation = await evaluationRepository.findEvaluationById(evaluacionId);

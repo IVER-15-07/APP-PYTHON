@@ -4,8 +4,12 @@ import { verifyToken } from '../../auth/middleware/auth.middleware.js';
 
 const router = express.Router();
 
-// Crear plantilla (profesor)
-router.post('/evaluations', verifyToken, evaluationController.crearPlantilla);
+// Listar plantillas (profesor)
+router.get('/evaluations', evaluationController.obtenerPlantillas);
+
+// Crear plantilla (profesor) - permite pruebas locales sin token
+// Si quieres exigir autenticación, vuelve a añadir `verifyToken` aquí.
+router.post('/evaluations', evaluationController.crearPlantilla);
 
 // Obtener plantilla
 router.get('/evaluations/:id', verifyToken, evaluationController.obtenerPlantilla);

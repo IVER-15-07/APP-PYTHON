@@ -8,3 +8,5 @@ export { topicsService } from '../../services/topic.api.js';
 export { adminService } from '../../services/admin.api.js';
 export { teacherService } from '../../services/teacher.api.js';
 export { coursesService as groupService } from '../../services/group.api.js';
+export { evaluationsService } from '../../services/evaluations.api.js';
+

@@ -12,6 +12,15 @@ export const evaluationRepository = {
     }
   }),
 
+  findAllEvaluations: () => prisma.evaluacion.findMany({
+    include: {
+      evaluacion_pregunta: {
+        include: { pregunta: { include: { respuesta: true, parametro: true } } }
+      }
+    },
+    orderBy: { id: 'desc' }
+  }),
+
   createStudentResponse: (data) => prisma.respuestaEstudiante.create({ data }),
 
   bulkCreateStudentResponses: (dataArray) => prisma.$transaction(

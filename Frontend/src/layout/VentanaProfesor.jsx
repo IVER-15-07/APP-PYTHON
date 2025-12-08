@@ -11,8 +11,9 @@ import { TopicViewer } from '../features/teacher/components';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
-import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School, Compass } from 'lucide-react';
-
+import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School, Compass, ClipboardList } from 'lucide-react';
+import CreateEvaluation from '../features/teacher/pages/CreateEvaluation';
+import ListEvaluations from '../features/teacher/pages/ListEvaluations';
 
 const VentanaProfesor = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -111,6 +112,11 @@ const VentanaProfesor = () => {
             icon: <Compass className="w-5 h-5" />, 
             label: 'Explorar Tópicos' 
         },
+        { 
+            path: '/profesor/evaluaciones', 
+            icon: <ClipboardList className="w-5 h-5" />, 
+            label: 'Evaluaciones' 
+        },
         // { 
         //     path: '/profesor/ejercicios', 
         //     icon: <FileEdit className="w-5 h-5" />, 
@@ -160,6 +166,8 @@ const VentanaProfesor = () => {
                     <Route path="topicos" element={<Topic/>} /> 
                     <Route path="ver-topico/:id" element={<TopicViewer role="teacher" />} />
                     <Route path="explorar" element={<ExploreTopics />} />
+                    <Route path="evaluaciones" element={<ListEvaluations />} />
+                    <Route path="evaluaciones/crear" element={<CreateEvaluation />} />
                     {/* <Route path="perfil" element={<Perfil />} /> */}
                 </Routes>
             </main>

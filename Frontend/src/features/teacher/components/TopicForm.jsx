@@ -160,9 +160,9 @@ const TopicForm = ({
                                                         Haz clic para seleccionar un archivo
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        {form.contentType === '1' && 'TXT, MD, DOC, DOCX, PDF'}
+                                                        {form.contentType === '1' && 'TXT, PDF'}
                                                         {form.contentType === '2' && 'MP4, AVI, MOV, MKV, WEBM'}
-                                                        {form.contentType === '3' && 'PPT, PPTX, PDF, KEY'}
+                                                        {form.contentType === '3' && 'PPT, PPTX, PDF'}
                                                     </p>
                                                 </>
                                             )}
@@ -243,9 +243,9 @@ const TopicForm = ({
                             {/* Información adicional según el tipo */}
                             <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
                                 <p className="text-sm text-slate-400">
-                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano (.txt), Markdown (.md) o documentos de Word (.docx). Opcionalmente, agrega una imagen ilustrativa.'}
-                                    {form.contentType === '2' && 'Asegúrate de que el video esté en un formato compatible y no sea muy pesado.'}
-                                    {form.contentType === '3' && 'Puedes subir presentaciones de PowerPoint o archivos PDF.'}
+                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano (.txt) o PDF. Opcionalmente, agrega una imagen ilustrativa.'}
+                                    {form.contentType === '2' && 'Puedes subir archivos de video en formatos compatibles (MP4, AVI, MOV, etc.).'}
+                                    {form.contentType === '3' && 'Puedes subir presentaciones de PowerPoint (.ppt, .pptx) o archivos PDF.'}
                                 </p>
                             </div>
                         </div>
@@ -258,8 +258,10 @@ const TopicForm = ({
                         disabled={
                             loading || 
                             !form.contentType || 
-                            (!isEditMode && form.contentType && !selectedFile) ||
-                            (isEditMode && form.contentType && !selectedFile && !hasExistingFile && !pdfPreview && !videoPreview && !imagePreview)
+                            !form.title ||
+                            !form.level ||
+                            (!isEditMode && !selectedFile) ||
+                            (isEditMode && !selectedFile && !hasExistingFile)
                         }
                         className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 border border-emerald-400/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -321,6 +323,7 @@ export default TopicForm;
 TopicForm.propTypes = {
     form: PropTypes.shape({
         title: PropTypes.string,
+        description: PropTypes.string,
         contentType: PropTypes.string,
         level: PropTypes.string,
     }).isRequired,

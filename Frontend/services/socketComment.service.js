@@ -20,6 +20,14 @@ socket.on("connect_error", (error) => {
   console.error(" Error de conexión:", error);
 });
 
+export const joinTopicRoom = (topicId) => {
+  socket.emit("join_topic", Number(topicId));
+};
+
+export const leaveTopicRoom = (topicId) => {
+  socket.emit("leave_topic", Number(topicId));
+};
+
 // Escucha únicamente comments_fetched; devuelve función de cleanup
 export const onCommentsFetched = (callback, { topicId } = {}) => {
   const handler = (data) => {

@@ -32,8 +32,8 @@ export async function responderComentario(req, res) {
 
 export async function getComentarios(req, res) {
     try {
-        const teacherId = req.params.id;
-        const comentario = await commentService.getCommentsByTeacherId(teacherId);
+        const topicId = req.params.topicId;
+        const comentario = await commentService.getCommentsByTopicId(Number(topicId));
         return res.json({ success: true, data: comentario });
     } catch (error) {
         console.error("error al obtener los comentarios:", error);
@@ -43,4 +43,4 @@ export async function getComentarios(req, res) {
             message: error.message || "Error interno"
         });
     }
-};  
+}; 

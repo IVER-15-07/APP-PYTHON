@@ -7,6 +7,43 @@ export const coursesService = {
         return cursos || [];
     },
 
+    async getCoursesWithStudentCount() {
+        const cursos = await coursesRepository.getCoursesWithStudentCount();
+        
+        // Calcular el total de estudiantes por curso
+        return cursos.map(curso => ({
+            ...curso,
+            totalEstudiantes: curso.grupo.reduce((total, grupo) => {
+                return total + grupo._count.registro;
+            }, 0),
+            grupos: curso.grupo.map(grupo => ({
+                id: grupo.id,
+                titulo: grupo.titulo,
+                estudiantesInscritos: grupo._count.registro
+            }))
+        }));
+    },
+
+    async getCourseWithStudentCount(cursoId) {
+        const curso = await coursesRepository.getCourseWithStudentCount(parseInt(cursoId));
+        
+        if (!curso) {
+            throw { status: 404, message: 'Curso no encontrado' };
+        }
+
+        return {
+            ...curso,
+            totalEstudiantes: curso.grupo.reduce((total, grupo) => {
+                return total + grupo._count.registro;
+            }, 0),
+            grupos: curso.grupo.map(grupo => ({
+                id: grupo.id,
+                titulo: grupo.titulo,
+                estudiantesInscritos: grupo._count.registro
+            }))
+        };
+    },
+
     async updateCourse(courseId, data) {
         const nombre = (data?.nombre ?? '').toString().trim();
         const descripcion = (data?.descripcion ?? '').toString().trim();

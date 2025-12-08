@@ -11,32 +11,19 @@ export const commentRepository = {
 
 
 
-    getCommentsByTeacherId: (teacherId) => prisma.comentario.findMany({
-        where: { teacherId },
-        orderBy: {
-            fecha_pub: 'desc'
-        },
-        include: {
-            usuario: {
-                select: { 
-                    nombre: true,
-                    profilePicture: true
+    getCommentsByTopicId: async (topicoId) => {
+        return await prisma.comentario.findMany({
+            where: {
+                topicoId: Number(topicoId) // Filtramos por el ID del tema/video
+            },
+            include: {
+                usuario: { select: { nombre: true, profilePicture: true } },
+                respuestas: {
+                    include: { usuario: { select: { nombre: true, profilePicture: true } } }
                 }
             },
-            respuestas: {
-                include: {
-                    usuario: {
-                        select: { 
-                            nombre: true,
-                            profilePicture: true
-                        }
-                    }
-                },
-                orderBy: {
-                    fecha_pub: 'desc'
-                }
-            }
-        },
-    }),
+            orderBy: { fecha_pub: 'desc' }
+        });
+    },
 
 }

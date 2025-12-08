@@ -4,61 +4,29 @@ import { getIO } from "../../../websocket/socket.config.js";
 export const commentService = {
 
   async crearComentario(data) {
-    const newComment = await commentRepository.createComment(data);
-    
-    // Emitir evento WebSocket a todos los clientes suscritos al profesor
-    try {
-      const io = getIO();
-      io.to(`teacher_${data.teacherId}`).emit("new_comment", {
-        event: "comment_created",
-        comment: newComment,
-        timestamp: new Date().toISOString(),
-      });
-      console.log(` Nuevo comentario emitido para profesor ${data.teacherId}`);
-    } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
-    }
-    
-    return newComment;
+   return await commentRepository.createComment(data);
   },
 
   async responderComentario(data) {
-    const answer = await commentRepository.createanswerComments(data);
-    
-    // Emitir evento WebSocket a todos los clientes suscritos al profesor
-    try {
-      const io = getIO();
-      io.to(`teacher_${data.teacherId}`).emit("comment_answered", {
-        event: "comment_answer_created",
-        answer: answer,
-        timestamp: new Date().toISOString(),
-      });
-      console.log(` Respuesta de comentario emitida para profesor ${data.teacherId}`);
-    } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
-    }
-    
-    return answer;
+    return await commentRepository.createanswerComments(data);
   },
 
-  async getCommentsByTeacherId(teacherId) {
-    const comments = await commentRepository.getCommentsByTeacherId(teacherId);
-    
-    // Emitir evento WebSocket para notificar que se solicitaron los comentarios
+  async getCommentsByTopicId(topicoId) {
+    const comments = await commentRepository.getCommentsByTopicId(topicoId);
+
+    // Emitir por WebSocket para que el frontend reciba en tiempo real
     try {
       const io = getIO();
-      io.to(`teacher_${teacherId}`).emit("comments_fetched", {
-        event: "comments_retrieved",
-        comments: comments,
-        teacherId: teacherId,
-        commentsCount: comments.length,
+      io.emit("comments_fetched", {
+        event: "comments_fetched",
+        topicId: Number(topicoId),
+        comments,
         timestamp: new Date().toISOString(),
       });
-      console.log(` Comentarios obtenidos para profesor ${teacherId}`);
     } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
+      console.warn("⚠️ Socket.io no disponible al emitir comments_fetched:", error.message);
     }
-    
+
     return comments;
   },
 

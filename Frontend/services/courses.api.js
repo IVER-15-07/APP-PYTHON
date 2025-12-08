@@ -19,4 +19,22 @@ export const coursesService = {
         }
     },
 
+    async getCoursesWithStudentCount() {
+        try {
+            const response = await axiosInstance.get("/api/courses-with-students");
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los cursos con estudiantes');
+        }
+    },
+
+    async getCourseWithStudentCount(cursoId) {
+        try {
+            const response = await axiosInstance.get(`/api/course/${cursoId}/students`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener el curso con estudiantes');
+        }
+    },
+
 }

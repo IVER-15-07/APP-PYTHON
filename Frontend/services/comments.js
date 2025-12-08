@@ -20,9 +20,9 @@ export const commentService = {
         }
     },
 
-    async getComentarios(teacherId) {   
+    async getComentarios(topicId) {   
         try {
-            const response = await axiosInstance.get(`api/comments/${teacherId}`);
+            const response = await axiosInstance.get(`api/comments/${topicId}`);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al obtener comentarios');

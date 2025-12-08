@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { MessageSquare, Send, Reply } from 'lucide-react';
 import { authService } from '../../../../services/auth.api';
 import { commentService } from '../../../../services/comments';
-import { onCommentsFetched } from '../../../../services/socketComment.service.js';
+import { onCommentsFetched, joinTopicRoom, leaveTopicRoom } from '../../../../services/socketComment.service';
 
 const TopicComments = ({ topicId }) => {
   const [comments, setComments] = useState([]);
@@ -16,18 +16,17 @@ const TopicComments = ({ topicId }) => {
   const [error, setError] = useState(null);
 
   // Cargar comentarios al montar
-  useEffect(() => {
+ useEffect(() => {
     const fetchComments = async () => {
-      if (!user?.id) return;
+      if (!topicId) return;
       setLoading(true);
       setError(null);
       try {
-        const response = await commentService.getComentarios(user.id);
+        const response = await commentService.getComentarios(topicId);
         const commentsData = response?.data || [];
-        const topicComments = commentsData
-          .filter((c) => c.topicoId === Number(topicId))
-          .sort((a, b) => new Date(b.fecha_pub) - new Date(a.fecha_pub));
-        setComments(topicComments);
+        // Ya vienen filtrados por tópico desde el backend
+        const sortedComments = commentsData.sort((a, b) => new Date(b.fecha_pub) - new Date(a.fecha_pub));
+        setComments(sortedComments);
       } catch {
         setError('No se pudieron cargar los comentarios');
       } finally {
@@ -36,11 +35,13 @@ const TopicComments = ({ topicId }) => {
     };
 
     fetchComments();
-  }, [topicId, user?.id]);
+  }, [topicId]);
 
-  // WebSocket: solo comments_fetched
+  // WebSocket: unirse a la sala del tópico y escuchar comments_fetched
   useEffect(() => {
     if (!user?.id) return;
+
+    joinTopicRoom(topicId);
     const unsubscribe = onCommentsFetched((data) => {
       if (data.comments) {
         const topicComments = data.comments.filter(
@@ -50,7 +51,10 @@ const TopicComments = ({ topicId }) => {
       }
     }, { topicId });
 
-    return () => unsubscribe && unsubscribe();
+    return () => {
+      leaveTopicRoom(topicId);
+      unsubscribe && unsubscribe();
+    };
   }, [topicId, user?.id]);
 
   const handleAddComment = async (e) => {

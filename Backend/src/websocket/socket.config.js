@@ -12,21 +12,22 @@ export const initializeSocket = (httpServer) => {
   });
 
   io.on("connection", (socket) => {
-    console.log(` Cliente conectado: ${socket.id}`);
+    console.log(`🟢 Cliente conectado: ${socket.id}`);
 
-    // Eventos de comentarios
-    socket.on("subscribe_teacher_comments", (teacherId) => {
-      socket.join(`teacher_${teacherId}`);
-      console.log(` Cliente suscrito a comentarios del profesor ${teacherId}`);
+    // --- CORRECCIÓN: Salas por Tópico ---
+    socket.on("join_topic", (topicoId) => {
+      const roomName = `topico_${topicoId}`;
+      socket.join(roomName);
+      console.log(`🚪 Cliente ${socket.id} entró a la sala: ${roomName}`);
     });
 
-    socket.on("unsubscribe_teacher_comments", (teacherId) => {
-      socket.leave(`teacher_${teacherId}`);
-      console.log(` Cliente desuscrito de comentarios del profesor ${teacherId}`);
+    socket.on("leave_topic", (topicoId) => {
+      const roomName = `topico_${topicoId}`;
+      socket.leave(roomName);
     });
 
     socket.on("disconnect", () => {
-      console.log(` Cliente desconectado: ${socket.id}`);
+      console.log(`🔴 Cliente desconectado: ${socket.id}`);
     });
   });
 
@@ -34,8 +35,6 @@ export const initializeSocket = (httpServer) => {
 };
 
 export const getIO = () => {
-  if (!io) {
-    throw new Error("Socket.io no ha sido inicializado");
-  }
+  if (!io) throw new Error("Socket.io no ha sido inicializado");
   return io;
 };

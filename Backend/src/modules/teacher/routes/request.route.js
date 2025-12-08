@@ -14,7 +14,7 @@ router.get("/teacher/group-requests", verifyToken, getMyGroupRequests);
 // Comentarios routes
 router.post("/comments", crearComentario);
 router.post("/replies", responderComentario);
-router.get("/comments/:teacherId", getComentarios);
+router.get("/comments/:topicId", getComentarios);
 
 
 

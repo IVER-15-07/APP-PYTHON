@@ -21,6 +21,11 @@ export const teamRepository = {
         esAprobado: true,
         codigo: true,
         curso: { select: { id: true, nombre: true } },
+        registro: {
+          select: {
+            usuarioId: true,
+          },
+        },
       },
       
       orderBy: { id: "desc" },

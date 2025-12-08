@@ -120,6 +120,7 @@ model Curso {
 
   nivel Nivel[]
   grupo Grupo[]
+  evaluacion Evaluacion[]
 }
 
 model Nivel {
@@ -224,12 +225,16 @@ model Evaluacion {
 
   fecha_ini DateTime? @default(now())
   fecha_fin DateTime? @default(now())
+  published Boolean @default(false)
+
+  curso   Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  cursoId Int
 
   topico   Topico @relation(fields: [topicoId], references: [id], onDelete: Cascade)
   topicoId Int
 
-  tipo_evaluacion   Tipo_evaluacion @relation(fields: [tipo_evaluacionId], references: [id], onDelete: Cascade)
-  tipo_evaluacionId Int
+  tipo_evaluacion   Tipo_evaluacion? @relation(fields: [tipo_evaluacionId], references: [id], onDelete: SetNull)
+  tipo_evaluacionId Int?
 
   evaluacion_pregunta Evaluacion_pregunta[]
   respuestasEstudiante RespuestaEstudiante[]

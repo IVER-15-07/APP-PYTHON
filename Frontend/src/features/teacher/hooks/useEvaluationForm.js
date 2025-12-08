@@ -235,8 +235,16 @@ export const useEvaluationForm = (onSuccess) => {
         topicoId: parseInt(form.topicoId),
         cursoId: parseInt(form.cursoId),
         puntaje_evaluacion: parseInt(form.puntaje_evaluacion),
-        fecha_ini: form.fecha_ini || null,
-        fecha_fin: form.fecha_fin || null,
+        fecha_ini: (() => {
+          if (!form.fecha_ini) return null;
+          const d = new Date(form.fecha_ini);
+          return Number.isNaN(d.getTime()) ? null : d.toISOString();
+        })(),
+        fecha_fin: (() => {
+          if (!form.fecha_fin) return null;
+          const d = new Date(form.fecha_fin);
+          return Number.isNaN(d.getTime()) ? null : d.toISOString();
+        })(),
         published: publish,
         preguntas: form.preguntas.map(q => ({
           pregunta: q.pregunta,

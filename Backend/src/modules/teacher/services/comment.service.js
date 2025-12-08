@@ -1,64 +1,43 @@
 import { commentRepository } from "../repositories/comment.repository.js";
-import { getIO } from "../../../websocket/socket.config.js";
+
+import { getIO } from "../../../websocket/socket.config.js"; 
 
 export const commentService = {
 
   async crearComentario(data) {
-    const newComment = await commentRepository.createComment(data);
-    
-    // Emitir evento WebSocket a todos los clientes suscritos al profesor
+    const nuevoComentario = await commentRepository.createComment(data);
     try {
       const io = getIO();
-      io.to(`teacher_${data.teacherId}`).emit("new_comment", {
-        event: "comment_created",
-        comment: newComment,
-        timestamp: new Date().toISOString(),
-      });
-      console.log(` Nuevo comentario emitido para profesor ${data.teacherId}`);
+      const roomName = `topico_${data.topicoId}`;
+      io.to(roomName).emit("new_comment", nuevoComentario);
+      console.log(` Enviado new_comment a la sala: ${roomName}`);
     } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
+      console.warn(" No se pudo emitir el socket (¿Servidor no iniciado?):", error.message);
     }
-    
-    return newComment;
+
+    return nuevoComentario;
   },
 
   async responderComentario(data) {
-    const answer = await commentRepository.createanswerComments(data);
-    
-    // Emitir evento WebSocket a todos los clientes suscritos al profesor
-    try {
-      const io = getIO();
-      io.to(`teacher_${data.teacherId}`).emit("comment_answered", {
-        event: "comment_answer_created",
-        answer: answer,
-        timestamp: new Date().toISOString(),
-      });
-      console.log(` Respuesta de comentario emitida para profesor ${data.teacherId}`);
-    } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
+    const nuevaRespuesta = await commentRepository.createanswerComments(data);
+    const topicoId = nuevaRespuesta.comentario?.topicoId;
+    if (topicoId) {
+      try {
+        const io = getIO();
+        const roomName = `topico_${topicoId}`;
+        io.to(roomName).emit("new_reply", nuevaRespuesta);
+        console.log(` Enviado new_reply a la sala: ${roomName}`);
+      } catch (error) {
+        console.warn(" No se pudo emitir el socket:", error.message);
+      }
     }
-    
-    return answer;
+
+    return nuevaRespuesta;
   },
 
-  async getCommentsByTeacherId(teacherId) {
-    const comments = await commentRepository.getCommentsByTeacherId(teacherId);
-    
-    // Emitir evento WebSocket para notificar que se solicitaron los comentarios
-    try {
-      const io = getIO();
-      io.to(`teacher_${teacherId}`).emit("comments_fetched", {
-        event: "comments_retrieved",
-        teacherId: teacherId,
-        commentsCount: comments.length,
-        timestamp: new Date().toISOString(),
-      });
-      console.log(` Comentarios obtenidos para profesor ${teacherId}`);
-    } catch (error) {
-      console.warn(" Socket.io no disponible para emitir evento:", error.message);
-    }
-    
-    return comments;
+
+  async getCommentsByTopicId(topicoId) {
+    return await commentRepository.getCommentsByTopicId(topicoId);
   },
 
-}
+};

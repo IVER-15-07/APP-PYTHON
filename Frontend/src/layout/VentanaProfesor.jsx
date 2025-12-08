@@ -10,6 +10,7 @@ import { TopicViewer } from '../features/shared/components';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
+import EvaluationEditor from '../features/teacher/components/EvaluationEditor';
 import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School } from 'lucide-react';
 
 const VentanaProfesor = () => {
@@ -17,6 +18,7 @@ const VentanaProfesor = () => {
     const [user] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
+    const [evalModalOpen, setEvalModalOpen] = useState(false);
 
     const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
     const [requestLoading, setRequestLoading] = useState(false);
@@ -130,6 +132,7 @@ const VentanaProfesor = () => {
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
                 onLogout={handleLogout}
+                onCreateEvaluation={() => setEvalModalOpen(true)}
                 brand={{ 
                     icon: <Code2 className="w-6 h-6" />, 
                     name: "PyLearn" 
@@ -278,6 +281,18 @@ const VentanaProfesor = () => {
                         )}
                     </div>
                 )}
+            </Modal>
+
+            {/* Modal para crear/editar una evaluación */}
+            <Modal
+                open={evalModalOpen}
+                onClose={() => setEvalModalOpen(false)}
+                title="Crear evaluación"
+                size="xl"
+            >
+                <div className="p-4">
+                    <EvaluationEditor onClose={() => setEvalModalOpen(false)} />
+                </div>
             </Modal>
         </div>
     );

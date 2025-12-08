@@ -49,6 +49,7 @@ export const commentService = {
       const io = getIO();
       io.to(`teacher_${teacherId}`).emit("comments_fetched", {
         event: "comments_retrieved",
+        comments: comments,
         teacherId: teacherId,
         commentsCount: comments.length,
         timestamp: new Date().toISOString(),

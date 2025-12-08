@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { MessageSquare, Send, Reply } from 'lucide-react';
 import { authService } from '../../../../services/auth.api';
 import { commentService } from '../../../../services/comments';
-import { onNewComment, onCommentAnswered, onCommentsFetched } from '../../../../services/socketComment.service.js';
-
+import { onCommentsFetched } from '../../../../services/socketComment.service.js';
 
 const TopicComments = ({ topicId }) => {
   const [comments, setComments] = useState([]);
@@ -16,19 +15,17 @@ const TopicComments = ({ topicId }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar comentarios del backend al montar
+  // Cargar comentarios al montar
   useEffect(() => {
     const fetchComments = async () => {
       if (!user?.id) return;
-      
       setLoading(true);
       setError(null);
       try {
         const response = await commentService.getComentarios(user.id);
         const commentsData = response?.data || [];
-        // Filtrar comentarios solo de este tópico y ordenar por fecha (más recientes primero)
         const topicComments = commentsData
-          .filter(c => c.topicoId === Number(topicId))
+          .filter((c) => c.topicoId === Number(topicId))
           .sort((a, b) => new Date(b.fecha_pub) - new Date(a.fecha_pub));
         setComments(topicComments);
       } catch {
@@ -41,63 +38,23 @@ const TopicComments = ({ topicId }) => {
     fetchComments();
   }, [topicId, user?.id]);
 
-  // Suscribirse a eventos WebSocket
+  // WebSocket: solo comments_fetched
   useEffect(() => {
     if (!user?.id) return;
-
-    const handleNewComment = (data) => {
-      console.log('WebSocket - Nuevo comentario:', data);
-      if (data.comment?.topicoId === Number(topicId)) {
-        setComments(prev => {
-          // Evitar duplicados
-          const exists = prev.some(c => c.id === data.comment.id);
-          if (exists) return prev;
-          return [data.comment, ...prev];
-        });
-      }
-    };
-
-    const handleCommentAnswered = (data) => {
-      console.log('WebSocket - Respuesta recibida:', data);
-      if (data.answer) {
-        setComments(prev => prev.map(comment => {
-          if (comment.id === data.answer.comentarioId) {
-            // Evitar duplicados
-            const exists = comment.respuestas?.some(r => r.id === data.answer.id);
-            if (exists) return comment;
-            return {
-              ...comment,
-              respuestas: [...(comment.respuestas || []), data.answer]
-            };
-          }
-          return comment;
-        }));
-      }
-    };
-
-    const handleCommentsFetched = (data) => {
-      console.log('WebSocket - Comentarios cargados:', data);
+    const unsubscribe = onCommentsFetched((data) => {
       if (data.comments) {
-        const topicComments = data.comments.filter(c => c.topicoId === Number(topicId));
+        const topicComments = data.comments.filter(
+          (c) => c.topicoId === Number(topicId)
+        );
         setComments(topicComments);
       }
-    };
+    }, { topicId });
 
-    // Suscribir a eventos
-    onNewComment(handleNewComment);
-    onCommentAnswered(handleCommentAnswered);
-    onCommentsFetched(handleCommentsFetched);
-
-    // Cleanup: remover listeners al desmontar
-    return () => {
-      // Socket.io no permite remover listeners individuales fácilmente
-      // pero los callbacks se limpiarán con el desmontaje del componente
-    };
+    return () => unsubscribe && unsubscribe();
   }, [topicId, user?.id]);
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    
     if (!newComment.trim() || !user?.id) return;
 
     setSubmitting(true);
@@ -111,9 +68,7 @@ const TopicComments = ({ topicId }) => {
       };
 
       const response = await commentService.crearComentario(commentData);
-      
-      // El comentario se agregará automáticamente por WebSocket
-      // pero lo agregamos de inmediato para mejor UX
+
       const newCommentObj = {
         id: response.data.id,
         contenido: newComment.trim(),
@@ -122,12 +77,12 @@ const TopicComments = ({ topicId }) => {
         usuarioId: user.id,
         usuario: {
           nombre: user.nombre,
-          profilePicture: user.profilePicture
+          profilePicture: user.profilePicture,
         },
-        respuestas: []
+        respuestas: [],
       };
 
-      setComments(prev => [newCommentObj, ...prev]);
+      setComments((prev) => [newCommentObj, ...prev]);
       setNewComment('');
     } catch (err) {
       setError(err.message || 'Error al crear el comentario');
@@ -150,8 +105,7 @@ const TopicComments = ({ topicId }) => {
       };
 
       const response = await commentService.responderComentario(replyData);
-      
-      // Agregar la respuesta inmediatamente al estado
+
       const newReply = {
         id: response.data.id,
         contenido: replyText.trim(),
@@ -159,20 +113,18 @@ const TopicComments = ({ topicId }) => {
         comentarioId: commentId,
         usuario: {
           nombre: user.nombre,
-          profilePicture: user.profilePicture
-        }
+          profilePicture: user.profilePicture,
+        },
       };
 
-      setComments(prev => prev.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            respuestas: [...(comment.respuestas || []), newReply]
-          };
-        }
-        return comment;
-      }));
-      
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, respuestas: [...(comment.respuestas || []), newReply] }
+            : comment
+        )
+      );
+
       setReplyText('');
       setReplyingTo(null);
     } catch (err) {
@@ -181,7 +133,6 @@ const TopicComments = ({ topicId }) => {
       setSubmitting(false);
     }
   };
-
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -195,22 +146,21 @@ const TopicComments = ({ topicId }) => {
     if (diffMins < 60) return `Hace ${diffMins} min`;
     if (diffHours < 24) return `Hace ${diffHours}h`;
     if (diffDays < 7) return `Hace ${diffDays}d`;
-    
-    return date.toLocaleDateString('es-ES', { 
-      day: '2-digit', 
+
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
       month: 'short',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined 
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
     });
   };
 
-  const getInitials = (name) => {
-    return name
+  const getInitials = (name) =>
+    name
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
 
   return (
     <section className="mt-8">
@@ -221,15 +171,13 @@ const TopicComments = ({ topicId }) => {
       </div>
 
       <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl space-y-6">
-        {/* Form para agregar comentario */}
         <form onSubmit={handleAddComment} className="space-y-3">
           <div className="flex items-start gap-3">
-            {/* Avatar del usuario actual */}
             <div className="flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm">
                 {user?.profilePicture ? (
-                  <img 
-                    src={user.profilePicture} 
+                  <img
+                    src={user.profilePicture}
                     alt={user.nombre}
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -239,7 +187,6 @@ const TopicComments = ({ topicId }) => {
               </div>
             </div>
 
-            {/* Input de comentario */}
             <div className="flex-1">
               <textarea
                 value={newComment}
@@ -249,9 +196,7 @@ const TopicComments = ({ topicId }) => {
                 rows="3"
                 disabled={submitting}
               />
-              {error && (
-                <p className="text-red-400 text-xs mt-1">{error}</p>
-              )}
+              {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
               <div className="flex items-center justify-between mt-2">
                 <span className="text-xs text-slate-500">
                   {newComment.length} caracteres
@@ -269,16 +214,12 @@ const TopicComments = ({ topicId }) => {
           </div>
         </form>
 
-        {/* Divider */}
-        {comments.length > 0 && (
-          <div className="border-t border-slate-700/50"></div>
-        )}
+        {comments.length > 0 && <div className="border-t border-slate-700/50" />}
 
-        {/* Lista de comentarios */}
         <div className="space-y-4">
           {loading ? (
             <div className="text-center py-8">
-              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
               <p className="text-slate-500 text-sm">Cargando comentarios...</p>
             </div>
           ) : comments.length === 0 ? (
@@ -293,12 +234,11 @@ const TopicComments = ({ topicId }) => {
                 key={comment.id}
                 className="flex items-start gap-3 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30 hover:border-slate-600/50 transition-all"
               >
-                {/* Avatar del autor */}
                 <div className="flex-shrink-0">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-semibold text-xs overflow-hidden">
                     {comment.usuario?.profilePicture ? (
-                      <img 
-                        src={comment.usuario.profilePicture} 
+                      <img
+                        src={comment.usuario.profilePicture}
                         alt={comment.usuario.nombre}
                         className="w-full h-full object-cover"
                       />
@@ -308,7 +248,6 @@ const TopicComments = ({ topicId }) => {
                   </div>
                 </div>
 
-                {/* Contenido del comentario */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -330,16 +269,16 @@ const TopicComments = ({ topicId }) => {
                     {comment.contenido}
                   </p>
 
-                  {/* Botón de responder */}
                   <button
-                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                    onClick={() =>
+                      setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                    }
                     className="flex items-center gap-1 mt-2 text-xs text-purple-400 hover:text-purple-300 transition-colors"
                   >
                     <Reply className="w-3 h-3" />
                     Responder
                   </button>
 
-                  {/* Input de respuesta */}
                   {replyingTo === comment.id && (
                     <div className="mt-3 space-y-2">
                       <textarea
@@ -371,7 +310,6 @@ const TopicComments = ({ topicId }) => {
                     </div>
                   )}
 
-                  {/* Respuestas existentes */}
                   {comment.respuestas && comment.respuestas.length > 0 && (
                     <div className="mt-3 space-y-2 pl-4 border-l-2 border-slate-700/50">
                       {comment.respuestas.map((reply) => (
@@ -379,8 +317,8 @@ const TopicComments = ({ topicId }) => {
                           <div className="flex-shrink-0">
                             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-xs overflow-hidden">
                               {reply.usuario?.profilePicture ? (
-                                <img 
-                                  src={reply.usuario.profilePicture} 
+                                <img
+                                  src={reply.usuario.profilePicture}
                                   alt={reply.usuario.nombre}
                                   className="w-full h-full object-cover"
                                 />

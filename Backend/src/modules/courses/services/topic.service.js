@@ -79,9 +79,7 @@ export const topicService = {
             // 6️ Subir archivo PRINCIPAL (para url)
             const isPdf = archivoParaUrl.mimetype === "application/pdf";
             const isVideoOrAudio = archivoParaUrl.mimetype.startsWith("video/") || archivoParaUrl.mimetype.startsWith("audio/");
-            const isDoc = archivoParaUrl.mimetype.includes("presentation") || 
-                         archivoParaUrl.mimetype.includes("wordprocessingml") ||
-                         archivoParaUrl.mimetype === "application/msword";
+            const isDoc = archivoParaUrl.mimetype.includes("presentation");
 
             const resourceTypePrincipal = isVideoOrAudio ? "video" : (isPdf || isDoc ? "raw" : "image");
 

@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-const URL = import.meta.env.VITE_API_RL || "ws://localhost:3000";
+const URL = import.meta.env.VITE_API_RL;
 
 export const socket = io(URL, {
   transports: ["websocket"],

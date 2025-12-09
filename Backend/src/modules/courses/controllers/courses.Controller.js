@@ -6,7 +6,7 @@ import { levelService } from "../services/level.service.js";
 export const getMyCourses = async (req, res) => {
     try {
         const cursos = await coursesService.getCourses();
-        return res.status(200).json({success: true, data: cursos});
+        return res.status(200).json({ success: true, data: cursos });
     } catch (err) {
         console.error("Error en getMyCourses:", err);
         return res.status(err.status || 500).json({
@@ -20,7 +20,7 @@ export const getMyCourses = async (req, res) => {
 export const getCoursesWithStudentCount = async (req, res) => {
     try {
         const cursos = await coursesService.getCoursesWithStudentCount();
-        return res.status(200).json({success: true, data: cursos});
+        return res.status(200).json({ success: true, data: cursos });
     } catch (err) {
         console.error("Error en getCoursesWithStudentCount:", err);
         return res.status(err.status || 500).json({
@@ -35,7 +35,7 @@ export const getCourseWithStudentCount = async (req, res) => {
     try {
         const { cursoId } = req.params;
         const curso = await coursesService.getCourseWithStudentCount(cursoId);
-        return res.status(200).json({success: true, data: curso});
+        return res.status(200).json({ success: true, data: curso });
     } catch (err) {
         console.error("Error en getCourseWithStudentCount:", err);
         return res.status(err.status || 500).json({
@@ -51,7 +51,7 @@ export const createTopicWithResource = async (req, res) => {
         const data = req.body;
         const files = req.files; // Archivos subidos
         const result = await topicService.createTopicWithResource(data, files);
-        return res.status(201).json({success: true, data: result});
+        return res.status(201).json({ success: true, data: result });
     } catch (err) {
         console.error("Error en create topico y recursos ", err);
         return res.status(err.status || 500).json({
@@ -65,7 +65,7 @@ export const createTopicWithResource = async (req, res) => {
 export const getAllTopics = async (req, res) => {
     try {
         const topics = await topicService.getAllTopics();
-        return res.status(200).json({success: true, data: topics});
+        return res.status(200).json({ success: true, data: topics });
     } catch (err) {
         console.error("Error en getAllTopics:", err);
         return res.status(err.status || 500).json({
@@ -110,11 +110,11 @@ export const updateCourse = async (req, res) => {
         console.log('Course ID:', id);
         console.log('Request body:', req.body);
 
-        const updatedCourse = await coursesService.updateCourse(id, { 
-            nombre, 
-            descripcion 
+        const updatedCourse = await coursesService.updateCourse(id, {
+            nombre,
+            descripcion
         });
-        
+
         res.status(200).json({
             success: true,
             data: updatedCourse,
@@ -132,7 +132,8 @@ export const updateCourse = async (req, res) => {
 export const updateTopic = async (req, res) => {
     try {
         const result = await topicService.updateTopicWithResources(req.params.id, req.body, req.files || []);
-         return res.status(200).json({success: true, data: result,
+        return res.status(200).json({
+            success: true, data: result,
         });
     } catch (err) {
         console.error("Error en actualizar el tópico:", err);
@@ -161,11 +162,26 @@ export const getTopicForStudent = async (req, res) => {
 
 export const getTopicsByCreator = async (req, res) => {
     try {
-        const { creatorId } = req.params;   
+        const { creatorId } = req.params;
         const topics = await topicService.getTopicsByCreatorId(creatorId);
         return res.status(200).json({ success: true, data: topics });
     } catch (err) {
         console.error("Error  al otener los topicos del usuario", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null
+        });
+    }
+};
+
+export const getListStudentsByGroup = async (req, res) => {
+    try {
+        const { groupId } = req.params;
+        const students = await coursesService.getListStudentsByGroup(Number(groupId));
+        return res.status(200).json({ success: true, data: students });
+    } catch (err) {
+        console.error("Error al obtener la lista de estudiantes por grupo", err);
         return res.status(err.status || 500).json({
             success: false,
             message: err.message || "Error interno del servidor",

@@ -78,4 +78,11 @@ export const coursesService = {
         return updated;
   },
 
+
+  getListStudentsByGroup: async (groupId) => {
+    const students = await coursesRepository.getListStudentsBygroupId(groupId);
+    return students;
+  },
+
+
 }

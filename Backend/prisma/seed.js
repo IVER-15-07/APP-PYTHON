@@ -7,6 +7,7 @@ import seedCursos from "./seeds/course.js";
 import seedEstados from "./seeds/state.js";
 import seedAdmin from "./seeds/admin.js";
 import seedTypeTopics from "./seeds/typeTopinc.js";
+import seedParametros from "./seeds/parametros.js";
 
 
 
@@ -18,6 +19,7 @@ async function main() {
   await seedEstados(prisma);
   await seedAdmin(prisma);
   await seedTypeTopics(prisma);
+  await seedParametros(prisma);
 
 
   console.log("🌟 Seed completado");

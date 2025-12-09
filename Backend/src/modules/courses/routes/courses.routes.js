@@ -10,7 +10,8 @@ import {
     getTopicForStudent,
     getTopicsByCreator,
     getCoursesWithStudentCount,
-    getCourseWithStudentCount
+    getCourseWithStudentCount,
+    getListStudentsByGroup
 
 } from '../controllers/courses.Controller.js';
 import multer from 'multer';
@@ -34,5 +35,6 @@ router.put('/course/:id', verifyToken, updateCourse);
 router.put('/topic/:id', verifyToken, upload.array('files'), updateTopic);
 router.get('/topic/:id/student', getTopicForStudent);
 
+router.get('/group/:groupId/students',  getListStudentsByGroup);
 
 export default router;

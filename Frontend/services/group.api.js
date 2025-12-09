@@ -25,13 +25,22 @@ export const coursesService = {
     },
 
     async updateGroup(id, updatedData) {
-    try {
-      const response = await axiosInstance.put(`/api/groups/${id}`, updatedData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || "Error al actualizar el grupo");
+        try {
+            const response = await axiosInstance.put(`/api/groups/${id}`, updatedData);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || "Error al actualizar el grupo");
+        }
+    },
+
+    async getListStudentsByGroup(groupId) {
+        try {
+            const response = await axiosInstance.get(`/api/group/${groupId}/students`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || "Error al obtener la lista de estudiantes por grupo");
+        }
     }
-  },
 
 }
 

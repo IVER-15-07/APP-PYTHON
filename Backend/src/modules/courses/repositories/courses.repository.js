@@ -82,4 +82,29 @@ export const coursesRepository = {
             }
         },
     }),
+
+    getListStudentsBygroupId: async (grupoId) => prisma.registro.findMany({
+        where: { grupoId: grupoId },
+        select: {
+            id: true,
+            fecha_registro: true,
+            usuario: {
+                select: {
+                    id: true,   
+                    nombre: true,
+                    email: true,
+                    profilePicture: true,
+                    rol_usuario: {
+                        select: {
+                            id: true,
+                            nombre: true    
+                        }
+                    }
+                }
+            }
+        }
+    }),
+
+
+
 }

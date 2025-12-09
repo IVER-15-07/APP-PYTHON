@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import evaluationsService from '../../../../services/evaluations.api.js';
 
-export const useEvaluationForm = (onSuccess) => {
+export const useEvaluationForm = (onSuccess, parameterTypes = []) => {
   const [form, setForm] = useState({
     evaluacion: '',
     descripcion: '',
@@ -18,6 +18,13 @@ export const useEvaluationForm = (onSuccess) => {
   const [error, setError] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
+
+  // Helper para identificar tipos de pregunta por nombre dinámicamente
+  const getParametroIdsByName = useCallback((name) => {
+    return parameterTypes
+      .filter(p => p.nombre?.toLowerCase() === name.toLowerCase())
+      .map(p => p.id);
+  }, [parameterTypes]);
 
   const validateForm = useCallback(() => {
     const errors = [];
@@ -36,6 +43,11 @@ export const useEvaluationForm = (onSuccess) => {
       errors.push('Agrega al menos una pregunta');
     }
 
+    // IDs dinámicos para tipos que requieren opciones
+    const singleIds = getParametroIdsByName('single');
+    const multipleIds = getParametroIdsByName('multiple');
+    const optionTypeIds = [...singleIds, ...multipleIds];
+
     // Validar cada pregunta
     form.preguntas.forEach((q, idx) => {
       if (!q.pregunta?.trim()) {
@@ -51,12 +63,12 @@ export const useEvaluationForm = (onSuccess) => {
       }
 
       // Validar que single/multiple tengan opciones
-      if ((q.parametroId === 1 || q.parametroId === 4) && (!q.respuestas || q.respuestas.length === 0)) {
+      if (optionTypeIds.includes(q.parametroId) && (!q.respuestas || q.respuestas.length === 0)) {
         errors.push(`Pregunta ${idx + 1}: agrega opciones`);
       }
 
       // Validar que haya al menos una respuesta correcta
-      if ((q.parametroId === 1 || q.parametroId === 4)) {
+      if (optionTypeIds.includes(q.parametroId)) {
         const hasCorrect = q.respuestas?.some(r => r.esCorrecta);
         if (!hasCorrect) {
           errors.push(`Pregunta ${idx + 1}: marca al menos una opción correcta`);
@@ -80,13 +92,16 @@ export const useEvaluationForm = (onSuccess) => {
   };
 
   const addQuestion = () => {
+    // Usar el primer parametroId disponible o default a 1
+    const defaultParametroId = parameterTypes.length > 0 ? parameterTypes[0].id : 1;
+    
     setForm(prev => ({
       ...prev,
       preguntas: [
         ...prev.preguntas,
         {
           pregunta: '',
-          parametroId: 1,
+          parametroId: defaultParametroId,
           valor: 1,
           respuestas: [],
           evaluacionManual: false
@@ -102,8 +117,14 @@ export const useEvaluationForm = (onSuccess) => {
         if (i !== index) return q;
         const merged = { ...q, ...updates };
 
+        // IDs dinámicos para tipos especiales
+        const vfIds = getParametroIdsByName('verdadero/falso');
+        const singleIds = getParametroIdsByName('single');
+        const multipleIds = getParametroIdsByName('multiple');
+        const optionTypeIds = [...singleIds, ...multipleIds];
+
         // Si el tipo cambió a Verdadero/Falso y no hay opciones, crear por defecto
-        if (updates.parametroId === 2 && (!merged.respuestas || merged.respuestas.length === 0)) {
+        if (vfIds.includes(updates.parametroId) && (!merged.respuestas || merged.respuestas.length === 0)) {
           merged.respuestas = [
             { respuesta: 'Verdadero', puntaje: merged.valor || 1, esCorrecta: false },
             { respuesta: 'Falso', puntaje: 0, esCorrecta: false }
@@ -111,7 +132,7 @@ export const useEvaluationForm = (onSuccess) => {
         }
 
         // Si el tipo cambió a single/multiple y no hay opciones, iniciar con dos opciones vacías
-        if ((updates.parametroId === 1 || updates.parametroId === 4) && (!merged.respuestas || merged.respuestas.length === 0)) {
+        if (optionTypeIds.includes(updates.parametroId) && (!merged.respuestas || merged.respuestas.length === 0)) {
           merged.respuestas = [
             { respuesta: '', puntaje: 1, esCorrecta: false },
             { respuesta: '', puntaje: 1, esCorrecta: false }

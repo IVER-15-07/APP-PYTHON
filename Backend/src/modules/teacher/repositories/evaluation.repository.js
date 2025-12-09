@@ -21,6 +21,10 @@ export const evaluationRepository = {
   createEvaluationResult: (data) => prisma.evaluacionResultado.create({ data }),
 
   getResultsForEvaluation: (evaluacionId) => prisma.evaluacionResultado.findMany({ where: { evaluacionId: Number(evaluacionId) } }),
+
+  getParametros: () => prisma.parametro.findMany(),
+
+  getParametroById: (id) => prisma.parametro.findUnique({ where: { id: Number(id) } }),
 };
 
 export default evaluationRepository;

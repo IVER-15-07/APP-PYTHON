@@ -38,6 +38,18 @@ export const evaluationService = {
     // payload expected shape: { evaluacion, descripcion, fecha_ini, fecha_fin, topicoId, cursoId, preguntas: [{ pregunta, parametroId, valor, respuestas:[{respuesta,puntaje}] }], published }
     const { preguntas = [], published, ...rest } = payload;
 
+    // Validar que todos los parametroId existan en la BD
+    if (preguntas.length > 0) {
+      const parametroIds = [...new Set(preguntas.map(q => q.parametroId))]; // IDs únicos
+      const validParams = await evaluationRepository.getParametros();
+      const validIds = validParams.map(p => p.id);
+      
+      const invalidIds = parametroIds.filter(id => !validIds.includes(id));
+      if (invalidIds.length > 0) {
+        throw new Error(`Parámetro(s) no válido(s): ${invalidIds.join(', ')}. Parámetros disponibles: ${validIds.join(', ')}`);
+      }
+    }
+
     // Build create data but only include `published` if explicitly provided.
     const base = {
       ...rest,

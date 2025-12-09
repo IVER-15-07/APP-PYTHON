@@ -43,16 +43,6 @@ const Navbar = () => {
                                 Inicio
                             </NavLink>
                         </li>
-                        <li>
-                            <a href="/acerca" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 px-4 py-2 rounded-lg transition-all duration-200">
-                                Acerca de
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/contacto" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 px-4 py-2 rounded-lg transition-all duration-200">
-                                Contacto
-                            </a>
-                        </li>
                     </ul>
                 </nav>
 

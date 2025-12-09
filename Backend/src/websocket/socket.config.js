@@ -22,11 +22,6 @@ export const initializeSocket = (httpServer) => {
       console.log(`🚪 Cliente ${socket.id} entró a la sala: ${roomName}`);
     });
     
-
-
-
-    
-
     socket.on("leave_topic", (topicoId) => {
       const roomName = `topico_${topicoId}`;
       socket.leave(roomName);

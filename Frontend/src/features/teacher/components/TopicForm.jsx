@@ -115,7 +115,7 @@ const TopicForm = ({
                                         onChange={onFileChange}
                                         accept={
                                             form.contentType === '1'
-                                                ? '.txt,.md,.doc,.docx,.pdf'
+                                                ? '.pdf'
                                                 : form.contentType === '2'
                                                     ? '.mp4,.avi,.mov,.mkv,.webm'
                                                     : '.ppt,.pptx,.pdf,.key'
@@ -160,7 +160,7 @@ const TopicForm = ({
                                                         Haz clic para seleccionar un archivo
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-1">
-                                                        {form.contentType === '1' && 'TXT, PDF'}
+                                                        {form.contentType === '1' && 'PDF'}
                                                         {form.contentType === '2' && 'MP4, AVI, MOV, MKV, WEBM'}
                                                         {form.contentType === '3' && 'PPT, PPTX, PDF'}
                                                     </p>
@@ -243,7 +243,7 @@ const TopicForm = ({
                             {/* Información adicional según el tipo */}
                             <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4">
                                 <p className="text-sm text-slate-400">
-                                    {form.contentType === '1' && 'Puedes subir archivos de texto plano (.txt) o PDF. Opcionalmente, agrega una imagen ilustrativa.'}
+                                    {form.contentType === '1' && 'Solo se permiten archivos PDF. Opcionalmente, agrega una imagen ilustrativa.'}
                                     {form.contentType === '2' && 'Puedes subir archivos de video en formatos compatibles (MP4, AVI, MOV, etc.).'}
                                     {form.contentType === '3' && 'Puedes subir presentaciones de PowerPoint (.ppt, .pptx) o archivos PDF.'}
                                 </p>

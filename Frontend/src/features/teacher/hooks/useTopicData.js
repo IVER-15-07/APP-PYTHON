@@ -17,8 +17,6 @@ export const useTopicData = (user) => {
             const topicsData = response?.data || [];
             setTopics(Array.isArray(topicsData) ? topicsData : []);
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('Error al obtener tópicos:', err);
             setError(err.message);
         }
     };

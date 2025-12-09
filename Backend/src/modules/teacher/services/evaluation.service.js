@@ -80,6 +80,11 @@ export const evaluationService = {
     return evaluationRepository.findEvaluationById(id);
   },
 
+  // List templates with optional filters
+  listTemplates: async (filters = {}) => {
+    return evaluationRepository.listEvaluations(filters);
+  },
+
   submitAnswers: async (evaluacionId, usuarioId, answers) => {
     // answers: [{ preguntaId, respuestaId | respuestaTxt | respuestaIds[] }]
     const evaluation = await evaluationRepository.findEvaluationById(evaluacionId);

@@ -24,6 +24,21 @@ export const evaluationController = {
     }
   },
 
+  listarPlantillas: async (req, res) => {
+    try {
+      const filters = {
+        cursoId: req.query.cursoId,
+        topicoId: req.query.topicoId,
+        published: typeof req.query.published !== 'undefined' ? req.query.published === 'true' : undefined
+      };
+      const list = await evaluationService.listTemplates(filters);
+      return res.status(200).json({ success: true, data: list });
+    } catch (error) {
+      console.error('Listar plantillas error:', error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
   responderEvaluacion: async (req, res) => {
     try {
       const { id } = req.params;

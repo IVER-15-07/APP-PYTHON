@@ -143,6 +143,21 @@ export const evaluationsService = {
       throw new Error(error.response?.data?.message || 'Error al obtener tipos de preguntas');
     }
   }
+,
+
+  // Obtener lista de plantillas (profesor)
+  async getMyEvaluations(filters = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (filters.cursoId) params.append('cursoId', filters.cursoId);
+      if (typeof filters.published !== 'undefined') params.append('published', filters.published);
+      const url = `/api/evaluations${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await axiosInstance.get(url);
+      return response.data?.data || [];
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al obtener evaluaciones');
+    }
+  }
 };
 
 export default evaluationsService;

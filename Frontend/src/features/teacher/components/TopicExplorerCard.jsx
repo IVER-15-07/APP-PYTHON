@@ -84,11 +84,11 @@ const TopicExplorerCard = ({ topic }) => {
         {topic.nombre}
       </h3>
 
-      {/* Información del nivel y curso */}
+      {/* Información del nivel */}
       <div className="flex items-center gap-2 mb-4 text-xs text-slate-400">
         <BookOpen className="w-3.5 h-3.5" />
         <span className="truncate">
-          {topic.nivel?.curso?.nombre || 'Sin curso'} • {topic.nivel?.nombre || 'Sin nivel'}
+          {topic.nivel?.nombre || 'Sin nivel'}
         </span>
       </div>
 

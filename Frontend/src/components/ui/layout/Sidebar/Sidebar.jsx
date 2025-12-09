@@ -93,22 +93,6 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* Action button area (left side) */}
-      <div className="p-3 border-b border-slate-700/50 bg-slate-900/60">
-        <div className="flex items-center">
-          <button
-            onClick={onCreateEvaluation}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-md hover:scale-[1.01] transition transform ${!open && 'justify-center w-full'}`}
-            title={!open ? 'Crear evaluación' : undefined}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-            {open && <span className="font-medium text-sm">Crear evaluación</span>}
-          </button>
-        </div>
-      </div>
-
       <nav className="p-4 space-y-1.5 overflow-y-auto flex-1">
         {items.map((item) => (
           <NavLink

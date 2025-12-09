@@ -14,9 +14,7 @@ const Home = () => {
       await navigator.clipboard.writeText(ejemploPython)
       setCopiado(true)
       setTimeout(() => setCopiado(false), 1500)
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("No se pudo copiar:", err)
+    } catch {
     }
   }
 

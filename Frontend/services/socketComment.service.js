@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-const URL = "http://localhost:3000"; // Tu backend local
+const URL = import.meta.env.VITE_API_RL || "ws://localhost:3000";
 
 export const socket = io(URL, {
   transports: ["websocket"],

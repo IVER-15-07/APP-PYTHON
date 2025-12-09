@@ -4,9 +4,10 @@ import { Server } from "socket.io";
 let io;
 
 export const initializeSocket = (httpServer) => {
+  const FRONTEND_URL = process.env.FRONTEND_URL;
   io = new Server(httpServer, {
     cors: {
-      origin: 'http://localhost:5173',
+      origin: FRONTEND_URL,
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     },

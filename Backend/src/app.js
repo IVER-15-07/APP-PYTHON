@@ -10,8 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
 
 
+const FRONTEND_URL = process.env.FRONTEND_URL;
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: FRONTEND_URL  , 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));

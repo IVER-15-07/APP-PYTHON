@@ -43,4 +43,4 @@ export async function getComentarios(req, res) {
             message: error.message || "Error interno"
         });
     }
-};  
+}; 

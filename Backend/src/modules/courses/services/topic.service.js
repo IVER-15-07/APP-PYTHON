@@ -40,7 +40,9 @@ export const topicService = {
                 const isText = file.mimetype.startsWith("text/") || file.mimetype === "application/x-subrip";
                 const isPdf = file.mimetype === "application/pdf";
                 const isDoc = file.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
-                    file.mimetype === "application/vnd.ms-powerpoint";
+                    file.mimetype === "application/vnd.ms-powerpoint" ||
+                    file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+                    file.mimetype === "application/msword";
 
                 // Clasificar según tipo de archivo
                 if (isImage) {
@@ -77,7 +79,9 @@ export const topicService = {
             // 6️ Subir archivo PRINCIPAL (para url)
             const isPdf = archivoParaUrl.mimetype === "application/pdf";
             const isVideoOrAudio = archivoParaUrl.mimetype.startsWith("video/") || archivoParaUrl.mimetype.startsWith("audio/");
-            const isDoc = archivoParaUrl.mimetype.includes("presentation");
+            const isDoc = archivoParaUrl.mimetype.includes("presentation") || 
+                         archivoParaUrl.mimetype.includes("wordprocessingml") ||
+                         archivoParaUrl.mimetype === "application/msword";
 
             const resourceTypePrincipal = isVideoOrAudio ? "video" : (isPdf || isDoc ? "raw" : "image");
 

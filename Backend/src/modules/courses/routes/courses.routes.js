@@ -8,7 +8,9 @@ import {
     updateCourse,
     updateTopic,
     getTopicForStudent,
-    getTopicsByCreator
+    getTopicsByCreator,
+    getCoursesWithStudentCount,
+    getCourseWithStudentCount
 
 } from '../controllers/courses.Controller.js';
 import multer from 'multer';
@@ -20,6 +22,8 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 router.get('/my-courses', getMyCourses);
+router.get('/courses-with-students', verifyToken, getCoursesWithStudentCount);
+router.get('/course/:cursoId/students', verifyToken, getCourseWithStudentCount);
 router.post('/topic', verifyToken, upload.array('files'), createTopicWithResource);
 router.get('/topics', getAllTopics);
 router.get('/topics/creator/:creatorId', getTopicsByCreator);

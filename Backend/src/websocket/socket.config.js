@@ -15,7 +15,6 @@ export const initializeSocket = (httpServer) => {
   io.on("connection", (socket) => {
     console.log(`🟢 Cliente conectado: ${socket.id}`);
 
-
     socket.on("join_topic", (topicoId) => {
       const roomName = `topico_${topicoId}`;
       socket.join(roomName);

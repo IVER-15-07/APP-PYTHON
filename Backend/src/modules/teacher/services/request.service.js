@@ -70,7 +70,27 @@ export const solicitudService = {
             esAprobado = null;
         }
 
-        return teamRepository.listCreatedBy(usuarioId, esAprobado);
+        const grupos = await teamRepository.listCreatedBy(usuarioId, esAprobado);
+        
+        // Transform to include estudiantesInscritos (excluding the creator)
+        return grupos.map(grupo => {
+            // Count students excluding the creator (current user)
+            const estudiantesInscritos = grupo.registro.filter(
+                reg => reg.usuarioId !== Number(usuarioId)
+            ).length;
+            
+            return {
+                id: grupo.id,
+                titulo: grupo.titulo,
+                descripcion: grupo.descripcion,
+                fecha_ini: grupo.fecha_ini,
+                fecha_fin: grupo.fecha_fin,
+                esAprobado: grupo.esAprobado,
+                codigo: grupo.codigo,
+                curso: grupo.curso,
+                estudiantesInscritos
+            };
+        });
     }
 
 };

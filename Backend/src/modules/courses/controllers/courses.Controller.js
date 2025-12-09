@@ -17,6 +17,35 @@ export const getMyCourses = async (req, res) => {
     }
 };
 
+export const getCoursesWithStudentCount = async (req, res) => {
+    try {
+        const cursos = await coursesService.getCoursesWithStudentCount();
+        return res.status(200).json({success: true, data: cursos});
+    } catch (err) {
+        console.error("Error en getCoursesWithStudentCount:", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null
+        });
+    }
+};
+
+export const getCourseWithStudentCount = async (req, res) => {
+    try {
+        const { cursoId } = req.params;
+        const curso = await coursesService.getCourseWithStudentCount(cursoId);
+        return res.status(200).json({success: true, data: curso});
+    } catch (err) {
+        console.error("Error en getCourseWithStudentCount:", err);
+        return res.status(err.status || 500).json({
+            success: false,
+            message: err.message || "Error interno del servidor",
+            data: null
+        });
+    }
+};
+
 export const createTopicWithResource = async (req, res) => {
     try {
         const data = req.body;

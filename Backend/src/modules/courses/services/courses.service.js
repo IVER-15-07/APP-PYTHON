@@ -7,6 +7,55 @@ export const coursesService = {
         return cursos || [];
     },
 
+    async getCoursesWithStudentCount() {
+        const cursos = await coursesRepository.getCoursesWithStudentCount();
+        
+        // Calcular el total de estudiantes por curso (excluyendo a TODOS los profesores)
+        return cursos.map(curso => ({
+            ...curso,
+            totalEstudiantes: curso.grupo.reduce((total, grupo) => {
+                // Contar solo los estudiantes (rol nombre === 'Estudiante')
+                const estudiantesCount = grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length;
+                return total + estudiantesCount;
+            }, 0),
+            grupos: curso.grupo.map(grupo => ({
+                id: grupo.id,
+                titulo: grupo.titulo,
+                estudiantesInscritos: grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length
+            }))
+        }));
+    },
+
+    async getCourseWithStudentCount(cursoId) {
+        const curso = await coursesRepository.getCourseWithStudentCount(parseInt(cursoId));
+        
+        if (!curso) {
+            throw { status: 404, message: 'Curso no encontrado' };
+        }
+
+        return {
+            ...curso,
+            totalEstudiantes: curso.grupo.reduce((total, grupo) => {
+                // Contar solo los estudiantes (rol nombre === 'Estudiante')
+                const estudiantesCount = grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length;
+                return total + estudiantesCount;
+            }, 0),
+            grupos: curso.grupo.map(grupo => ({
+                id: grupo.id,
+                titulo: grupo.titulo,
+                estudiantesInscritos: grupo.registro.filter(
+                    reg => reg.usuario?.rol_usuario?.nombre === 'Estudiante'
+                ).length
+            }))
+        };
+    },
+
     async updateCourse(courseId, data) {
         const nombre = (data?.nombre ?? '').toString().trim();
         const descripcion = (data?.descripcion ?? '').toString().trim();

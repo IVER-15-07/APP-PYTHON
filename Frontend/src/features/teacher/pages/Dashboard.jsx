@@ -30,8 +30,16 @@ const Dashboard = () => {
         startDate: group.fecha_ini,
         endDate: group.fecha_fin,
         isApproved: group.esAprobado,
-        students: 0 // TODO: obtener cantidad de estudiantes del backend
+        students: group.estudiantesInscritos || 0
       }));
+      
+      // eslint-disable-next-line no-console
+      console.log('DEBUG - Grupos:', data.map(g => ({
+        titulo: g.titulo,
+        estudiantesInscritos: g.estudiantesInscritos
+      })));
+      // eslint-disable-next-line no-console
+      console.log('DEBUG - Total estudiantes:', transformedGroups.reduce((s, g) => s + (g.students || 0), 0));
       
       setGroups(transformedGroups);
     } catch (err) {
@@ -45,6 +53,41 @@ const Dashboard = () => {
 
   const totalStudents = groups.reduce((s, g) => s + (g.students || 0), 0);
 
+  // Calcular próximo grupo por iniciar
+  const getNextGroup = () => {
+    if (groups.length === 0) return 'Sin grupos';
+    
+    const now = new Date();
+    
+    // Filtrar grupos aprobados que aún no han iniciado o están por iniciar pronto
+    const upcomingGroups = groups
+      .filter(g => g.isApproved)
+      .map(group => ({
+        ...group,
+        startDate: new Date(group.startDate)
+      }))
+      .sort((a, b) => a.startDate - b.startDate);
+    
+    if (upcomingGroups.length === 0) return 'Sin grupos';
+    
+    // Tomar el grupo más cercano por fecha de inicio
+    const nextGroup = upcomingGroups[0];
+    const diffMs = nextGroup.startDate - now;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    const groupName = nextGroup.title.length > 20 
+      ? nextGroup.title.substring(0, 20) + '...' 
+      : nextGroup.title;
+    
+    if (diffDays < 0) return `${groupName} - En curso`;
+    if (diffDays === 0) return `${groupName} - Hoy`;
+    if (diffDays === 1) return `${groupName} - Mañana`;
+    if (diffDays < 7) return `${groupName} - En ${diffDays} días`;
+    if (diffDays < 30) return `${groupName} - En ${Math.floor(diffDays / 7)} semanas`;
+    return `${groupName} - En ${Math.floor(diffDays / 30)} meses`;
+  };
+
+  const nextGroupInfo = getNextGroup();
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 lg:p-10">
@@ -69,7 +112,7 @@ const Dashboard = () => {
         {/* Estadísticas rápidas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard label="Grupos" value={groups.length} variant="default" icon={BookOpen} />
-          <StatCard label="Estudiantes en total" value="---" variant="primary" icon={Users} />
+          <StatCard label="Estudiantes en total" value={totalStudents} variant="primary" icon={Users} />
           <StatCard label="Grupos aprobados" value={groups.filter(g => g.isApproved).length} variant="secondary" icon={Activity} />
           <StatCard label="Grupos pendientes" value={groups.filter(g => !g.isApproved).length} variant="accent" icon={Target} />
         </div>
@@ -110,7 +153,7 @@ const Dashboard = () => {
           <DashboardSummary
             coursesCount={groups.length}
             studentsCount={totalStudents}
-            lastActivity="hace 2 días"
+            nextGroup={nextGroupInfo}
           />
         </div>
       </div>

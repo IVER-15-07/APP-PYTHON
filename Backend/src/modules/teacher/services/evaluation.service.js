@@ -35,11 +35,13 @@ const calculateScoreForQuestion = (question, answerPayload) => {
 
 export const evaluationService = {
   createTemplate: async (payload) => {
-    // payload expected shape: { evaluacion, descripcion, fecha_ini, fecha_fin, topicoId, tipo_evaluacionId, preguntas: [{ pregunta, parametroId, valor, respuestas:[{respuesta,puntaje}] }] }
-    const { preguntas = [], ...rest } = payload;
+    // payload expected shape: { evaluacion, descripcion, fecha_ini, fecha_fin, topicoId, cursoId, preguntas: [{ pregunta, parametroId, valor, respuestas:[{respuesta,puntaje}] }], published }
+    const { preguntas = [], published, ...rest } = payload;
 
-    const evaluacionData = {
+    // Build create data but only include `published` if explicitly provided.
+    const base = {
       ...rest,
+      tipo_evaluacionId: rest.tipo_evaluacionId || null,
       evaluacion_pregunta: {
         create: preguntas.map((q) => ({
           pregunta: {
@@ -54,7 +56,11 @@ export const evaluationService = {
       }
     };
 
-    const created = await evaluationRepository.createEvaluation(evaluacionData);
+    if (typeof published !== 'undefined') {
+      base.published = published;
+    }
+
+    const created = await evaluationRepository.createEvaluation(base);
     return created;
   },
 

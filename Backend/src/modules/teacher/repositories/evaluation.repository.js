@@ -25,6 +25,21 @@ export const evaluationRepository = {
   getParametros: () => prisma.parametro.findMany(),
 
   getParametroById: (id) => prisma.parametro.findUnique({ where: { id: Number(id) } }),
+  listEvaluations: (filter = {}) => {
+    const where = {};
+    if (filter.cursoId) where.cursoId = Number(filter.cursoId);
+    if (filter.topicoId) where.topicoId = Number(filter.topicoId);
+    if (typeof filter.published !== 'undefined') where.published = Boolean(filter.published);
+    return prisma.evaluacion.findMany({
+      where,
+      include: {
+        curso: true,
+        topico: true,
+        evaluacion_pregunta: { include: { pregunta: { include: { respuesta: true, parametro: true } } } }
+      },
+      orderBy: { id: 'desc' }
+    });
+  },
 };
 
 export default evaluationRepository;

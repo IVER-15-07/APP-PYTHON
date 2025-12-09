@@ -12,6 +12,7 @@ import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
 import EvaluationEditor from '../features/teacher/components/EvaluationEditor';
+import MyEvaluations from '../features/teacher/pages/MyEvaluations';
 import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School, Compass } from 'lucide-react';
 
 
@@ -20,7 +21,7 @@ const VentanaProfesor = () => {
     const [user] = useState(authService.obtenerUsuarioActual());
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
-    const [evalModalOpen, setEvalModalOpen] = useState(false);
+    
 
     const [professorVariant, setProfessorVariant] = useState('ejecutor'); // 'ejecutor' | 'editor'
     const [requestLoading, setRequestLoading] = useState(false);
@@ -109,6 +110,11 @@ const VentanaProfesor = () => {
             label: 'Mis tópicos' 
         },
         { 
+            path: '/profesor/evaluaciones', 
+            icon: <BookOpen className="w-5 h-5" />, 
+            label: 'Mis Evaluaciones' 
+        },
+        { 
             path: '/profesor/explorar', 
             icon: <Compass className="w-5 h-5" />, 
             label: 'Explorar Tópicos' 
@@ -139,7 +145,6 @@ const VentanaProfesor = () => {
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
                 onLogout={handleLogout}
-                onCreateEvaluation={() => setEvalModalOpen(true)}
                 brand={{ 
                     icon: <Code2 className="w-6 h-6" />, 
                     name: "PyLearn" 
@@ -161,6 +166,7 @@ const VentanaProfesor = () => {
                     <Route path="cursos/:id" element={<CourseDetail />} />
                     <Route path="grupos" element={<Group/>} />
                     <Route path="topicos" element={<Topic/>} /> 
+                    <Route path="evaluaciones" element={<MyEvaluations/>} />
                     <Route path="ver-topico/:id" element={<TopicViewer role="teacher" />} />
                     <Route path="explorar" element={<ExploreTopics />} />
                     {/* <Route path="perfil" element={<Perfil />} /> */}
@@ -291,17 +297,6 @@ const VentanaProfesor = () => {
                 )}
             </Modal>
 
-            {/* Modal para crear/editar una evaluación */}
-            <Modal
-                open={evalModalOpen}
-                onClose={() => setEvalModalOpen(false)}
-                title="Crear evaluación"
-                size="xl"
-            >
-                <div className="p-4">
-                    <EvaluationEditor onSuccess={() => setEvalModalOpen(false)} />
-                </div>
-            </Modal>
         </div>
     );
 };

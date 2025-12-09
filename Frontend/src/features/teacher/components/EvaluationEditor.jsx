@@ -8,6 +8,12 @@ import { coursesService } from '../../../../services/courses.api';
 import { topicsService } from '../../../../services/topic.api';
 
 const EvaluationEditor = ({ courses: initialCourses = [], topics: initialTopics = [], parameterTypes: initialParameterTypes = [], onSuccess, evaluationId = null }) => {
+  const [saveMode, setSaveMode] = useState('draft'); // 'draft' o 'publish'
+  const [showPreview, setShowPreview] = useState(false);
+  const [parameterTypes, setParameterTypes] = useState(initialParameterTypes || []);
+  const [courses, setCourses] = useState(initialCourses || []);
+  const [topics, setTopics] = useState(initialTopics || []);
+
   const {
     form,
     loading,
@@ -24,13 +30,7 @@ const EvaluationEditor = ({ courses: initialCourses = [], topics: initialTopics 
     removeOption,
     loadForEdit,
     submitForm
-  } = useEvaluationForm(onSuccess);
-
-  const [saveMode, setSaveMode] = useState('draft'); // 'draft' o 'publish'
-  const [showPreview, setShowPreview] = useState(false);
-  const [parameterTypes, setParameterTypes] = useState(initialParameterTypes || []);
-  const [courses, setCourses] = useState(initialCourses || []);
-  const [topics, setTopics] = useState(initialTopics || []);
+  } = useEvaluationForm(onSuccess, parameterTypes);
 
   useEffect(() => {
     const fetchMeta = async () => {
@@ -106,7 +106,57 @@ const EvaluationEditor = ({ courses: initialCourses = [], topics: initialTopics 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main form */}
           <div className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            {showPreview ? (
+              <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+                <h2 className="text-2xl font-semibold">Vista previa de la evaluación</h2>
+                <div className="mt-4">
+                  <h3 className="text-lg font-medium">{form.evaluacion || 'Sin título'}</h3>
+                  <p className="text-sm text-gray-400 mt-2">{form.descripcion || 'Sin descripción'}</p>
+                  <div className="mt-3 text-sm text-gray-400">
+                    <div><strong>Curso:</strong> {selectedCourse ? selectedCourse.nombre : '—'}</div>
+                    <div><strong>Tópico:</strong> {selectedTopics.length ? selectedTopics.map(t=>t.nombre).join(', ') : '—'}</div>
+                    <div><strong>Fecha inicio:</strong> {form.fecha_ini ? new Date(form.fecha_ini).toLocaleString() : '—'}</div>
+                    <div><strong>Fecha fin:</strong> {form.fecha_fin ? new Date(form.fecha_fin).toLocaleString() : '—'}</div>
+                    <div><strong>Puntaje total:</strong> {form.puntaje_evaluacion}</div>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {form.preguntas.length === 0 && (
+                    <p className="text-sm text-gray-400">No hay preguntas añadidas.</p>
+                  )}
+
+                  {form.preguntas.map((q, idx) => (
+                    <div key={idx} className="bg-gray-900 border border-gray-700 rounded p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">{idx + 1}. {q.pregunta || 'Pregunta sin texto'}</div>
+                          <div className="text-xs text-gray-400">Tipo: {parameterTypes.find(p => p.id === q.parametroId)?.nombre || q.parametroId}</div>
+                        </div>
+                        <div className="text-sm text-green-300">{q.valor} pts</div>
+                      </div>
+
+                      {q.respuestas && q.respuestas.length > 0 && (
+                        <ul className="mt-3 space-y-2">
+                          {q.respuestas.map((opt, oi) => (
+                            <li key={oi} className="flex items-center gap-3 text-sm">
+                              <span className={"inline-block w-3 h-3 rounded-full " + (opt.esCorrecta ? 'bg-green-400' : 'bg-gray-600')} />
+                              <span className="flex-1 text-gray-200">{opt.respuesta || '(vacía)'}</span>
+                              <span className="text-xs text-gray-400">{opt.puntaje} pts</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button onClick={() => setShowPreview(false)} className="px-4 py-2 bg-gray-700 rounded text-white">Cerrar vista previa</button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-800 rounded-lg p-6 space-y-6">
               {/* Título */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -233,6 +283,8 @@ const EvaluationEditor = ({ courses: initialCourses = [], topics: initialTopics 
                 />
               </div>
             </div>
+            )}
+
           </div>
 
           {/* Sidebar */}

@@ -7,6 +7,9 @@ const router = express.Router();
 // Crear plantilla (profesor)
 router.post('/evaluations', evaluationController.crearPlantilla);
 
+// Listar plantillas (profesor)
+router.get('/evaluations', verifyToken, evaluationController.listarPlantillas);
+
 // Obtener plantilla
 router.get('/evaluations/:id', verifyToken, evaluationController.obtenerPlantilla);
 

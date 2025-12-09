@@ -1,16 +1,22 @@
 import admin from "firebase-admin";
-import fs from "fs";
 
-const servicePath = new URL("./login-ac512-firebase-adminsdk-fbsvc-14457b84d6.json", import.meta.url);
-const serviceAccount = JSON.parse(fs.readFileSync(servicePath, "utf8"));
 
-if (!admin.apps.length) {
+const rawServiceAccount = process.env.FIREBASE_CREDENTIALS;
+
+if (!rawServiceAccount) {
+  console.error(" ERROR: No se encontró la variable de entorno FIREBASE_CREDENTIALS");
+  process.exit(1);
+}
+
+try {
+  const serviceAccount = JSON.parse(rawServiceAccount);
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Firebase Admin inicializado para project_id:", serviceAccount.project_id);
-} else {
-  console.log("Firebase Admin ya inicializado. apps.length =", admin.apps.length);
+  console.log(" Firebase Admin inicializado correctamente desde variable de entorno.");
+} catch (e) {
+  console.error("ERROR: No se pudo parsear el JSON de Firebase desde FIREBASE_CREDENTIALS", e);
+  process.exit(1);
 }
 
 export default admin;

@@ -195,8 +195,10 @@ CREATE TABLE "Evaluacion" (
     "puntaje_evaluacion" INTEGER NOT NULL,
     "fecha_ini" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "fecha_fin" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "published" BOOLEAN NOT NULL DEFAULT false,
+    "cursoId" INTEGER NOT NULL,
     "topicoId" INTEGER NOT NULL,
-    "tipo_evaluacionId" INTEGER NOT NULL,
+    "tipo_evaluacionId" INTEGER,
 
     CONSTRAINT "Evaluacion_pkey" PRIMARY KEY ("id")
 );
@@ -223,6 +225,7 @@ CREATE TABLE "Pregunta" (
     "id" SERIAL NOT NULL,
     "pregunta" TEXT NOT NULL,
     "parametroId" INTEGER NOT NULL,
+    "valor" INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT "Pregunta_pkey" PRIMARY KEY ("id")
 );
@@ -382,10 +385,13 @@ ALTER TABLE "ComentarioVisto" ADD CONSTRAINT "ComentarioVisto_usuarioId_fkey" FO
 ALTER TABLE "Recursos" ADD CONSTRAINT "Recursos_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_cursoId_fkey" FOREIGN KEY ("cursoId") REFERENCES "Curso"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_topicoId_fkey" FOREIGN KEY ("topicoId") REFERENCES "Topico"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_tipo_evaluacionId_fkey" FOREIGN KEY ("tipo_evaluacionId") REFERENCES "Tipo_evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Evaluacion" ADD CONSTRAINT "Evaluacion_tipo_evaluacionId_fkey" FOREIGN KEY ("tipo_evaluacionId") REFERENCES "Tipo_evaluacion"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Evaluacion_pregunta" ADD CONSTRAINT "Evaluacion_pregunta_evaluacionId_fkey" FOREIGN KEY ("evaluacionId") REFERENCES "Evaluacion"("id") ON DELETE CASCADE ON UPDATE CASCADE;

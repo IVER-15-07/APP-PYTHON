@@ -157,3 +157,67 @@
 .react-datepicker-popper[data-placement^="top"] {
   margin-bottom: 8px !important;
 }
+
+/* Selector de tiempo */
+.react-datepicker__time-container {
+  border-left: 1px solid rgb(71 85 105 / 0.5) !important;
+  background-color: rgb(15 23 42 / 0.95) !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time {
+  background: transparent !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box {
+  width: 100% !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgb(71 85 105) rgb(15 23 42) !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-track {
+  background: rgb(15 23 42) !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-thumb {
+  background: rgb(71 85 105) !important;
+  border-radius: 3px !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item {
+  color: rgb(203 213 225) !important;
+  padding: 0.5rem !important;
+  transition: all 0.15s !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover {
+  background-color: rgb(71 85 105 / 0.5) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background: linear-gradient(135deg, rgb(16 185 129), rgb(5 150 105)) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected:hover {
+  background: linear-gradient(135deg, rgb(5 150 105), rgb(4 120 87)) !important;
+}
+
+.react-datepicker__header--time {
+  background-color: rgb(30 41 59 / 0.8) !important;
+  border-bottom: 1px solid rgb(71 85 105 / 0.5) !important;
+}
+
+.react-datepicker-time__header {
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}

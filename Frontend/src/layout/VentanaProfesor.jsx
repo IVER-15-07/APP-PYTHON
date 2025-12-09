@@ -79,8 +79,6 @@ const VentanaProfesor = () => {
             }, 1400);
             setPendingRequest({ rol_usuarioId: desiredRolId, estado: 'pendiente' });
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('Enviar solicitud error:', err);
             setRequestError(err.message || 'Error al enviar la solicitud');
         } finally {
             setRequestLoading(false);

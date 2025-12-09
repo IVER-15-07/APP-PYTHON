@@ -33,18 +33,8 @@ const Dashboard = () => {
         students: group.estudiantesInscritos || 0
       }));
       
-      // eslint-disable-next-line no-console
-      console.log('DEBUG - Grupos:', data.map(g => ({
-        titulo: g.titulo,
-        estudiantesInscritos: g.estudiantesInscritos
-      })));
-      // eslint-disable-next-line no-console
-      console.log('DEBUG - Total estudiantes:', transformedGroups.reduce((s, g) => s + (g.students || 0), 0));
-      
       setGroups(transformedGroups);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Error al cargar grupos:', err);
+    } catch {
       setGroups([]);
     } finally {
       setLoading(false);

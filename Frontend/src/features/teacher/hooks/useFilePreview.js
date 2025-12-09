@@ -157,13 +157,9 @@ export const useFilePreview = () => {
                 const url = URL.createObjectURL(file);
                 setPdfPreview(url);
             }
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Error al procesar archivo:', error);
-        }
-    };
-
-    const handleImageChange = (file) => {
+            } catch {
+            }
+        };    const handleImageChange = (file) => {
         if (!file) return;
 
         setSelectedImage(file);

@@ -36,10 +36,7 @@ const Group = () => {
     const fetchCourses = async () => {
         try {
             const courseResponse = await coursesService.getCourses();
-            // eslint-disable-next-line no-console
-            console.log('Courses Response:', courseResponse);
             
-            // El backend retorna { success: true, data: [...] }
             const courseData = courseResponse?.data || [];
             
             setCourses(courseData);
@@ -48,9 +45,8 @@ const Group = () => {
             if (courseData.length > 0) {
                 setForm(prev => ({ ...prev, courseId: courseData[0].id }));
             }
-        } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('Error al cargar cursos:', err);
+        } catch {
+            // Error al cargar cursos
         }
     };
 
@@ -74,9 +70,8 @@ const Group = () => {
             }));
 
             setGroups(transformedGroups);
-        } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error(err);
+        } catch {
+            // Error al cargar grupos
         }
     };
 
@@ -90,9 +85,8 @@ const Group = () => {
             await navigator.clipboard.writeText(text);
             setCopied(id);
             setTimeout(() => setCopied(null), 2000);
-        } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('No se pudo copiar', err);
+        } catch {
+            // Error al copiar
         }
     };
 
@@ -196,9 +190,7 @@ const Group = () => {
                 }));
             
             setStudents(studentList);
-        } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error('Error al cargar estudiantes:', err);
+        } catch {
             setStudents([]);
         } finally {
             setLoadingStudents(false);

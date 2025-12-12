@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Plus, Trash2, ChevronUp, ChevronDown, AlertCircle } from 'lucide-react';
 import PropTypes from 'prop-types';
 
@@ -18,13 +18,7 @@ const QuestionBuilder = ({
     return type?.nombre || 'Desconocido';
   };
 
-  const questionTypeNames = {
-    1: 'single',
-    2: 'vf',
-    3: 'open',
-    4: 'multiple',
-    5: 'numeric'
-  };
+
 
   const renderQuestionPreview = (question, index) => {
     return (

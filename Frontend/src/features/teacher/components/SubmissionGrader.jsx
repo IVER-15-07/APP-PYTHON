@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle, Save, ChevronLeft, ChevronRight, Loader, Send } from 'lucide-react';
+import { AlertCircle, CheckCircle, Save, ChevronLeft, ChevronRight, Loader } from 'lucide-react';
 import PropTypes from 'prop-types';
 import evaluationsService from '../../../../services/evaluations.api';
 

@@ -77,7 +77,7 @@ export const useEvaluationForm = (onSuccess, parameterTypes = []) => {
     });
 
     return errors;
-  }, [form]);
+  }, [form, getParametroIdsByName] );
 
   const handleChange = (e) => {
     const { name, value } = e.target;

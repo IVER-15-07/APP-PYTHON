@@ -11,7 +11,7 @@ const EvaluationTake = ({ evaluationId, onSuccess, onError }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [fetchError, setFetchError] = useState('');
 
-  const { answers, handleAnswer, handleMultipleAnswer, getAnswerPayload, setLoading: setTakeLoading } = useEvaluationTake();
+  const { answers, handleAnswer, handleMultipleAnswer, getAnswerPayload } = useEvaluationTake();
 
   useEffect(() => {
     const loadEvaluation = async () => {
@@ -27,7 +27,7 @@ const EvaluationTake = ({ evaluationId, onSuccess, onError }) => {
     };
 
     loadEvaluation();
-  }, [evaluationId]);
+  }, [evaluationId, onError]);
 
   if (loading) {
     return (

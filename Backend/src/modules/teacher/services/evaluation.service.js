@@ -1,5 +1,4 @@
 import evaluationRepository from '../repositories/evaluation.repository.js';
-import prisma from '../../../config/database.js';
 
 const calculateScoreForQuestion = (question, answerPayload) => {
   

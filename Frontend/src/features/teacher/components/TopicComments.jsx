@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { MessageSquare, Send, Reply } from 'lucide-react';
 import { authService } from '../../../../services/auth.api';
 import { commentService } from '../../../../services/comments';
-import { 
-  onNewComment, 
-  onNewReply, 
-  joinTopicRoom, 
-  leaveTopicRoom 
+import {
+  onNewComment,
+  onNewReply,
+  joinTopicRoom,
+  leaveTopicRoom
 } from '../../../../services/socketComment.service';
 
 const TopicComments = ({ topicId }) => {
@@ -29,7 +29,9 @@ const TopicComments = ({ topicId }) => {
       try {
         const response = await commentService.getComentarios(topicId);
         const commentsData = response?.data || [];
-        const sortedComments = commentsData.sort((a, b) => new Date(b.fecha_pub) - new Date(a.fecha_pub));
+        const sortedComments = commentsData.sort(
+          (a, b) => new Date(b.fecha_pub) - new Date(a.fecha_pub)
+        );
         setComments(sortedComments);
       } catch {
         setError('No se pudieron cargar los comentarios');
@@ -41,27 +43,39 @@ const TopicComments = ({ topicId }) => {
     fetchComments();
   }, [topicId]);
 
-  // WebSocket: unirse a la sala del tópico y escuchar eventos en tiempo real
+  // WebSocket: unirse a la sala y escuchar eventos
   useEffect(() => {
     if (!user?.id) return;
 
     joinTopicRoom(topicId);
 
-    // Escuchar nuevos comentarios
-    const unsubNewComment = onNewComment((newCommentData) => {
-      setComments((prev) => [newCommentData, ...prev]);
+    // NUEVO COMENTARIO
+    const unsubNewComment = onNewComment((data) => {
+      const fixed = {
+        ...data,
+        usuario: data.usuario || {
+          nombre: user.nombre,
+          profilePicture: user.profilePicture,
+        }
+      };
+      setComments(prev => [fixed, ...prev]);
     });
 
-    // Escuchar nuevas respuestas
-    const unsubNewReply = onNewReply((newReplyData) => {
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment.id === newReplyData.comentarioId
-            ? { 
-                ...comment, 
-                respuestas: [...(comment.respuestas || []), newReplyData] 
-              }
-            : comment
+    // NUEVA RESPUESTA
+    const unsubNewReply = onNewReply((data) => {
+      const fixed = {
+        ...data,
+        usuario: data.usuario || {
+          nombre: user.nombre,
+          profilePicture: user.profilePicture,
+        }
+      };
+
+      setComments(prev =>
+        prev.map(c =>
+          c.id === fixed.comentarioId
+            ? { ...c, respuestas: [...(c.respuestas || []), fixed] }
+            : c
         )
       );
     });
@@ -71,8 +85,9 @@ const TopicComments = ({ topicId }) => {
       unsubNewComment && unsubNewComment();
       unsubNewReply && unsubNewReply();
     };
-  }, [topicId, user?.id]);
+  }, [topicId, user?.id, user?.nombre, user?.profilePicture]);
 
+  // AGREGAR COMENTARIO (corregido)
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim() || !user?.id) return;
@@ -81,28 +96,13 @@ const TopicComments = ({ topicId }) => {
     setError(null);
 
     try {
-      const commentData = {
+      await commentService.crearComentario({
         contenido: newComment.trim(),
         usuarioId: user.id,
         topicoId: Number(topicId),
-      };
+      });
 
-      const response = await commentService.crearComentario(commentData);
-
-      const newCommentObj = {
-        id: response.data.id,
-        contenido: newComment.trim(),
-        fecha_pub: new Date().toISOString(),
-        topicoId: Number(topicId),
-        usuarioId: user.id,
-        usuario: {
-          nombre: user.nombre,
-          profilePicture: user.profilePicture,
-        },
-        respuestas: [],
-      };
-
-      setComments((prev) => [newCommentObj, ...prev]);
+      // No agregamos nada al estado → lo hará el WebSocket
       setNewComment('');
     } catch (err) {
       setError(err.message || 'Error al crear el comentario');
@@ -111,6 +111,7 @@ const TopicComments = ({ topicId }) => {
     }
   };
 
+  // AGREGAR RESPUESTA (corregido)
   const handleReply = async (commentId) => {
     if (!replyText.trim() || !user?.id) return;
 
@@ -118,33 +119,13 @@ const TopicComments = ({ topicId }) => {
     setError(null);
 
     try {
-      const replyData = {
+      await commentService.responderComentario({
         contenido: replyText.trim(),
         usuarioId: user.id,
         comentarioId: commentId,
-      };
+      });
 
-      const response = await commentService.responderComentario(replyData);
-
-      const newReply = {
-        id: response.data.id,
-        contenido: replyText.trim(),
-        fecha_pub: new Date().toISOString(),
-        comentarioId: commentId,
-        usuario: {
-          nombre: user.nombre,
-          profilePicture: user.profilePicture,
-        },
-      };
-
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, respuestas: [...(comment.respuestas || []), newReply] }
-            : comment
-        )
-      );
-
+      // NO agregamos manual → WebSocket lo hace
       setReplyText('');
       setReplyingTo(null);
     } catch (err) {
@@ -174,7 +155,7 @@ const TopicComments = ({ topicId }) => {
     });
   };
 
-  const getInitials = (name) =>
+  const getInitials = (name = '') =>
     name
       .split(' ')
       .map((word) => word[0])
@@ -211,20 +192,25 @@ const TopicComments = ({ topicId }) => {
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Escribe un comentario o nota sobre este tópico..."
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all"
+                placeholder="Escribe un comentario..."
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
                 rows="3"
                 disabled={submitting}
               />
-              {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+
+              {error && (
+                <p className="text-red-400 text-xs mt-1">{error}</p>
+              )}
+
               <div className="flex items-center justify-between mt-2">
                 <span className="text-xs text-slate-500">
                   {newComment.length} caracteres
                 </span>
+
                 <button
                   type="submit"
                   disabled={!newComment.trim() || submitting}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 hover:text-purple-300 rounded-lg border border-purple-500/30 hover:border-purple-500/50 transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-lg"
                 >
                   <Send className="w-4 h-4" />
                   {submitting ? 'Enviando...' : 'Comentar'}
@@ -246,16 +232,12 @@ const TopicComments = ({ topicId }) => {
             <div className="text-center py-8">
               <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-3" />
               <p className="text-slate-500 text-sm">Aún no hay comentarios</p>
-              <p className="text-slate-600 text-xs mt-1">Sé el primero en agregar una nota</p>
             </div>
           ) : (
             comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="flex items-start gap-3 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30 hover:border-slate-600/50 transition-all"
-              >
+              <div key={comment.id} className="flex items-start gap-3 p-4 bg-slate-800/30 rounded-xl">
                 <div className="flex-shrink-0">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-semibold text-xs overflow-hidden">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-semibold text-xs">
                     {comment.usuario?.profilePicture ? (
                       <img
                         src={comment.usuario.profilePicture}
@@ -263,37 +245,24 @@ const TopicComments = ({ topicId }) => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      getInitials(comment.usuario?.nombre || 'Usuario')
+                      getInitials(comment.usuario?.nombre || 'U')
                     )}
                   </div>
                 </div>
 
-                <div className="flex-1 min-w-0">
+                <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-white">
-                        {comment.usuario?.nombre || 'Usuario'}
-                      </span>
-                      {comment.usuarioId === user?.id && (
-                        <span className="text-xs px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-full">
-                          Tú
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-slate-500">
-                      {formatDate(comment.fecha_pub)}
+                    <span className="text-sm font-semibold text-white">
+                      {comment.usuario?.nombre || 'Usuario'}
                     </span>
+                    <span className="text-xs text-slate-500">{formatDate(comment.fecha_pub)}</span>
                   </div>
 
-                  <p className="text-slate-300 text-sm whitespace-pre-wrap break-words">
-                    {comment.contenido}
-                  </p>
+                  <p className="text-slate-300 text-sm">{comment.contenido}</p>
 
                   <button
-                    onClick={() =>
-                      setReplyingTo(replyingTo === comment.id ? null : comment.id)
-                    }
-                    className="flex items-center gap-1 mt-2 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                    className="flex items-center gap-1 mt-2 text-xs text-purple-400"
                   >
                     <Reply className="w-3 h-3" />
                     Responder
@@ -305,65 +274,49 @@ const TopicComments = ({ topicId }) => {
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="Escribe tu respuesta..."
-                        className="w-full px-3 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all"
+                        className="w-full px-3 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-white"
                         rows="2"
                         disabled={submitting}
                       />
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleReply(comment.id)}
-                          disabled={!replyText.trim() || submitting}
-                          className="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 hover:text-purple-300 rounded-lg border border-purple-500/30 hover:border-purple-500/50 transition-all text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {submitting ? 'Enviando...' : 'Responder'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setReplyingTo(null);
-                            setReplyText('');
-                          }}
-                          className="px-3 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-all text-xs"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
+
+                      <button
+                        onClick={() => handleReply(comment.id)}
+                        disabled={!replyText.trim() || submitting}
+                        className="px-3 py-1.5 bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/30 text-xs font-medium"
+                      >
+                        {submitting ? 'Enviando...' : 'Responder'}
+                      </button>
                     </div>
                   )}
 
-                  {comment.respuestas && comment.respuestas.length > 0 && (
-                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-slate-700/50">
+                  {comment.respuestas?.length > 0 && (
+                    <div className="mt-3 space-y-2 pl-4 border-l border-slate-700/50">
                       {comment.respuestas.map((reply) => (
                         <div key={reply.id} className="flex items-start gap-2">
-                          <div className="flex-shrink-0">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-xs overflow-hidden">
-                              {reply.usuario?.profilePicture ? (
-                                <img
-                                  src={reply.usuario.profilePicture}
-                                  alt={reply.usuario.nombre}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                getInitials(reply.usuario?.nombre || 'Usuario')
-                              )}
-                            </div>
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xs">
+                            {reply.usuario?.profilePicture ? (
+                              <img
+                                src={reply.usuario.profilePicture}
+                                alt={reply.usuario.nombre}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              getInitials(reply.usuario?.nombre || 'U')
+                            )}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-xs font-semibold text-white">
-                                {reply.usuario?.nombre || 'Usuario'}
-                              </span>
-                              <span className="text-xs text-slate-500">
-                                {formatDate(reply.fecha_pub)}
-                              </span>
-                            </div>
-                            <p className="text-slate-300 text-xs whitespace-pre-wrap break-words">
-                              {reply.contenido}
-                            </p>
+
+                          <div>
+                            <span className="text-xs font-semibold text-white">
+                              {reply.usuario?.nombre}
+                            </span>
+
+                            <p className="text-slate-300 text-xs">{reply.contenido}</p>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
+
                 </div>
               </div>
             ))

@@ -158,6 +158,7 @@ export const useFilePreview = () => {
                 setPdfPreview(url);
             }
             } catch {
+            clearPreviews();
             }
         };    const handleImageChange = (file) => {
         if (!file) return;

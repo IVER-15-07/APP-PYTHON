@@ -15,6 +15,7 @@ const Home = () => {
       setCopiado(true)
       setTimeout(() => setCopiado(false), 1500)
     } catch {
+      setCopiado(false)
     }
   }
 

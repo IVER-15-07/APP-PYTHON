@@ -61,33 +61,40 @@ describe('solicitudService.listMyCreatedGroups', () => {
   beforeEach(() => jest.clearAllMocks());
 
   test('filtra por esAprobado=true cuando estado="aprobado"', async () => {
-    const mockGroups = [{ id: 1, esAprobado: true }];
+    const mockGroups = [{ id: 1, esAprobado: true, registro: [] }];
     teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
     const res = await solicitudService.listMyCreatedGroups(1, 'aprobado');
 
     expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, true);
-    expect(res).toEqual(mockGroups);
+    expect(res).toEqual([
+      expect.objectContaining({ id: 1, esAprobado: true, estudiantesInscritos: 0 }),
+    ]);
   });
 
   test('filtra por esAprobado=false cuando estado="pendiente"', async () => {
-    const mockGroups = [{ id: 2, esAprobado: false }];
+    const mockGroups = [{ id: 2, esAprobado: false, registro: [] }];
     teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
     const res = await solicitudService.listMyCreatedGroups(1, 'pendiente');
 
     expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, false);
-    expect(res).toEqual(mockGroups);
+    expect(res).toEqual([
+      expect.objectContaining({ id: 2, esAprobado: false, estudiantesInscritos: 0 }),
+    ]);
   });
 
   test('no filtra cuando estado no es "aprobado" ni "pendiente"', async () => {
-    const mockGroups = [{ id: 3 }, { id: 4 }];
+    const mockGroups = [{ id: 3, registro: [] }, { id: 4, registro: [] }];
     teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
     const res = await solicitudService.listMyCreatedGroups(1, 'otro');
 
     expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, null);
-    expect(res).toEqual(mockGroups);
+    expect(res).toEqual([
+      expect.objectContaining({ id: 3, estudiantesInscritos: 0 }),
+      expect.objectContaining({ id: 4, estudiantesInscritos: 0 }),
+    ]);
   });
 
   test('retorna vacío si el repo devuelve []', async () => {

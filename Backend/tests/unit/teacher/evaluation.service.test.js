@@ -8,6 +8,16 @@ describe("evaluationService", () => {
     jest.clearAllMocks();
   });
 
+  beforeEach(() => {
+    // Aseguramos que getParametros siempre esté mockeado para evitar errores
+    evaluationRepository.getParametros = jest.fn().mockResolvedValue([
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+      { id: 4 },
+    ]);
+  });
+
   describe("createTemplate", () => {
     test("debería crear una plantilla de evaluación correctamente", async () => {
       const payload = {

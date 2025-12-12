@@ -205,36 +205,43 @@ describe("solicitudService", () => {
     beforeEach(() => jest.clearAllMocks());
 
     test('filtra por esAprobado=true cuando estado="aprobado"', async () => {
-      const mockGroups = [{ id: 1, titulo: 'Grupo 1', esAprobado: true }];
+      const mockGroups = [{ id: 1, titulo: 'Grupo 1', esAprobado: true, registro: [] }];
       teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
       const result = await solicitudService.listMyCreatedGroups(1, 'aprobado');
 
       expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, true);
-      expect(result).toEqual(mockGroups);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 1, titulo: 'Grupo 1', esAprobado: true, estudiantesInscritos: 0 }),
+      ]);
     });
 
     test('filtra por esAprobado=false cuando estado="pendiente"', async () => {
-      const mockGroups = [{ id: 2, titulo: 'Grupo 2', esAprobado: false }];
+      const mockGroups = [{ id: 2, titulo: 'Grupo 2', esAprobado: false, registro: [] }];
       teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
       const result = await solicitudService.listMyCreatedGroups(1, 'pendiente');
 
       expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, false);
-      expect(result).toEqual(mockGroups);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 2, titulo: 'Grupo 2', esAprobado: false, estudiantesInscritos: 0 }),
+      ]);
     });
 
     test('no filtra (pasa null) cuando estado no es "aprobado" ni "pendiente"', async () => {
       const mockGroups = [
-        { id: 3, esAprobado: true },
-        { id: 4, esAprobado: false },
+        { id: 3, esAprobado: true, registro: [] },
+        { id: 4, esAprobado: false, registro: [] },
       ];
       teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
       const result = await solicitudService.listMyCreatedGroups(1, 'todos');
 
       expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(1, null);
-      expect(result).toEqual(mockGroups);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 3, estudiantesInscritos: 0 }),
+        expect.objectContaining({ id: 4, estudiantesInscritos: 0 }),
+      ]);
     });
 
     test('retorna array vacío si no hay grupos', async () => {
@@ -246,13 +253,16 @@ describe("solicitudService", () => {
     });
 
     test('estado undefined devuelve todos (esAprobado=null)', async () => {
-      const mockGroups = [{ id: 5 }, { id: 6 }];
+      const mockGroups = [{ id: 5, registro: [] }, { id: 6, registro: [] }];
       teamRepository.listCreatedBy.mockResolvedValue(mockGroups);
 
       const result = await solicitudService.listMyCreatedGroups(3);
 
       expect(teamRepository.listCreatedBy).toHaveBeenCalledWith(3, null);
-      expect(result).toEqual(mockGroups);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 5, estudiantesInscritos: 0 }),
+        expect.objectContaining({ id: 6, estudiantesInscritos: 0 }),
+      ]);
     });
 
 

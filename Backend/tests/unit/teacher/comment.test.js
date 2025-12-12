@@ -1,138 +1,85 @@
+
 import { commentService } from "../../../src/modules/teacher/services/comment.service.js";
 import { commentRepository } from "../../../src/modules/teacher/repositories/comment.repository.js";
+import { getIO } from "../../../src/websocket/socket.config.js";
 
 jest.mock("../../../src/modules/teacher/repositories/comment.repository.js");
+jest.mock("../../../src/websocket/socket.config.js", () => ({
+  getIO: jest.fn(),
+}));
 
-describe("commentService", () => {
+describe("commentService (websocket emissions)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("crearComentario", () => {
-    it("crea comentario con datos válidos", async () => {
-      const input = { contenido: "Hola", usuarioId: 1, topicoId: 2 };
-      const created = { id: 10, ...input, fecha: new Date().toISOString() };
-      commentRepository.createComment.mockResolvedValue(created);
+  test("crearComentario -> guarda y emite 'new_comment' a la sala del tópico", async () => {
+    const input = { contenido: "Hola", usuarioId: 1, topicoId: 2 };
+    const nuevoComentario = { id: 100, ...input, fecha_pub: new Date().toISOString() };
 
-      const result = await commentService.crearComentario(input);
+    commentRepository.createComment.mockResolvedValue(nuevoComentario);
 
-      expect(commentRepository.createComment).toHaveBeenCalledWith(input);
-      expect(result).toBe(created);
-    });
+    const mockEmit = jest.fn();
+    const mockTo = jest.fn(() => ({ emit: mockEmit }));
+    getIO.mockReturnValue({ to: mockTo });
 
-    it("falla sin data", async () => {
-      await expect(commentService.crearComentario()).rejects.toThrow("data is required");
-      expect(commentRepository.createComment).not.toHaveBeenCalled();
-    });
+    const result = await commentService.crearComentario(input);
 
-    it("falla sin contenido", async () => {
-      await expect(commentService.crearComentario({ usuarioId: 1, topicoId: 2 }))
-        .rejects.toThrow("contenido is required");
-    });
-
-    it("falla sin usuarioId", async () => {
-      await expect(commentService.crearComentario({ contenido: "Hola", topicoId: 2 }))
-        .rejects.toThrow("usuarioId is required");
-    });
-
-    it("falla sin topicoId", async () => {
-      await expect(commentService.crearComentario({ contenido: "Hola", usuarioId: 1 }))
-        .rejects.toThrow("topicoId is required");
-    });
+    expect(commentRepository.createComment).toHaveBeenCalledWith(input);
+    expect(getIO).toHaveBeenCalled();
+    expect(mockTo).toHaveBeenCalledWith(`topico_${input.topicoId}`);
+    expect(mockEmit).toHaveBeenCalledWith("new_comment", nuevoComentario);
+    expect(result).toBe(nuevoComentario);
   });
 
-  describe("responderComentario", () => {
-    it("falla sin parentId", async () => {
-      await expect(commentService.responderComentario(undefined, { contenido: "x" }))
-        .rejects.toThrow("parentId is required");
-      expect(commentRepository.replyToComment).not.toHaveBeenCalled();
-    });
+  test("responderComentario -> guarda y emite 'new_reply' cuando viene topicoId", async () => {
+    const data = { contenido: "Respuesta", usuarioId: 3, comentarioId: 55 };
+    const nuevaRespuesta = {
+      id: 200,
+      ...data,
+      comentario: { id: 55, topicoId: 7 }
+    };
 
-    it("llama al repository con los parámetros correctos", async () => {
-      const parentId = 5;
-      const input = { contenido: "Respuesta", usuarioId: 3, topicoId: 2 };
-      const reply = { id: 22, parentId, ...input };
-      commentRepository.replyToComment.mockResolvedValue(reply);
+    commentRepository.createanswerComments.mockResolvedValue(nuevaRespuesta);
 
-      const result = await commentService.responderComentario(parentId, input);
+    const mockEmit = jest.fn();
+    const mockTo = jest.fn(() => ({ emit: mockEmit }));
+    getIO.mockReturnValue({ to: mockTo });
 
-      expect(commentRepository.replyToComment).toHaveBeenCalledWith(parentId, input);
-      expect(result).toBe(reply);
-    });
+    const result = await commentService.responderComentario(data);
+
+    expect(commentRepository.createanswerComments).toHaveBeenCalledWith(data);
+    expect(getIO).toHaveBeenCalled();
+    expect(mockTo).toHaveBeenCalledWith(`topico_${nuevaRespuesta.comentario.topicoId}`);
+    expect(mockEmit).toHaveBeenCalledWith("new_reply", nuevaRespuesta);
+    expect(result).toBe(nuevaRespuesta);
   });
 
-  describe("obtenerPorId", () => {
-    it("retorna comentario con conteo de vistas", async () => {
-      const id = 7;
-      const comentario = { id, contenido: "X", usuarioId: 1, topicoId: 2 };
-      commentRepository.getCommentById.mockResolvedValue(comentario);
-      commentRepository.countVistas.mockResolvedValue(3);
+  test("responderComentario -> no emite si no hay topicoId en la respuesta", async () => {
+    const data = { contenido: "Respuesta sin tópico", usuarioId: 4, comentarioId: 66 };
+    const respSinTopico = { id: 201, ...data, comentario: { id: 66 } }; // sin topicoId
 
-      const result = await commentService.obtenerPorId(id);
+    commentRepository.createanswerComments.mockResolvedValue(respSinTopico);
 
-      expect(commentRepository.getCommentById).toHaveBeenCalledWith(id);
-      expect(commentRepository.countVistas).toHaveBeenCalledWith(id);
-      expect(result).toEqual({ ...comentario, vistas: 3 });
-    });
+    // configuramos getIO pero esperamos que NO se llame
+    const mockIo = { to: jest.fn(() => ({ emit: jest.fn() })) };
+    getIO.mockReturnValue(mockIo);
 
-    it("falla sin id", async () => {
-      await expect(commentService.obtenerPorId()).rejects.toThrow("id is required");
-    });
+    const result = await commentService.responderComentario(data);
 
-    it("falla si no existe", async () => {
-      commentRepository.getCommentById.mockResolvedValue(null);
-      await expect(commentService.obtenerPorId(99)).rejects.toThrow("Comentario no encontrado");
-    });
+    expect(commentRepository.createanswerComments).toHaveBeenCalledWith(data);
+    expect(getIO).not.toHaveBeenCalled(); // no debería invocar getIO si no hay topicoId
+    expect(result).toBe(respSinTopico);
   });
 
-  describe("listarPorTopico", () => {
-    it("lista por topicoId", async () => {
-      const topicoId = 2;
-      const rows = [{ id: 1 }, { id: 2 }];
-      commentRepository.listByTopico.mockResolvedValue(rows);
+  test("getCommentsByTopicId -> devuelve lo que retorna el repositorio", async () => {
+    const topicoId = 3;
+    const comments = [{ id: 1 }, { id: 2 }];
+    commentRepository.getCommentsByTopicId.mockResolvedValue(comments);
 
-      const result = await commentService.listarPorTopico(topicoId);
+    const result = await commentService.getCommentsByTopicId(topicoId);
 
-      expect(commentRepository.listByTopico).toHaveBeenCalledWith(topicoId);
-      expect(result).toBe(rows);
-    });
-
-    it("falla sin topicoId", async () => {
-      await expect(commentService.listarPorTopico()).rejects.toThrow("topicoId is required");
-    });
-  });
-
-  describe("marcarVisto", () => {
-    it("actualiza si ya existe vista", async () => {
-      const comentarioId = 1, usuarioId = 2;
-      commentRepository.findVista.mockResolvedValue({ id: 10 });
-      commentRepository.updateVista.mockResolvedValue({ id: 10, comentarioId, usuarioId });
-
-      const result = await commentService.marcarVisto(comentarioId, usuarioId);
-
-      expect(commentRepository.findVista).toHaveBeenCalledWith(comentarioId, usuarioId);
-      expect(commentRepository.updateVista).toHaveBeenCalledWith(10, { vistoEn: expect.any(Date) });
-      expect(result).toEqual({ id: 10, comentarioId, usuarioId });
-    });
-
-    it("crea si no existe vista", async () => {
-      const comentarioId = 3, usuarioId = 4;
-      commentRepository.findVista.mockResolvedValue(null);
-      commentRepository.createVista.mockResolvedValue({ id: 11, comentarioId, usuarioId });
-
-      const result = await commentService.marcarVisto(comentarioId, usuarioId);
-
-      expect(commentRepository.findVista).toHaveBeenCalledWith(comentarioId, usuarioId);
-      expect(commentRepository.createVista).toHaveBeenCalledWith(comentarioId, usuarioId);
-      expect(result).toEqual({ id: 11, comentarioId, usuarioId });
-    });
-
-    it("falla sin comentarioId", async () => {
-      await expect(commentService.marcarVisto(undefined, 1)).rejects.toThrow("comentarioId is required");
-    });
-
-    it("falla sin usuarioId", async () => {
-      await expect(commentService.marcarVisto(1, undefined)).rejects.toThrow("usuarioId is required");
-    });
+    expect(commentRepository.getCommentsByTopicId).toHaveBeenCalledWith(topicoId);
+    expect(result).toBe(comments);
   });
 });

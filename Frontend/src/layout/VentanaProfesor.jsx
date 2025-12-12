@@ -11,7 +11,7 @@ import { TopicViewer } from '../features/teacher/components';
 import { teacherService } from '../../services/teacher.api';
 import DashboardAdmin from '../features/admin/pages/DashboardAdmin';
 import { Sidebar, Modal } from "../components/ui";
-import EvaluationEditor from '../features/teacher/components/EvaluationEditor';
+
 import MyEvaluations from '../features/teacher/pages/MyEvaluations';
 import { Home, BookOpen, Library, Code2, AlertCircle, CheckCircle2, Clock, School, Compass } from 'lucide-react';
 

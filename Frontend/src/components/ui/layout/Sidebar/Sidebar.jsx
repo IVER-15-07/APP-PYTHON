@@ -12,7 +12,7 @@ const Sidebar = ({
   sidebarOpen: controlledOpen,
   setSidebarOpen: setControlledOpen,
   onLogout,
-  onCreateEvaluation,
+ 
   brand = { icon: <Code2 className="w-6 h-6" />, name: "PyLearn" },
 }) => {
   const [open, setOpen] = useState(controlledOpen ?? true)

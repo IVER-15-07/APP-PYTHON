@@ -63,7 +63,7 @@ export const validateEvaluationTemplate = (form) => {
 /**
  * Calcular score total automático
  */
-export const calculateAutoScore = (respuestas, preguntas) => {
+export const calculateAutoScore = (respuestas) => {
   let totalScore = 0;
 
   respuestas.forEach(resp => {

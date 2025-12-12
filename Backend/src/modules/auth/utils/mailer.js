@@ -8,7 +8,7 @@ export const sendVerificationCode = async (userEmail, code) => {
   });
 
   await transporter.sendMail({
-    from: '"PyLearn" <no-reply@pylearn>',
+    from: `"PyLearn" <${process.env.EMAIL_USER}>`,
     to: userEmail,
     subject: "Código de verificación",
     html: `

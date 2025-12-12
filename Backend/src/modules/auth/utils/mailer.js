@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendVerificationCode = async (email, code) => {
   try {
     await resend.emails.send({
-      from: "PyLearn <onboarding@resend.dev>",
+      from: "PyLearn <pylearn@resend.dev>",
       to: email,
       subject: "Código de verificación",
       html: `
